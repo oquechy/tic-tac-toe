@@ -10,8 +10,12 @@ import ru.spbau.tictactoe.Logic.Turn.Turn;
 
 public class Bot implements AnotherPlayer {
     private Random rand = new Random();
+    private Board board;
+    public Bot(Board board){
+        this.board = board;
+    }
     @Override
-    public Turn makeTurn(Board board) {
+    public Turn makeTurn() {
         int cur = board.getCurrentInnerBoard();
         if(cur == -1){
             while(cur == -1 || board.getBlockStatus(cur) != Status.GAME_CONTINUES){
