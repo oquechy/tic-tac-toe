@@ -12,6 +12,7 @@ public class Logic {
     private Board board = new Board();
     private GameLog gameLog = new GameLog();
     private Turn lastTurn;
+    private boolean isLittleWin;
     public Board setUpField(){
         return board;
     }
@@ -20,11 +21,11 @@ public class Logic {
         return board.verifyTurn(turn);
     }
 
-    public boolean applyOpponentsTurn(Turn turn){
+    public void applyOpponentsTurn(Turn turn){
         lastTurn = turn;
         if(board.getCurrentInnerBoard() == -1){
             try {
-                return board.makeMoveToAnyOuterSquare(
+                isLittleWin = board.makeMoveToAnyOuterSquare(
                         turn.getInnerBoard(), turn.getInnerSquare());
             }
             catch(IncorrectMoveException e){
@@ -33,13 +34,20 @@ public class Logic {
         }
         else{
             try {
-                return board.makeMove(turn.getInnerSquare());
+                isLittleWin = board.makeMove(turn.getInnerSquare());
             }
             catch(IncorrectMoveException e){
 
             }
         }
-        return false;
+    }
+
+    public void applyMyTurn(Turn turn){
+        applyOpponentsTurn(turn);
+    }
+
+    public boolean isLittleWin() {
+        return isLittleWin;
     }
 
     public GameLog getGameLog(){
@@ -58,6 +66,10 @@ public class Logic {
 
     int getLittleWinCoords() {
         return lastTurn.getInnerBoard();
+    }
+
+    public boolean isEndOfGame(){
+        return board.getGameStatus() != Status.GAME_CONTINUES;
     }
 
 }

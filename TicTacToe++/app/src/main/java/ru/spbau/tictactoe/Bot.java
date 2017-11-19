@@ -1,17 +1,20 @@
-package ru.spbau.tictactoe.AnotherPlayer.Bot;
+package ru.spbau.tictactoe;
 
 import java.util.Random;
 
-import ru.spbau.tictactoe.AnotherPlayer.AnotherPlayer;
 import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
 
-public class Bot implements AnotherPlayer {
+public class Bot {
     private Random rand = new Random();
-    @Override
-    public Turn makeTurn(Board board) {
+    private Board board;
+    public Bot(Board board){
+        this.board = board;
+    }
+
+    public Turn makeTurn() {
         int cur = board.getCurrentInnerBoard();
         if(cur == -1){
             while(cur == -1 || board.getBlockStatus(cur) != Status.GAME_CONTINUES){
@@ -25,7 +28,6 @@ public class Bot implements AnotherPlayer {
         return new Turn(cur, x);
     }
 
-    @Override
     public String getName() {
         return "Robert";
     }
