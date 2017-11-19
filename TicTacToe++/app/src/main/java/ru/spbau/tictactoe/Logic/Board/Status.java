@@ -1,9 +1,9 @@
-package ru.spbau.tictactoe.Board;
+package ru.spbau.tictactoe.Logic.Board;
 
 
 public enum Status {
     GAME_CONTINUES,
     CROSS,
     NOUGHT,
-    BLOCK;
+    DRAW;
 }

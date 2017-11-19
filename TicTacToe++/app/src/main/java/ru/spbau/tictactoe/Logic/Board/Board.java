@@ -1,9 +1,11 @@
-package ru.spbau.tictactoe.Board;
+package ru.spbau.tictactoe.Logic.Board;
 
 
 import java.util.Arrays;
 
-import static ru.spbau.tictactoe.Board.Status.*;
+import ru.spbau.tictactoe.Logic.Turn.Turn;
+
+import static ru.spbau.tictactoe.Logic.Board.Status.*;
 
 
 /**
@@ -18,7 +20,7 @@ public class Board {
     /**
      * An outer square or an inner board.
      */
-    private static class InnerBoard {
+    public static class InnerBoard {
         private int numberOfMarkedSquares;
         /**
          * Each box could be empty (GAME_CONTINUES), or marked as CROSS or NOUGHT (the BLOCK is not used here).
@@ -47,21 +49,21 @@ public class Board {
          * @param player   is a player who makes move (CROSS or NOUGHT)
          * @throws IncorrectMoveException if the square is already marked or the game on this block is over
          */
-        private boolean setSquare(int squareId, Status player) throws IncorrectMoveException {
+        private boolean setSquare(int squareId, Turn.Player player) throws IncorrectMoveException {
             if (status != GAME_CONTINUES) {
                 throw new IncorrectMoveException("This block is invalid");
             }
             if (innerBoard[squareId] != GAME_CONTINUES) {
                 throw new IncorrectMoveException("The square is busy");
             }
-            innerBoard[squareId] = player;
+            innerBoard[squareId] = player == Turn.Player.CROSS ? CROSS : NOUGHT;
             numberOfMarkedSquares++;
             if (isOver()) {
-                status = player;
+                status = player == Turn.Player.CROSS ? CROSS : NOUGHT;
                 return true;
             }
             if (numberOfMarkedSquares == 9) {
-                status = BLOCK;
+                status = DRAW;
                 return true;
             }
             return false;
@@ -78,7 +80,7 @@ public class Board {
         private boolean isOver() {
             //check columns
             for (int i = 0; i < 3; i++) {
-                if (innerBoard[i] == innerBoard[i + 3]
+                if (innerBoard[i] != GAME_CONTINUES && innerBoard[i] == innerBoard[i + 3]
                         && innerBoard[i] == innerBoard[i + 6]) {
                     return true;
                 }
@@ -96,8 +98,12 @@ public class Board {
                     innerBoard[2] == innerBoard[4] && innerBoard[4] == innerBoard[6]);
         }
 
-        private Status getSquare(int squareId) {
+        public Status getSquare(int squareId) {
             return innerBoard[squareId];
+        }
+
+        public Status getStatus() {
+            return status;
         }
     }
 
@@ -128,7 +134,7 @@ public class Board {
     /**
      * The player who makes next move.
      */
-    private Status currentPlayer = CROSS;
+    private Turn.Player currentPlayer = Turn.Player.CROSS;
 
     /**
      * Number of blocks where the game is over.
@@ -166,7 +172,25 @@ public class Board {
             throw new IncorrectMoveException(
                     "The inner board must be also specified");
         }
-        return makeMoveToAnyOuterSquare(currentInnerBoard, innerSquare);
+        boolean blockIsOver = board[currentInnerBoard].setSquare(innerSquare, currentPlayer);
+        if (blockIsOver) {
+            numberOfInvalidBlocks++;
+        }
+        if (board[innerSquare].status == Status.GAME_CONTINUES) {
+            currentInnerBoard = innerSquare;
+        } else {
+            currentInnerBoard = -1;
+        }
+        if (isOver()) {
+            status = currentPlayer == Turn.Player.CROSS ? CROSS : NOUGHT;
+        } else {
+            if (numberOfInvalidBlocks == 9) {
+                status = DRAW;
+            }
+        }
+        currentPlayer =
+                currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
+        return status != GAME_CONTINUES;
     }
 
     /**
@@ -194,17 +218,13 @@ public class Board {
             currentInnerBoard = -1;
         }
         if (isOver()) {
-            status = currentPlayer;
+            status = currentPlayer == Turn.Player.CROSS ? CROSS : NOUGHT;
         } else {
             if (numberOfInvalidBlocks == 9) {
-                status = BLOCK;
+                status = DRAW;
             }
         }
-        if (currentPlayer == CROSS) {
-            currentPlayer = NOUGHT;
-        } else {
-            currentPlayer = CROSS;
-        }
+        currentPlayer = currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
         return status != GAME_CONTINUES;
     }
 
@@ -224,7 +244,7 @@ public class Board {
         //check columns
         for (int i = 0; i < 3; i++) {
             if (board[i].status != GAME_CONTINUES
-                    && board[i].status != BLOCK
+                    && board[i].status != DRAW
                     && board[i].status == board[i + 3].status
                     && board[i].status == board[i + 6].status) {
                 return true;
@@ -233,17 +253,26 @@ public class Board {
         //check rows
         for (int i = 0; i < 9; i += 3) {
             if (board[i].status != GAME_CONTINUES
-                    && board[i].status != BLOCK
+                    && board[i].status != DRAW
                     && board[i].status == board[i + 1].status
                     && board[i].status == board[i + 2].status) {
                 return true;
             }
         }
         //check diagonals
-        return board[4].status != GAME_CONTINUES && board[4].status != BLOCK
+        return board[4].status != GAME_CONTINUES && board[4].status != DRAW
                 && (board[0].status == board[4].status
                 && board[4].status == board[8].status ||
                 board[2].status == board[4].status && board[4].status == board[6].status);
+    }
+
+    public InnerBoard[] getBoard() {
+        return Arrays.copyOf(board, board.length);
+    }
+
+    public boolean verifyTurn(Turn turn){
+        return (currentInnerBoard == -1 || turn.getInnerBoard() == currentInnerBoard) &&
+                board[turn.getInnerBoard()].getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
     }
 }
 

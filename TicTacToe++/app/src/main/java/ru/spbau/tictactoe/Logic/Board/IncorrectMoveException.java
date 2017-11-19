@@ -1,4 +1,4 @@
-package ru.spbau.tictactoe.Board;
+package ru.spbau.tictactoe.Logic.Board;
 
 
 public class IncorrectMoveException extends Exception {

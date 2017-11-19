@@ -1,6 +1,8 @@
-package ru.spbau.tictactoe.Board;
+package ru.spbau.tictactoe.Logic.Board;
 
 import org.junit.Test;
+
+import java.util.Scanner;
 
 import static org.junit.Assert.*;
 
@@ -20,7 +22,7 @@ public class BoardTest {
         assertEquals(Status.GAME_CONTINUES, board.getGameStatus());
     }
 
-    //TODO
+
     @Test
     public void makeMoveToAnyOuterSquare() throws Exception {
 
