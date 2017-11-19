@@ -54,17 +54,18 @@ public class Controller {
 
         state = State.CREATE_FIELD;
 
-        Bot bot = new Bot();
+        final Bot bot = new Bot(logic.getBoard());
         friend = new NetAnotherPlayer() {
+        ru.spbau.tictactoe.Logic.Turn.Turn turn;
 
             @Override
-            public void setOpponentTurn(Turn turn) {
-
+            public void setOpponentTurn(Turn t) {
+                turn = bot.makeTurn();
             }
 
             @Override
             public Turn getOpponentTurn() {
-                return null;
+                return new Turn(turn);
             }
 
             @Override
@@ -74,7 +75,7 @@ public class Controller {
 
             @Override
             public String getName() {
-                return null;
+                return bot.getName();
             }
         };
 
@@ -101,7 +102,7 @@ public class Controller {
         if (state == State.MY_TURN && logic.verifyTurn(new ru.spbau.tictactoe.Logic.Turn.Turn(newTurn.x, newTurn.y))) {
 //            ui.acceptTurn(newTurn);
             friend.setOpponentTurn(newTurn);
-            logic.applyMyTurn(newTurn);
+            logic.applyMyTurn(newTurn.convertToTurn());
 
             if (!checkForWins(newTurn)) {             // if not end of game
                 state = State.FRIENDS_TURN;
@@ -118,7 +119,7 @@ public class Controller {
 
 
     private static boolean checkForWins(Turn newTurn) {  // turn: who and where
-        if (logic.isLittleWin(new ru.spbau.tictactoe.Logic.Turn.Turn(newTurn.x, newTurn.y))) {         // applies new turn & checks for little win
+        if (logic.isLittleWin()) {         // applies new turn & checks for little win
 //            ui.showLittleWin(logic.getLittleWinCoords());
         }
 
