@@ -60,7 +60,8 @@ public class Board extends Activity implements SurfaceHolder.Callback, View.OnTo
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Pair<Integer, Integer> p = getCoordinates(x, y);
-                if (Controller.verifyTurn(new Turn(false, p.first, p.second))) {
+                Controller.verifyTurn(new Turn(false, p.first, p.second));
+                if (true) {
                     board[p.first - 1][p.second - 1] = 1;
                     redraw();
                 }

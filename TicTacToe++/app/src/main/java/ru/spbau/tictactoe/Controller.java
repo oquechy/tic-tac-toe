@@ -6,12 +6,10 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
-import ru.spbau.tictactoe.NetAnotherPlayer.Bot.Bot;
 import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Network.Client;
 import ru.spbau.tictactoe.Network.IPGetter;
 import ru.spbau.tictactoe.Network.Server;
-import ru.spbau.tictactoe.AnotherPlayer.Bot.Bot;
 
 public class Controller {
 
@@ -29,7 +27,7 @@ public class Controller {
     private boolean paused = false;
 
     private static State state;
-    private static UI ui;
+    private static Board ui;
     private static Server server;
     private static Client client;
     private static Logic logic = new Logic();
@@ -139,7 +137,7 @@ public class Controller {
     public static void setOpponentTurn(Turn turn) {
         if (state == State.FRIENDS_TURN) {
             logic.applyOpponentsTurn(new ru.spbau.tictactoe.Logic.Turn.Turn(turn.x, turn.y));
-//            ui.applyOpponentTurn(turn);
+            ui.applyOpponentTurn(turn.x, turn.y);
 //            System.out.println(turn.toString());
 
             if (!checkForWins(turn)) {
