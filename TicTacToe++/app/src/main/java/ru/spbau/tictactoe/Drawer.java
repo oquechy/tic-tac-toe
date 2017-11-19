@@ -4,9 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import java.util.ArrayList;
-
-public class Drawer {
+class Drawer {
 
     static private Paint mPaint = new Paint();
     static private Paint mPaintFat = new Paint();
@@ -14,7 +12,10 @@ public class Drawer {
     static int CELL_WIDTH = 0;
     static int CELL_HEIGHT = 0;
 
-    public static void drawBackground(Canvas canvas) { //TODO
+    private static float indentX = 0;
+    private static float indentY = 0;
+
+    private static void drawBackground(Canvas canvas) { //TODO
 
         int width = canvas.getWidth();
         int height = canvas.getHeight();
@@ -22,10 +23,14 @@ public class Drawer {
         CELL_WIDTH = width / 9;
         CELL_HEIGHT = height / 9;
 
+        indentX = (float) CELL_WIDTH / 9;
+        indentY = (float) CELL_HEIGHT / 9;
+
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
 
         mPaint.setColor(Color.BLACK);
+        mPaint.setStrokeWidth(3);
         mPaintFat.setColor(Color.BLACK);
         mPaintFat.setStrokeWidth(23);
 
@@ -47,33 +52,36 @@ public class Drawer {
         }
         for (int i = 0 ; i < 9; i++) {
             for (int j = 0 ; j < 9; j++) {
-                if (Board.board[i][j] == 1) {
-                    drawSquare(canvas, i*width, i*height);
+                if (Board.board[i][j] * Board.crossOrZero == 1) {
+                    drawCross(canvas, i, j);
+                }
+                if (Board.board[i][j] * Board.crossOrZero == -1) {
+                    drawCircle(canvas, i, j);
                 }
             }
         }
     }
 
-    static private boolean drawSquare(Canvas mCanvas, int x, int y) {
-        mPaint.setStyle(Paint.Style.FILL);
+    static private boolean drawCircle(Canvas mCanvas, int x, int y) {
         mPaint.setColor(Color.BLACK);
-        int x1 = 0;
-        int y1 = 0;
-        int x2 = 0;
-        int y2 = 0;
-        while (x > x2) {
-            x1 = x2;
-            x2 += CELL_HEIGHT;
-        }
-        while (y > y2)  {
-            y1 = y2;
-            y2 += CELL_WIDTH;
-        }
-        mCanvas.drawLine(0 , 0 , 1000 , 1000 , mPaint);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(10);
+        mCanvas.drawCircle(x * CELL_WIDTH + (CELL_WIDTH / 2), y * CELL_HEIGHT + (CELL_HEIGHT / 2),
+                (CELL_WIDTH / 2) - indentX / 2, mPaint);
         return true;
     }
 
-    public static void drawEverything(Canvas canvas) {
+    static private boolean drawCross(Canvas mCanvas, int x, int y) {
+        mPaint.setColor(Color.BLACK);
+        mPaint.setStrokeWidth(10);
+        mCanvas.drawLine(x * CELL_WIDTH + indentX, (y + 1) * CELL_HEIGHT - indentY,
+                (x + 1) * CELL_WIDTH - indentX, y * CELL_HEIGHT + indentY, mPaint);
+        mCanvas.drawLine(x * CELL_WIDTH + indentX, y * CELL_HEIGHT + indentY,
+                (x + 1) * CELL_WIDTH - indentX, (y + 1) * CELL_HEIGHT - indentY, mPaint);
+        return true;
+    }
+
+    static void drawEverything(Canvas canvas) {
         drawBackground(canvas);
     }
 }
