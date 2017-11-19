@@ -3,6 +3,7 @@ package ru.spbau.tictactoe;
 import android.app.Activity;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import ru.spbau.tictactoe.Network.Client;
@@ -24,144 +25,173 @@ public class Controller {
 
     private boolean paused = false;
 
-    private State state;
-    private UI ui;
-    private Server server;
-    private Client client;
-    private Logic logic = new Logic();
-    private Stats stats = new Stats();
-    private AnotherPlayer friend;
+    private static State state;
+    private static UI ui;
+    private static Server server;
+    private static Client client;
+//    private Logic logic = new Logic();
+//    private Stats stats = new Stats();
+    private static AnotherPlayer friend;
 
     public Controller(Activity mainMenu) {
         state = State.MAIN_MENU;
 
-        ui = new UI(mainMenu);
+//        ui = new UI(mainMenu);
     }
 
     public void fromGameToMainMenu() {
         paused = true;
         state = State.MAIN_MENU;
 
-        ui.toMainMenu();
+//        ui.toMainMenu();
     }
 
-    public void optionGameWithBot() {
-        newGameWarningIfPaused();
+//    public void optionGameWithBot() {
+//        newGameWarningIfPaused();
+//
+//        state = State.CREATE_FIELD;
+//
+//        friend = new Bot();
+//        initField();                   // if previous game wasn't finished, you can clear board here
+//        boolean firstPlayer = ui.chooseFirstPlayer();
+//        ui.switchTurn(firstPlayer);    // true if it is my turn
+//        logic.setFirstPlayer(firstPlayer);
+//
+//        state = firstPlayer ? State.MY_TURN : State.FRIENDS_TURN;
+//    }
+//
+//    private void initField() {
+//        Board board = logic.setUpField();
+//        ui.setUpField(board);
+//    }
+//
+//    private void newGameWarningIfPaused() {
+//        if (paused) {
+//            ui.showWarning();
+//        }
+//    }
+//
+    public static void verifyTurn(Turn newTurn) {
+        if (state == State.MY_TURN /*&& logic.verifyTurn(newTurn)*/) {
+//            ui.acceptTurn(newTurn);
+            friend.setOpponentTurn(newTurn);
+//
+//            if (!checkForWins(newTurn)) {             // if not end of game
+//                state = State.FRIENDS_TURN;
 
-        state = State.CREATE_FIELD;
-
-        friend = new Bot();
-        initField();                   // if previous game wasn't finished, you can clear board here
-        boolean firstPlayer = ui.chooseFirstPlayer();
-        ui.switchTurn(firstPlayer);    // true if it is my turn
-        logic.setFirstPlayer(firstPlayer);
-
-        state = firstPlayer ? State.MY_TURN : State.FRIENDS_TURN;
-    }
-
-    private void initField() {
-        Board board = logic.setUpField();
-        ui.setUpField(board);
-    }
-
-    private void newGameWarningIfPaused() {
-        if (paused) {
-            ui.showWarning();
-        }
-    }
-
-    public void verifyTurn(Turn newTurn) {
-        if (state == State.MY_TURN && logic.verifyTurn(newTurn)) {
-            ui.acceptTurn(newTurn);
-            friend.setOpponenTurn(newTurn);
-
-            if (!checkForWins(newTurn)) {             // if not end of game
-                state = State.FRIENDS_TURN;
-
-                ui.switchTurn(false);                 // friend's turn
-            }
+//                ui.switchTurn(false);                 // friend's turn
+        System.out.println(newTurn.toString());
+        state = State.FRIENDS_TURN;
+                setOpponentTurn(friend.getOpponentTurn());
+//            }
         } else {
             System.err.println("incorrect turn time");
         }
     }
-
-
-    private boolean checkForWins(Turn newTurn) {  // turn: who and where
-        if (logic.isLittleWin(newTurn)) {         // applies new turn & checks for little win
-            ui.showLittleWin(logic.getLittleWinCoords());
-        }
-
-        if (logic.isEndOfGame()) {                // first player wins/second player wins/draw
-            state = State.END_OF_GAME;
-
-            GameLog gameLog = logic.getGameLog(); // am I a winner? how many turns?
-            gameLog.writeFriendsName(friend.getName());
-            stats.getNewRecord(gameLog);
-            ui.displayResult(logic.getResult());  // and go to main menu then
-
-            return true;
-        }
-        return false;
-    }
-
-    public void setOpponentTurn(Turn turn) {
+//
+//
+//    private boolean checkForWins(Turn newTurn) {  // turn: who and where
+//        if (logic.isLittleWin(newTurn)) {         // applies new turn & checks for little win
+//            ui.showLittleWin(logic.getLittleWinCoords());
+//        }
+//
+//        if (logic.isEndOfGame()) {                // first player wins/second player wins/draw
+//            state = State.END_OF_GAME;
+//
+//            GameLog gameLog = logic.getGameLog(); // am I a winner? how many turns?
+//            gameLog.writeFriendsName(friend.getName());
+//            stats.getNewRecord(gameLog);
+//            ui.displayResult(logic.getResult());  // and go to main menu then
+//
+//            return true;
+//        }
+//        return false;
+//    }
+//
+    public static void setOpponentTurn(Turn turn) {
         if (state == State.FRIENDS_TURN) {
-            logic.applyOpponentTurn(turn);
-            ui.applyOpponentTurn(turn);
+//            logic.applyOpponentTurn(turn);
+//            ui.applyOpponentTurn(turn);
+            System.out.println(turn.toString());
 
-            if (!checkForWins(turn)) {
-                state = State.MY_TURN;
-
-                ui.switchTurn(true);
-            }
+//            if (!checkForWins(turn)) {
+//                state = State.MY_TURN;
+            state = State.MY_TURN;
+            verifyTurn(server == null ? new Turn(true, 1, 1) : new Turn(false, 3, 3));
+//                ui.switchTurn(true);
+//            }
         } else {
             System.err.println("incorrect turn time");
         }
     }
+//
+//    public void optionStats() {
+//        state = State.STATS;
+//
+//        ui.displayStats(stats.getRecords());
+//    }
 
-    public void optionStats() {
-        state = State.STATS;
-
-        ui.displayStats(stats.getRecords());
-    }
-
-    public void optionConnectToFriend() {
-        state = State.CONNECT_TO_FRIEND;
-
-        ui.getGameCode();           // could be possible to return to main menu
-    }
-
-    public void setGameCode(String gameCode) {
-        client = new Client();
+    public static String getIPtoShow() {
         try {
-            client.start(Coder.parse(gameCode));
-        } catch (IOException e) {
-            ui.networkError();
-            ui.getGameCode();
-            e.printStackTrace();
-        }
-    }
-
-    public void optionInviteFriend() {
-     state = State.SHARE_IP;
-
-        try {
-            String ip = new IPGetter().execute().get();
-            if (ip == null) {
-                ui.checkConnectionWarning();
-            } else {
-                ui.showCode(Coder.encode(ip));
-            }
+            String s = new IPGetter().execute().get();
+            System.err.println(s);
+            return s;
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+        return "empty";
+    }
+
+
+    public static void optionConnectToFriend() {
+        state = State.CONNECT_TO_FRIEND;
+
+//        ui.getGameCode();           // could be possible to return to main menu
+        setGameCode("");
+    }
+
+    public static void setGameCode(String gameCode) {
+        client = new Client();
+        try {
+            client.start("Client", "192.168.1.49", "3030");
+            boolean myTurn = Boolean.parseBoolean(client.getFrom());
+//            ui.switchTurn(myTurn);
+            friend = client.getPlayer("Server");
+            if (!myTurn) {
+                state = State.FRIENDS_TURN;
+                setOpponentTurn(friend.getOpponentTurn());
+            } else {
+                state = State.MY_TURN;
+                verifyTurn(new Turn(true, 1, 1));
+            }
+        } catch (IOException e) {
+//            ui.networkError();
+//            ui.getGameCode();
+            e.printStackTrace();
+        }
+    }
+
+    public static void optionInviteFriend() {
+        state = State.SHARE_IP;
         server = new Server();
         try {
-            server.start("3030");
+            server.start("Server", 3030);
+            boolean myTurn = new Random().nextBoolean();
+//            ui.switchTurn(myTurn);
+            server.passTo(Boolean.toString(!myTurn));
+            friend = server.getPlayer("Client");
+            if (!myTurn) {
+                state = State.FRIENDS_TURN;
+                Turn opponentTurn = friend.getOpponentTurn();
+                setOpponentTurn(opponentTurn);
+            } else {
+                state = State.MY_TURN;
+                verifyTurn(new Turn(false, 3, 3));
+            }
         } catch (IOException e) {
-            ui.
+//            ui.networkError();
             e.printStackTrace();
         }
     }
