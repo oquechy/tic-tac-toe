@@ -72,4 +72,8 @@ public class Logic {
         return board.getGameStatus() != Status.GAME_CONTINUES;
     }
 
+    public Board getBoard(){
+        return board;
+    }
+
 }
