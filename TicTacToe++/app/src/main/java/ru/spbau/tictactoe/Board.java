@@ -12,7 +12,7 @@ public class Board extends Activity implements SurfaceHolder.Callback, View.OnTo
 
     public static int[][] board = new int[9][9];
 
-    public static int crossOrZero = -1;
+    public static int crossOrZero = 1;
 
     static private SurfaceHolder surfaceHolder;
 
@@ -60,16 +60,15 @@ public class Board extends Activity implements SurfaceHolder.Callback, View.OnTo
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Pair<Integer, Integer> p = getCoordinates(x, y);
-                if (Controller.verifyTurn(p.first, p.second)) {
+                // Controller.verifyTurn(p.first, p.second)
                     board[p.first - 1][p.second - 1] = 1;
                     redraw();
-                }
         }
         return true;
     }
 
-    public void applyOpponentTurn(int x, int y) {
-        board[x - 1][y - 1] = -1;
+    public void applyTurn(int x, int y, int who) {
+        board[x - 1][y - 1] = who;
         redraw();
     }
 
