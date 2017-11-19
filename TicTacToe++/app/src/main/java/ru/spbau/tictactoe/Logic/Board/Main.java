@@ -3,7 +3,7 @@ package ru.spbau.tictactoe.Logic.Board;
 
 import java.util.Scanner;
 
-import ru.spbau.tictactoe.AnotherPlayer.Bot.Bot;
+import ru.spbau.tictactoe.Bot;
 
 public class Main {
     private static char toChar(Status t){
@@ -39,7 +39,7 @@ public class Main {
 
     public static void go() {
         Board board = new Board();
-        Bot bot = new Bot();
+        Bot bot = new Bot(board);
         Scanner reader = new Scanner(System.in);
         while(!board.isOver()){
             System.out.printf("Current board is %d\n", board.getCurrentInnerBoard());
