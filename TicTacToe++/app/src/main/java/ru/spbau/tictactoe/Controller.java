@@ -11,6 +11,7 @@ import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Network.Client;
 import ru.spbau.tictactoe.Network.IPGetter;
 import ru.spbau.tictactoe.Network.Server;
+import ru.spbau.tictactoe.AnotherPlayer.Bot.Bot;
 
 public class Controller {
 
@@ -53,7 +54,30 @@ public class Controller {
 
         state = State.CREATE_FIELD;
 
-        friend = new Bot();
+        Bot bot = new Bot();
+        friend = new NetAnotherPlayer() {
+
+            @Override
+            public void setOpponentTurn(Turn turn) {
+
+            }
+
+            @Override
+            public Turn getOpponentTurn() {
+                return null;
+            }
+
+            @Override
+            public boolean getFirstPlayer() {
+                return false;
+            }
+
+            @Override
+            public String getName() {
+                return null;
+            }
+        };
+
         initField();                   // if previous game wasn't finished, you can clear board here
         boolean firstPlayer = true; //ui.chooseFirstPlayer();
 //        ui.switchTurn(firstPlayer);    // true if it is my turn
