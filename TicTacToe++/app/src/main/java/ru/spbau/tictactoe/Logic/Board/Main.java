@@ -3,7 +3,7 @@ package ru.spbau.tictactoe.Logic.Board;
 
 import java.util.Scanner;
 
-import ru.spbau.tictactoe.AnotherPlayer.Bot.Bot;
+import ru.spbau.tictactoe.NetAnotherPlayer.Bot.Bot;
 
 public class Main {
     private static char toChar(Status t){

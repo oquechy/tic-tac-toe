@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+import ru.spbau.tictactoe.NetAnotherPlayer.Bot.Bot;
+import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Network.Client;
 import ru.spbau.tictactoe.Network.IPGetter;
 import ru.spbau.tictactoe.Network.Server;
@@ -29,9 +31,9 @@ public class Controller {
     private static UI ui;
     private static Server server;
     private static Client client;
-//    private Logic logic = new Logic();
+    private static Logic logic = new Logic();
 //    private Stats stats = new Stats();
-    private static AnotherPlayer friend;
+    private static NetAnotherPlayer friend;
 
     public Controller(Activity mainMenu) {
         state = State.MAIN_MENU;
@@ -46,80 +48,81 @@ public class Controller {
 //        ui.toMainMenu();
     }
 
-//    public void optionGameWithBot() {
-//        newGameWarningIfPaused();
-//
-//        state = State.CREATE_FIELD;
-//
-//        friend = new Bot();
-//        initField();                   // if previous game wasn't finished, you can clear board here
-//        boolean firstPlayer = ui.chooseFirstPlayer();
+    public void optionGameWithBot() {
+        newGameWarningIfPaused();
+
+        state = State.CREATE_FIELD;
+
+        friend = new Bot();
+        initField();                   // if previous game wasn't finished, you can clear board here
+        boolean firstPlayer = true; //ui.chooseFirstPlayer();
 //        ui.switchTurn(firstPlayer);    // true if it is my turn
 //        logic.setFirstPlayer(firstPlayer);
-//
-//        state = firstPlayer ? State.MY_TURN : State.FRIENDS_TURN;
-//    }
-//
-//    private void initField() {
+
+        state = firstPlayer ? State.MY_TURN : State.FRIENDS_TURN;
+    }
+
+    private void initField() {
 //        Board board = logic.setUpField();
 //        ui.setUpField(board);
-//    }
-//
-//    private void newGameWarningIfPaused() {
-//        if (paused) {
+    }
+
+    private void newGameWarningIfPaused() {
+        if (paused) {
 //            ui.showWarning();
-//        }
-//    }
-//
+        }
+    }
+
     public static void verifyTurn(Turn newTurn) {
-        if (state == State.MY_TURN /*&& logic.verifyTurn(newTurn)*/) {
+        if (state == State.MY_TURN && logic.verifyTurn(new ru.spbau.tictactoe.Logic.Turn.Turn(newTurn.x, newTurn.y))) {
 //            ui.acceptTurn(newTurn);
             friend.setOpponentTurn(newTurn);
-//
-//            if (!checkForWins(newTurn)) {             // if not end of game
-//                state = State.FRIENDS_TURN;
+            logic.applyMyTurn(newTurn);
+
+            if (!checkForWins(newTurn)) {             // if not end of game
+                state = State.FRIENDS_TURN;
 
 //                ui.switchTurn(false);                 // friend's turn
-        System.out.println(newTurn.toString());
-        state = State.FRIENDS_TURN;
+                System.out.println(newTurn.toString());
+                state = State.FRIENDS_TURN;
                 setOpponentTurn(friend.getOpponentTurn());
-//            }
+            }
         } else {
             System.err.println("incorrect turn time");
         }
     }
-//
-//
-//    private boolean checkForWins(Turn newTurn) {  // turn: who and where
-//        if (logic.isLittleWin(newTurn)) {         // applies new turn & checks for little win
+
+
+    private static boolean checkForWins(Turn newTurn) {  // turn: who and where
+        if (logic.isLittleWin(new ru.spbau.tictactoe.Logic.Turn.Turn(newTurn.x, newTurn.y))) {         // applies new turn & checks for little win
 //            ui.showLittleWin(logic.getLittleWinCoords());
-//        }
-//
-//        if (logic.isEndOfGame()) {                // first player wins/second player wins/draw
-//            state = State.END_OF_GAME;
-//
+        }
+
+        if (logic.isEndOfGame()) {                // first player wins/second player wins/draw
+            state = State.END_OF_GAME;
+
 //            GameLog gameLog = logic.getGameLog(); // am I a winner? how many turns?
 //            gameLog.writeFriendsName(friend.getName());
 //            stats.getNewRecord(gameLog);
 //            ui.displayResult(logic.getResult());  // and go to main menu then
-//
-//            return true;
-//        }
-//        return false;
-//    }
-//
+
+            return true;
+        }
+        return false;
+    }
+
     public static void setOpponentTurn(Turn turn) {
         if (state == State.FRIENDS_TURN) {
-//            logic.applyOpponentTurn(turn);
+            logic.applyOpponentsTurn(new ru.spbau.tictactoe.Logic.Turn.Turn(turn.x, turn.y));
 //            ui.applyOpponentTurn(turn);
-            System.out.println(turn.toString());
+//            System.out.println(turn.toString());
 
-//            if (!checkForWins(turn)) {
-//                state = State.MY_TURN;
+            if (!checkForWins(turn)) {
+                state = State.MY_TURN;
             state = State.MY_TURN;
             verifyTurn(server == null ? new Turn(true, 1, 1) : new Turn(false, 3, 3));
 //                ui.switchTurn(true);
-//            }
+            }
         } else {
             System.err.println("incorrect turn time");
         }

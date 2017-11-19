@@ -1,6 +1,6 @@
 package ru.spbau.tictactoe;
 
-public interface AnotherPlayer {
+public interface NetAnotherPlayer {
     void setOpponentTurn(Turn turn);
 
     Turn getOpponentTurn();
