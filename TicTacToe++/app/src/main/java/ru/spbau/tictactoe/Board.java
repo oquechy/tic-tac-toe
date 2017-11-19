@@ -1,106 +1,101 @@
 package ru.spbau.tictactoe;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 
-public class Board extends AppCompatActivity {
+public class Board extends Activity implements SurfaceHolder.Callback, View.OnTouchListener {
 
-    public class Draw2D extends View implements View.OnTouchListener {
-        public Draw2D(Context context) {
-            super(context);
-            this.setOnTouchListener(this);
-        }
+    public static int[][] board = new int[9][9];
 
+    public static int crossOrZero = -1;
 
-        private Paint mPaint = new Paint();
-        private Paint mPaintFat = new Paint();
-
-        int CELL_WIDTH = 0;
-        int CELL_HEIGHT = 0;
-
-        Canvas mCanvas;
-        @Override
-        protected void onDraw(Canvas canvas){
-            super.onDraw(canvas);
-
-            mCanvas = canvas;
-
-            int width = canvas.getWidth();
-            int height = canvas.getHeight();
-
-            CELL_WIDTH = width / 9;
-            CELL_HEIGHT = height / 9;
-
-            mPaint.setStyle(Paint.Style.FILL);
-            mPaint.setColor(Color.WHITE);
-            canvas.drawPaint(mPaint);
-
-            mPaint.setColor(Color.BLACK);
-            mPaintFat.setColor(Color.BLACK);
-            mPaintFat.setStrokeWidth(23);
-
-            int k = 0;
-            for (int i = 0; i <= width; i += CELL_WIDTH, k++) {
-                if (k % 3 == 0)
-                    canvas.drawLine(i, 0, i, height, mPaintFat);
-                else
-                    canvas.drawLine(i, 0, i, height, mPaint);
-            }
-
-            k = 0;
-            for (int i = 0; i <= height; i += CELL_HEIGHT) {
-                if (k % 3 == 0)
-                    canvas.drawLine(0, i, width, i, mPaintFat);
-                else
-                    canvas.drawLine(0, i, width, i, mPaint);
-                k++;
-            }
-        }
-
-        private boolean drawSquare(int x, int y) {
-            mPaint.setStyle(Paint.Style.FILL);
-            mPaint.setColor(Color.BLACK);
-            int x1 = 0;
-            int y1 = 0;
-            int x2 = 0;
-            int y2 = 0;
-            while (x > x2) {
-                x1 = x2;
-                x2 += CELL_HEIGHT;
-            }
-            while (y > y2)  {
-                y1 = y2;
-                y2 += CELL_WIDTH;
-            }
-            mCanvas.drawRect(0 , 0 , 100 , 100 , mPaint);
-            return true;
-        }
-
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            float x = motionEvent.getX();
-            float y = motionEvent.getY();
-
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    drawSquare((int) x, (int) y);
-
-            }
-            return true;
-        }
-    }
+    static private SurfaceHolder surfaceHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Draw2D draw2D = new Draw2D(this);
-        setContentView(draw2D);
+        setContentView(R.layout.activity_board);
+        final SurfaceView surface = findViewById(R.id.surfaceView);
+        surfaceHolder = surface.getHolder();
+        surfaceHolder.addCallback(this);
+        surface.setOnTouchListener(Board.this);
+
+    }
+
+    static private class Pair<T, S> {
+        T first;
+        S second;
+
+        Pair(T f, S s) {
+            first = f;
+            second = s;
+        }
+    }
+
+    private Pair<Integer, Integer> getCoordinates(float x, float y) {
+        int x1 = 0;
+        int y1 = 0;
+        int k1 = 0;
+        int k2 = 0;
+        while (x > x1) {
+            k1++;
+            x1 += Drawer.CELL_WIDTH;
+        }
+        while (y > y1) {
+            k2++;
+            y1 += Drawer.CELL_HEIGHT;
+        }
+        return new Pair<>(k1, k2);
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        float x = motionEvent.getX();
+        float y = motionEvent.getY();
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                Pair<Integer, Integer> p = getCoordinates(x, y);
+                if (Controller.verifyTurn(p.first, p.second)) {
+                    board[p.first - 1][p.second - 1] = 1;
+                    redraw();
+                }
+        }
+        return true;
+    }
+
+    public void applyOpponentTurn(int x, int y) {
+        board[x - 1][y - 1] = -1;
+        redraw();
+    }
+
+    //1 - cross
+    //-1 - zero
+    public void whoAmI(int i) {
+        crossOrZero = i;
+    }
+
+    public void redraw() {
+        Canvas canvas = surfaceHolder.lockCanvas();
+        Drawer.drawEverything(canvas);
+        surfaceHolder.unlockCanvasAndPost(canvas);
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        redraw();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+        redraw();
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
     }
 }
