@@ -22,7 +22,7 @@ public class Bot {
             }
         }
         int x = rand.nextInt(9);
-        while(board.getSquare(cur, 9) != Status.GAME_CONTINUES){
+        while(board.getSquare(cur, x) != Status.GAME_CONTINUES){
             x = rand.nextInt(9);
         }
         return new Turn(cur, x);
