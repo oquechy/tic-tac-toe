@@ -1,4 +1,4 @@
-package ru.spbau.tictactoe;
+package ru.spbau.tictactoe.ui;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,16 +15,15 @@ class Drawer {
     private static float indentX = 0;
     private static float indentY = 0;
 
-    private static void drawBackground(Canvas canvas) { //TODO
-
+    private static void drawBackground(Canvas canvas) {
         int width = canvas.getWidth();
-        int height = canvas.getHeight();
+        int height = width;
 
         CELL_WIDTH = width / 9;
-        CELL_HEIGHT = height / 9;
+        CELL_HEIGHT = width / 9;
 
-        indentX = (float) CELL_WIDTH / 9;
-        indentY = (float) CELL_HEIGHT / 9;
+        indentX = (float) CELL_WIDTH / 6;
+        indentY = (float) CELL_HEIGHT / 6;
 
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
@@ -35,7 +34,7 @@ class Drawer {
         mPaintFat.setStrokeWidth(23);
 
         int k = 0;
-        for (int i = 0; i <= width; i += CELL_WIDTH, k++) {
+        for (int i = 0; i <= width && k <= 9; i += CELL_WIDTH, k++) {
             if (k % 3 == 0)
                 canvas.drawLine(i, 0, i, height, mPaintFat);
             else
@@ -43,7 +42,7 @@ class Drawer {
         }
 
         k = 0;
-        for (int i = 0; i <= height; i += CELL_HEIGHT) {
+        for (int i = 0; i <= height && k <= 9; i += CELL_HEIGHT) {
             if (k % 3 == 0)
                 canvas.drawLine(0, i, width, i, mPaintFat);
             else
@@ -52,11 +51,21 @@ class Drawer {
         }
         for (int i = 0 ; i < 9; i++) {
             for (int j = 0 ; j < 9; j++) {
-                if (Board.board[i][j] * Board.crossOrZero == 1) {
+                if (UI.board[i][j] * UI.crossOrZero == 1) {
                     drawCross(canvas, i, j);
                 }
-                if (Board.board[i][j] * Board.crossOrZero == -1) {
+                if (UI.board[i][j] * UI.crossOrZero == -1) {
                     drawCircle(canvas, i, j);
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (UI.smallBoard[i][j] * UI.crossOrZero == 1) {
+                    drawBigCross(canvas, i, j);
+                }
+                if (UI.smallBoard[i][j] * UI.crossOrZero == -1) {
+                    drawBigCircle(canvas, i, j);
                 }
             }
         }
@@ -81,6 +90,24 @@ class Drawer {
         return true;
     }
 
+    static private boolean drawBigCross(Canvas mCanvas, int x, int y) {
+        mPaint.setColor(Color.BLACK);
+        mPaint.setStrokeWidth(10);
+        mCanvas.drawLine(x * CELL_WIDTH * 3 + indentX, (y + 1) * CELL_HEIGHT * 3 - indentY,
+                (x + 1) * CELL_WIDTH * 3 - indentX, y * CELL_HEIGHT * 3 + indentY, mPaint);
+        mCanvas.drawLine(x * CELL_WIDTH * 3 + indentX, y * CELL_HEIGHT * 3 + indentY,
+                (x + 1) * CELL_WIDTH * 3 - indentX, (y + 1) * CELL_HEIGHT * 3 - indentY, mPaint);
+        return true;
+    }
+
+    static private boolean drawBigCircle(Canvas mCanvas, int x, int y) {
+        mPaint.setColor(Color.BLACK);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(10);
+        mCanvas.drawCircle(x * CELL_WIDTH * 3 + (CELL_WIDTH / 2) * 3, y * CELL_HEIGHT * 3 + (CELL_HEIGHT / 2) * 3,
+                (CELL_WIDTH / 2) * 3 - indentX, mPaint);
+        return true;
+    }
     static void drawEverything(Canvas canvas) {
         drawBackground(canvas);
     }

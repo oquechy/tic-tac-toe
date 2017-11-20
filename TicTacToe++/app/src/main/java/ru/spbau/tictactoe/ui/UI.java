@@ -1,4 +1,4 @@
-package ru.spbau.tictactoe;
+package ru.spbau.tictactoe.ui;
 
 import android.app.Activity;
 import android.graphics.Canvas;
@@ -8,11 +8,14 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-public class Board extends Activity implements SurfaceHolder.Callback, View.OnTouchListener {
+import ru.spbau.tictactoe.R;
+
+public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouchListener {
 
     public static int[][] board = new int[9][9];
+    public static int[][] smallBoard = new int[3][3];
 
-    public static int crossOrZero = -1;
+    public static int crossOrZero = 1;
 
     static private SurfaceHolder surfaceHolder;
 
@@ -23,7 +26,7 @@ public class Board extends Activity implements SurfaceHolder.Callback, View.OnTo
         final SurfaceView surface = findViewById(R.id.surfaceView);
         surfaceHolder = surface.getHolder();
         surfaceHolder.addCallback(this);
-        surface.setOnTouchListener(Board.this);
+        surface.setOnTouchListener(UI.this);
 
     }
 
@@ -60,17 +63,15 @@ public class Board extends Activity implements SurfaceHolder.Callback, View.OnTo
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Pair<Integer, Integer> p = getCoordinates(x, y);
-                Controller.verifyTurn(new Turn(false, p.first, p.second));
-                if (true) {
+                // Controller.verifyTurn(p.first, p.second);
                     board[p.first - 1][p.second - 1] = 1;
                     redraw();
-                }
         }
         return true;
     }
 
-    public void applyOpponentTurn(int x, int y) {
-        board[x - 1][y - 1] = -1;
+    public void applyTurn(int x, int y, int who) {
+        board[x - 1][y - 1] = who;
         redraw();
     }
 
@@ -78,6 +79,16 @@ public class Board extends Activity implements SurfaceHolder.Callback, View.OnTo
     //-1 - zero
     public void whoAmI(int i) {
         crossOrZero = i;
+    }
+
+    public void smallWin(int x, int y, int who) {
+        smallBoard[x - 1][y - 1] = who;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                board[(x - 1) * 3 + i][(y - 1) * 3 + j] = 0;
+            }
+        }
+        redraw();
     }
 
     public void redraw() {
