@@ -1,4 +1,4 @@
-package ru.spbau.tictactoe;
+package ru.spbau.tictactoe.ui;
 
 import android.app.Activity;
 import android.graphics.Canvas;
@@ -8,7 +8,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-public class Board extends Activity implements SurfaceHolder.Callback, View.OnTouchListener {
+import ru.spbau.tictactoe.R;
+
+public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouchListener {
 
     public static int[][] board = new int[9][9];
     public static int[][] smallBoard = new int[3][3];
@@ -24,7 +26,7 @@ public class Board extends Activity implements SurfaceHolder.Callback, View.OnTo
         final SurfaceView surface = findViewById(R.id.surfaceView);
         surfaceHolder = surface.getHolder();
         surfaceHolder.addCallback(this);
-        surface.setOnTouchListener(Board.this);
+        surface.setOnTouchListener(UI.this);
 
     }
 

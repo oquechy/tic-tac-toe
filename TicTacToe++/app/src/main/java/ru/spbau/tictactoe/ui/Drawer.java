@@ -1,4 +1,4 @@
-package ru.spbau.tictactoe;
+package ru.spbau.tictactoe.ui;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -51,20 +51,20 @@ class Drawer {
         }
         for (int i = 0 ; i < 9; i++) {
             for (int j = 0 ; j < 9; j++) {
-                if (Board.board[i][j] * Board.crossOrZero == 1) {
+                if (UI.board[i][j] * UI.crossOrZero == 1) {
                     drawCross(canvas, i, j);
                 }
-                if (Board.board[i][j] * Board.crossOrZero == -1) {
+                if (UI.board[i][j] * UI.crossOrZero == -1) {
                     drawCircle(canvas, i, j);
                 }
             }
         }
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (Board.smallBoard[i][j] * Board.crossOrZero == 1) {
+                if (UI.smallBoard[i][j] * UI.crossOrZero == 1) {
                     drawBigCross(canvas, i, j);
                 }
-                if (Board.smallBoard[i][j] * Board.crossOrZero == -1) {
+                if (UI.smallBoard[i][j] * UI.crossOrZero == -1) {
                     drawBigCircle(canvas, i, j);
                 }
             }
