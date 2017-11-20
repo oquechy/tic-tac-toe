@@ -65,8 +65,6 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
             case MotionEvent.ACTION_DOWN:
                 Pair<Integer, Integer> p = getCoordinates(x, y);
                  Controller.verifyTurn(p.first - 1, p.second - 1);
-                    board[p.first - 1][p.second - 1] = 1;
-                    redraw();
         }
         return true;
     }
