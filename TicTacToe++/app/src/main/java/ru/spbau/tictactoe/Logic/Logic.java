@@ -64,7 +64,7 @@ public class Logic {
         return Result.DRAW;
     }
 
-    int getLittleWinCoords() {
+    public int getLittleWinCoords() {
         return lastTurn.getInnerBoard();
     }
 

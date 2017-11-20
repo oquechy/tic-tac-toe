@@ -8,12 +8,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import ru.spbau.tictactoe.ui.UI;
+
 public class EntryPoint extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entry_point);
+
         //create buttons
         Button singleButton = (Button) findViewById(R.id.singleButton);
         Button inviteFriendButton = (Button) findViewById(R.id.inviteFriendButton);
@@ -24,7 +27,8 @@ public class EntryPoint extends AppCompatActivity {
         View.OnClickListener oclSingleButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(EntryPoint.this, Board.class);
+                Controller.optionGameWithBot();
+                Intent intent = new Intent(EntryPoint.this, UI.class);
                 startActivity(intent);
             }
         };

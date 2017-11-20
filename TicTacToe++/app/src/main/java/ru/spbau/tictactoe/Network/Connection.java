@@ -6,7 +6,6 @@ import java.util.concurrent.ExecutionException;
 
 import ru.spbau.tictactoe.Network.SocketUtils.SocketReader;
 import ru.spbau.tictactoe.Network.SocketUtils.SocketWriter;
-import ru.spbau.tictactoe.NetAnotherPlayer;
 import ru.spbau.tictactoe.Turn;
 
 public class Connection {

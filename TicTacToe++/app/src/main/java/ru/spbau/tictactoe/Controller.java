@@ -9,7 +9,9 @@ import java.util.concurrent.ExecutionException;
 import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Network.Client;
 import ru.spbau.tictactoe.Network.IPGetter;
+import ru.spbau.tictactoe.Network.NetAnotherPlayer;
 import ru.spbau.tictactoe.Network.Server;
+import ru.spbau.tictactoe.ui.*;
 
 public class Controller {
 
@@ -27,30 +29,33 @@ public class Controller {
     private boolean paused = false;
 
     private static State state;
-    private static Board ui;
+    private static UI ui;
     private static Server server;
     private static Client client;
     private static Logic logic = new Logic();
 //    private Stats stats = new Stats();
     private static NetAnotherPlayer friend;
 
-    public Controller(Activity mainMenu) {
-        state = State.MAIN_MENU;
+    private static boolean myType;
 
-//        ui = new UI(mainMenu);
+
+
+    public static void initController(UI ui) {
+
+        Controller.ui = ui;
     }
 
     public void fromGameToMainMenu() {
         paused = true;
-        state = State.MAIN_MENU;
 
 //        ui.toMainMenu();
     }
 
-    public void optionGameWithBot() {
-        newGameWarningIfPaused();
+    public static void optionGameWithBot() {
+//        newGameWarningIfPaused();
 
         state = State.CREATE_FIELD;
+        myType = true;
 
         final Bot bot = new Bot(logic.getBoard());
         friend = new NetAnotherPlayer() {
@@ -58,17 +63,17 @@ public class Controller {
 
             @Override
             public void setOpponentTurn(Turn t) {
-                turn = bot.makeTurn();
             }
 
             @Override
             public Turn getOpponentTurn() {
-                return new Turn(turn);
+                Turn turn = new Turn(bot.makeTurn());
+                return turn;
             }
 
             @Override
             public boolean getFirstPlayer() {
-                return false;
+                return true;
             }
 
             @Override
@@ -77,8 +82,8 @@ public class Controller {
             }
         };
 
-        initField();                   // if previous game wasn't finished, you can clear board here
-        boolean firstPlayer = true; //ui.chooseFirstPlayer();
+//        initField();                   // if previous game wasn't finished, you can clear board here
+        boolean firstPlayer = myType; //ui.chooseFirstPlayer();
 //        ui.switchTurn(firstPlayer);    // true if it is my turn
 //        logic.setFirstPlayer(firstPlayer);
 
@@ -96,9 +101,11 @@ public class Controller {
         }
     }
 
-    public static void verifyTurn(Turn newTurn) {
+    public static void verifyTurn(int x, int y) {
+        Turn newTurn = new Turn(myType, x, y);
+
         if (state == State.MY_TURN && logic.verifyTurn(new ru.spbau.tictactoe.Logic.Turn.Turn(newTurn.x, newTurn.y))) {
-//            ui.acceptTurn(newTurn);
+            ui.applyTurn(newTurn.x + 1, newTurn.y + 1, myType ? 1 : -1);
             friend.setOpponentTurn(newTurn);
             logic.applyMyTurn(newTurn.convertToTurn());
 
@@ -107,7 +114,6 @@ public class Controller {
 
 //                ui.switchTurn(false);                 // friend's turn
                 System.out.println(newTurn.toString());
-                state = State.FRIENDS_TURN;
                 setOpponentTurn(friend.getOpponentTurn());
             }
         } else {
@@ -118,7 +124,8 @@ public class Controller {
 
     private static boolean checkForWins(Turn newTurn) {  // turn: who and where
         if (logic.isLittleWin()) {         // applies new turn & checks for little win
-//            ui.showLittleWin(logic.getLittleWinCoords());
+            int littleWinCoords = logic.getLittleWinCoords();
+            ui.smallWin(littleWinCoords % 3 + 1, littleWinCoords / 3 + 1, myType ? 1 : -1);
         }
 
         if (logic.isEndOfGame()) {                // first player wins/second player wins/draw
@@ -137,13 +144,11 @@ public class Controller {
     public static void setOpponentTurn(Turn turn) {
         if (state == State.FRIENDS_TURN) {
             logic.applyOpponentsTurn(new ru.spbau.tictactoe.Logic.Turn.Turn(turn.x, turn.y));
-            ui.applyOpponentTurn(turn.x, turn.y);
+            ui.applyTurn(turn.x + 1, turn.y + 1, myType ? -1 : 1);
 //            System.out.println(turn.toString());
 
             if (!checkForWins(turn)) {
                 state = State.MY_TURN;
-            state = State.MY_TURN;
-            verifyTurn(server == null ? new Turn(true, 1, 1) : new Turn(false, 3, 3));
 //                ui.switchTurn(true);
             }
         } else {
@@ -190,7 +195,7 @@ public class Controller {
                 setOpponentTurn(friend.getOpponentTurn());
             } else {
                 state = State.MY_TURN;
-                verifyTurn(new Turn(true, 1, 1));
+                verifyTurn( 1, 1);
             }
         } catch (IOException e) {
 //            ui.networkError();
@@ -214,7 +219,7 @@ public class Controller {
                 setOpponentTurn(opponentTurn);
             } else {
                 state = State.MY_TURN;
-                verifyTurn(new Turn(false, 3, 3));
+                verifyTurn(3, 3);
             }
         } catch (IOException e) {
 //            ui.networkError();

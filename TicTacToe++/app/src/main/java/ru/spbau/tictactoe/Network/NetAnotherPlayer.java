@@ -1,4 +1,6 @@
-package ru.spbau.tictactoe;
+package ru.spbau.tictactoe.Network;
+
+import ru.spbau.tictactoe.Turn;
 
 public interface NetAnotherPlayer {
     void setOpponentTurn(Turn turn);
