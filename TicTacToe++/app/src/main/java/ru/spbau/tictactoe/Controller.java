@@ -104,7 +104,7 @@ public class Controller {
     public static void verifyTurn(int x, int y) {
         Turn newTurn = new Turn(myType, x, y);
 
-        if (state == State.MY_TURN && logic.verifyTurn(new ru.spbau.tictactoe.Logic.Turn.Turn(newTurn.x, newTurn.y))) {
+        if (state == State.MY_TURN && logic.verifyTurn(newTurn.convertToTurn())) {
             ui.applyTurn(newTurn.x + 1, newTurn.y + 1, myType ? 1 : -1);
             friend.setOpponentTurn(newTurn);
             logic.applyMyTurn(newTurn.convertToTurn());
@@ -143,7 +143,7 @@ public class Controller {
 
     public static void setOpponentTurn(Turn turn) {
         if (state == State.FRIENDS_TURN) {
-            logic.applyOpponentsTurn(new ru.spbau.tictactoe.Logic.Turn.Turn(turn.x, turn.y));
+            logic.applyOpponentsTurn(turn.convertToTurn());
             ui.applyTurn(turn.x + 1, turn.y + 1, myType ? -1 : 1);
 //            System.out.println(turn.toString());
 
