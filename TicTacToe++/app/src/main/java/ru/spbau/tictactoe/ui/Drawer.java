@@ -31,7 +31,7 @@ class Drawer {
         mPaint.setColor(Color.BLACK);
         mPaint.setStrokeWidth(3);
         mPaintFat.setColor(Color.BLACK);
-        mPaintFat.setStrokeWidth(23);
+        mPaintFat.setStrokeWidth(20);
 
         int k = 0;
         for (int i = 0; i <= width && k <= 9; i += CELL_WIDTH, k++) {

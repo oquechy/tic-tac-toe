@@ -12,10 +12,10 @@ import ru.spbau.tictactoe.R;
 
 public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouchListener {
 
-    public static int[][] board = new int[9][9];
-    public static int[][] smallBoard = new int[3][3];
+    static int[][] board = new int[9][9];
+    static int[][] smallBoard = new int[3][3];
 
-    public static int crossOrZero = 1;
+    static int crossOrZero = 1;
 
     static private SurfaceHolder surfaceHolder;
 
@@ -63,7 +63,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Pair<Integer, Integer> p = getCoordinates(x, y);
-                // Controller.verifyTurn(p.first, p.second);
+                //Controller.verifyTurn(p.first, p.second);
                     board[p.first - 1][p.second - 1] = 1;
                     redraw();
         }
@@ -91,7 +91,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         redraw();
     }
 
-    public void redraw() {
+    private void redraw() {
         Canvas canvas = surfaceHolder.lockCanvas();
         Drawer.drawEverything(canvas);
         surfaceHolder.unlockCanvasAndPost(canvas);
