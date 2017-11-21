@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import ru.spbau.tictactoe.Logic.Result.Result;
+
 class Drawer {
 
     static int CELL_WIDTH = 0;
@@ -25,14 +27,6 @@ class Drawer {
         indentY = (float) CELL_HEIGHT / 6;
 
         canvas.drawColor(Color.WHITE);
-
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(Color.GRAY);
-
-        if (UI.Hx >= 0 && UI.Hy >= 0) {
-            canvas.drawRect(UI.Hx * 3 * CELL_WIDTH, UI.Hy * 3 * CELL_HEIGHT,
-                    (UI.Hx + 1) * 3 * CELL_WIDTH, (UI.Hy + 1) * 3 * CELL_HEIGHT, mPaint);
-        }
 
         mPaint.setColor(Color.BLACK);
         mPaint.setStrokeWidth(3);
@@ -74,6 +68,19 @@ class Drawer {
                     drawBigCircle(canvas, i, j);
                 }
             }
+        }
+
+        mPaintFat.setStyle(Paint.Style.STROKE);
+        mPaintFat.setColor(Color.RED);
+
+        if (UI.Hx >= 0 && UI.Hy >= 0) {
+            canvas.drawRect(UI.Hx * 3 * CELL_WIDTH, UI.Hy * 3 * CELL_HEIGHT,
+                    (UI.Hx + 1) * 3 * CELL_WIDTH, (UI.Hy + 1) * 3 * CELL_HEIGHT, mPaintFat);
+        }
+
+        if (UI.Hx == -2 && UI.Hy == -2) {
+            canvas.drawRect(0, 0,
+                    9 * CELL_WIDTH, 9 * CELL_HEIGHT, mPaintFat);
         }
     }
 
@@ -118,9 +125,11 @@ class Drawer {
         drawBackground(canvas);
     }
 
-    static void writeWin(Canvas canvas, int who) {
+    static void writeWin(Canvas canvas, Result r) {
         mPaint.setColor(Color.BLACK);
-        if (who * UI.crossOrZero == 1)
+        if (r == Result.DRAW)
+            canvas.drawText("YOU WIN!", CELL_WIDTH, CELL_HEIGHT * 10, mPaint);
+        if (r == Result.CROSS && UI.crossOrZero == 1 || r == Result.NOUGHT && UI.crossOrZero == -1)
             canvas.drawText("YOU WIN!", CELL_WIDTH, CELL_HEIGHT * 10, mPaint);
         else
             canvas.drawText("YOU LOSE!", CELL_WIDTH, CELL_HEIGHT * 10, mPaint);
