@@ -1,5 +1,7 @@
 package ru.spbau.tictactoe;
 
+import android.app.Activity;
+
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -9,7 +11,7 @@ import ru.spbau.tictactoe.Network.Client;
 import ru.spbau.tictactoe.Network.IPGetter;
 import ru.spbau.tictactoe.Network.NetAnotherPlayer;
 import ru.spbau.tictactoe.Network.Server;
-import ru.spbau.tictactoe.ui.*;
+import ru.spbau.tictactoe.ui.UI;
 
 public class Controller {
 
@@ -31,12 +33,9 @@ public class Controller {
     private static Server server;
     private static Client client;
     private static Logic logic = new Logic();
-//    private Stats stats = new Stats();
+    //    private Stats stats = new Stats();
     private static NetAnotherPlayer friend;
-
     private static boolean myType;
-
-
 
     public static void initController(UI ui) {
 
@@ -52,12 +51,12 @@ public class Controller {
     public static void optionGameWithBot() {
 //        newGameWarningIfPaused();
 
-              state = State.CREATE_FIELD;
+        state = State.CREATE_FIELD;
         myType = true;
 
         final Bot bot = new Bot(logic.getBoard());
         friend = new NetAnotherPlayer() {
-        ru.spbau.tictactoe.Logic.Turn.Turn turn;
+            ru.spbau.tictactoe.Logic.Turn.Turn turn;
 
             @Override
             public void setOpponentTurn(Turn t) {
@@ -103,6 +102,7 @@ public class Controller {
         Turn newTurn = new Turn(myType, x, y);
 
         if (state == State.MY_TURN && logic.verifyTurn(newTurn.convertToTurn())) {
+            ui.disableHighlight();
             ui.applyTurn(newTurn.x + 1, newTurn.y + 1, myType ? 1 : -1);
             friend.setOpponentTurn(newTurn);
             logic.applyMyTurn(newTurn.convertToTurn());
@@ -125,19 +125,21 @@ public class Controller {
             int littleWinCoords = logic.getLittleWinCoords();
             ui.smallWin(getXPosOfLittleWin(littleWinCoords),
                     getYPosOfLittleWin(littleWinCoords),
-                    getPlayer());
+                    getPlayer(newTurn));
         }
 
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
+            ui.displayResult(logic.getResult());
+            ui.setUpField();
             return true;
         }
 
         return false;
     }
 
-    private static int getPlayer() {
-        return myType ? 1 : -1;
+    private static int getPlayer(Turn newTurn) {
+        return newTurn.player ? 1 : -1;
     }
 
     private static int getXPosOfLittleWin(int littleWinCoords) {
@@ -154,6 +156,8 @@ public class Controller {
         if (state == State.FRIENDS_TURN) {
             logic.applyOpponentsTurn(turn.convertToTurn());
             ui.applyTurn(turn.x + 1, turn.y + 1, myType ? -1 : 1);
+            int innerSquare = turn.convertToTurn().getInnerSquare();
+            ui.setHighlight(innerSquare % 3 + 1, innerSquare / 3 + 1);
 //            System.out.println(turn.toString());
 
             if (!checkForWins(turn)) {
