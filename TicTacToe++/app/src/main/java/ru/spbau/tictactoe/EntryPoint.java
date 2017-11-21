@@ -37,16 +37,14 @@ public class EntryPoint extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast toast = Toast.makeText(EntryPoint.this,
-                        Controller.getIPtoShow(), Toast.LENGTH_LONG);
+                        Controller.getIPtoShow(EntryPoint.this), Toast.LENGTH_LONG);
                 toast.show();
 
-                Controller.optionInviteFriend();
             }
         };
         View.OnClickListener oclJoinFriendButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Controller.optionConnectToFriend();
             }
         };
         View.OnClickListener oclSettingsButton = new View.OnClickListener() {
