@@ -44,6 +44,12 @@ public class Controller {
         Controller.ui = ui;
     }
 
+    public static void initBoard() {
+        if (state == State.MY_TURN) {
+            ui.setHighlight(2, 2);
+        }
+    }
+
     public void fromGameToMainMenu() {
         paused = true;
         state = State.MAIN_MENU;
@@ -87,6 +93,7 @@ public class Controller {
 //        logic.setFirstPlayer(firstPlayer);
 
         state = firstPlayer ? State.MY_TURN : State.FRIENDS_TURN;
+
     }
 
     private void initField() {
@@ -139,6 +146,7 @@ public class Controller {
                 e.printStackTrace();
             }
             ui.setUpField();
+            logic.reset();
             return true;
         }
 

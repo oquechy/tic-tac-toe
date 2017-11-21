@@ -31,6 +31,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         surfaceHolder.addCallback(this);
         surface.setOnTouchListener(UI.this);
         Controller.initController(this);
+//
     }
 
     private Pair<Integer, Integer> getCoordinates(float x, float y) {
@@ -119,6 +120,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        Controller.initBoard();
         redraw();
     }
 
