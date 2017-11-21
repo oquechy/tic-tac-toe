@@ -1,5 +1,7 @@
 package ru.spbau.tictactoe;
 
+import android.app.Activity;
+
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -9,7 +11,7 @@ import ru.spbau.tictactoe.Network.Client;
 import ru.spbau.tictactoe.Network.IPGetter;
 import ru.spbau.tictactoe.Network.NetAnotherPlayer;
 import ru.spbau.tictactoe.Network.Server;
-import ru.spbau.tictactoe.ui.*;
+import ru.spbau.tictactoe.ui.UI;
 
 public class Controller {
 
@@ -31,12 +33,10 @@ public class Controller {
     private static Server server;
     private static Client client;
     private static Logic logic = new Logic();
-//    private Stats stats = new Stats();
+    //    private Stats stats = new Stats();
     private static NetAnotherPlayer friend;
-
     private static boolean myType;
-
-
+    private boolean paused = false;
 
     public static void initController(UI ui) {
 
@@ -52,12 +52,12 @@ public class Controller {
     public static void optionGameWithBot() {
 //        newGameWarningIfPaused();
 
-              state = State.CREATE_FIELD;
+        state = State.CREATE_FIELD;
         myType = true;
 
         final Bot bot = new Bot(logic.getBoard());
         friend = new NetAnotherPlayer() {
-        ru.spbau.tictactoe.Logic.Turn.Turn turn;
+            ru.spbau.tictactoe.Logic.Turn.Turn turn;
 
             @Override
             public void setOpponentTurn(Turn t) {
@@ -236,4 +236,8 @@ public class Controller {
         }
     }
 
-}
+    public void fromGameToMainMenu() {
+        paused = true;
+
+//        ui.toMainMenu();
+    }
