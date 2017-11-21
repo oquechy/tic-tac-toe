@@ -36,7 +36,6 @@ public class Controller {
     //    private Stats stats = new Stats();
     private static NetAnotherPlayer friend;
     private static boolean myType;
-    private boolean paused = false;
 
     public static void initController(UI ui) {
 
@@ -125,7 +124,7 @@ public class Controller {
             int littleWinCoords = logic.getLittleWinCoords();
             ui.smallWin(getXPosOfLittleWin(littleWinCoords),
                     getYPosOfLittleWin(littleWinCoords),
-                    getPlayer());
+                    getPlayer(newTurn));
         }
 
         if (logic.isEndOfGame()) {
@@ -136,8 +135,8 @@ public class Controller {
         return false;
     }
 
-    private static int getPlayer() {
-        return myType ? 1 : -1;
+    private static int getPlayer(Turn newTurn) {
+        return newTurn.player ? 1 : -1;
     }
 
     private static int getXPosOfLittleWin(int littleWinCoords) {
@@ -236,8 +235,4 @@ public class Controller {
         }
     }
 
-    public void fromGameToMainMenu() {
-        paused = true;
-
-//        ui.toMainMenu();
-    }
+}
