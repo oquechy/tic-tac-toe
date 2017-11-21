@@ -44,6 +44,12 @@ public class Controller {
         Controller.ui = ui;
     }
 
+    public static void initBoard() {
+        if (state == State.MY_TURN) {
+            ui.setHighlight(2, 2);
+        }
+    }
+
     public void fromGameToMainMenu() {
         paused = true;
         state = State.MAIN_MENU;
@@ -87,6 +93,7 @@ public class Controller {
 //        logic.setFirstPlayer(firstPlayer);
 
         state = firstPlayer ? State.MY_TURN : State.FRIENDS_TURN;
+
     }
 
     private void initField() {
@@ -132,13 +139,14 @@ public class Controller {
 
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
-            ui.displayResult(logic.getResult() == Result.CROSS ? 1 : -1);
+            ui.displayResult(logic.getResult());
             try {
                 TimeUnit.SECONDS.sleep(8);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             ui.setUpField();
+            logic.reset();
             return true;
         }
 
