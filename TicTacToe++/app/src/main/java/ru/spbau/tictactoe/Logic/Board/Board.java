@@ -21,23 +21,23 @@ public class Board {
      * An outer square or an inner board.
      */
     public static class InnerBoard {
-        private int numberOfMarkedSquares;
+        public int numberOfMarkedSquares;
         /**
          * Each box could be empty (GAME_CONTINUES), or marked as CROSS or NOUGHT (the BLOCK is not used here).
          */
-        private Status[] innerBoard = new Status[9];
+        public Status[] innerBoard = new Status[9];
         /**
          * If the game in this block is not finished, the status is GAME_CONTINUES.
          * If one of the players won on this block the status is the player who won (CROSS or NOUGHT).
          * If nobody won but all boxes are filled, the status is BLOCK.
          */
-        private Status status = GAME_CONTINUES;
+        public Status status = GAME_CONTINUES;
 
         /**
          * Initializes the values of squares in innerBoard with GAME_CONTINUES, as they should be empty in
          * the beginning of game.
          */
-        private InnerBoard() {
+        public InnerBoard() {
             Arrays.fill(innerBoard, GAME_CONTINUES);
         }
 
@@ -49,7 +49,7 @@ public class Board {
          * @param player   is a player who makes move (CROSS or NOUGHT)
          * @throws IncorrectMoveException if the square is already marked or the game on this block is over
          */
-        private boolean setSquare(int squareId, Turn.Player player) throws IncorrectMoveException {
+        public boolean setSquare(int squareId, Turn.Player player) throws IncorrectMoveException {
             if (status != GAME_CONTINUES) {
                 throw new IncorrectMoveException("This block is invalid");
             }
@@ -77,7 +77,7 @@ public class Board {
          * @return true if the game on this block is over
          * (three squares in row, column or diagonal were marked by the same player)
          */
-        private boolean isOver() {
+        public boolean isOver() {
             //check columns
             for (int i = 0; i < 3; i++) {
                 if (innerBoard[i] != GAME_CONTINUES && innerBoard[i] == innerBoard[i + 3]
@@ -120,7 +120,7 @@ public class Board {
      * If the relevant block is busy (somebody won there or it is completely filled), it becomes -1,
      * which means that the next move can be made to any block.
      */
-    private int currentInnerBoard = 4;
+    public int currentInnerBoard = 4;
 
     /**
      * There are four opportunities:
@@ -129,17 +129,17 @@ public class Board {
      * the second player won - NOUGHT,
      * nobody won but the moves cannot be made - BLOCK.
      */
-    private Status status = GAME_CONTINUES;
+    public Status status = GAME_CONTINUES;
 
     /**
      * The player who makes next move.
      */
-    private Turn.Player currentPlayer = Turn.Player.CROSS;
+    public Turn.Player currentPlayer = Turn.Player.CROSS;
 
     /**
      * Number of blocks where the game is over.
      */
-    private int numberOfInvalidBlocks;
+    public int numberOfInvalidBlocks;
 
     public Board() {
         for (int i = 0; i < 9; i++) {

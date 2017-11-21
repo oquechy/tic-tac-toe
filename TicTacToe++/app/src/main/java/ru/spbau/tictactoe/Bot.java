@@ -9,7 +9,7 @@ import ru.spbau.tictactoe.Logic.Turn.Turn;
 
 public class Bot {
     private Random rand = new Random();
-    private Board board;
+    protected Board board;
     public Bot(Board board){
         this.board = board;
     }

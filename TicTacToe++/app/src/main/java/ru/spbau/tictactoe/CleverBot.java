@@ -1,7 +1,11 @@
 package ru.spbau.tictactoe;
-/*
+
+import java.util.HashSet;
+import java.util.Random;
+
 import ru.spbau.tictactoe.Bot;
 import ru.spbau.tictactoe.Logic.Board.Board;
+import ru.spbau.tictactoe.Logic.Board.IncorrectMoveException;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
@@ -11,23 +15,23 @@ public class CleverBot extends Bot {
         super(board);
     }
 
-    protected int analyzeBlock(int block){
-        for()
-    }
+    public int analyzeBlock(int block){
+        HashSet<Integer> possibleMoves = new HashSet<>();
+        for(int i = 0; i < 9; i++){
+            Board.InnerBoard[] realBoard = board.getBoard();
+            Board.InnerBoard square = realBoard[block];
+            try{
+                square.setSquare(i, board.currentPlayer);
+                possibleMoves.add(i);
+                if(square.isOver()){
+                    return i;
+                }
+            }
+            catch(IncorrectMoveException e){
 
-    @Override
-    public Turn makeTurn() {
-        int cur = board.getCurrentInnerBoard();
-        if(cur == -1){
-            while(cur == -1 || board.getBlockStatus(cur) != Status.GAME_CONTINUES){
-                cur = rand.nextInt(9);
             }
         }
-        int x = rand.nextInt(9);
-        while(board.getSquare(cur, x) != Status.GAME_CONTINUES){
-            x = rand.nextInt(9);
-        }
-        return new Turn(cur, x);
+        Random rand = new Random();
+        return rand.nextInt(possibleMoves.size());
     }
 }
-*/

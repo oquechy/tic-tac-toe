@@ -77,4 +77,8 @@ public class Logic {
         return board;
     }
 
+    public void reset(){
+        board = new Board();
+    }
+
 }
