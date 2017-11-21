@@ -6,12 +6,10 @@ import android.graphics.Paint;
 
 class Drawer {
 
-    static private Paint mPaint = new Paint();
-    static private Paint mPaintFat = new Paint();
-
     static int CELL_WIDTH = 0;
     static int CELL_HEIGHT = 0;
-
+    static private Paint mPaint = new Paint();
+    static private Paint mPaintFat = new Paint();
     private static float indentX = 0;
     private static float indentY = 0;
 
@@ -25,13 +23,13 @@ class Drawer {
         indentX = (float) CELL_WIDTH / 6;
         indentY = (float) CELL_HEIGHT / 6;
 
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(Color.WHITE);
+        canvas.drawColor(Color.WHITE);
 
+        mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.BLACK);
         mPaint.setStrokeWidth(3);
         mPaintFat.setColor(Color.BLACK);
-        mPaintFat.setStrokeWidth(20);
+        mPaintFat.setStrokeWidth(15);
 
         int k = 0;
         for (int i = 0; i <= width && k <= 9; i += CELL_WIDTH, k++) {
@@ -74,7 +72,7 @@ class Drawer {
     static private boolean drawCircle(Canvas mCanvas, int x, int y) {
         mPaint.setColor(Color.BLACK);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(10);
+        mPaint.setStrokeWidth(6);
         mCanvas.drawCircle(x * CELL_WIDTH + (CELL_WIDTH / 2), y * CELL_HEIGHT + (CELL_HEIGHT / 2),
                 (CELL_WIDTH / 2) - indentX / 2, mPaint);
         return true;
@@ -82,7 +80,7 @@ class Drawer {
 
     static private boolean drawCross(Canvas mCanvas, int x, int y) {
         mPaint.setColor(Color.BLACK);
-        mPaint.setStrokeWidth(10);
+        mPaint.setStrokeWidth(6);
         mCanvas.drawLine(x * CELL_WIDTH + indentX, (y + 1) * CELL_HEIGHT - indentY,
                 (x + 1) * CELL_WIDTH - indentX, y * CELL_HEIGHT + indentY, mPaint);
         mCanvas.drawLine(x * CELL_WIDTH + indentX, y * CELL_HEIGHT + indentY,
@@ -92,7 +90,7 @@ class Drawer {
 
     static private boolean drawBigCross(Canvas mCanvas, int x, int y) {
         mPaint.setColor(Color.BLACK);
-        mPaint.setStrokeWidth(10);
+        mPaint.setStrokeWidth(6);
         mCanvas.drawLine(x * CELL_WIDTH * 3 + indentX, (y + 1) * CELL_HEIGHT * 3 - indentY,
                 (x + 1) * CELL_WIDTH * 3 - indentX, y * CELL_HEIGHT * 3 + indentY, mPaint);
         mCanvas.drawLine(x * CELL_WIDTH * 3 + indentX, y * CELL_HEIGHT * 3 + indentY,
@@ -103,7 +101,7 @@ class Drawer {
     static private boolean drawBigCircle(Canvas mCanvas, int x, int y) {
         mPaint.setColor(Color.BLACK);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(10);
+        mPaint.setStrokeWidth(6);
         mCanvas.drawCircle(x * CELL_WIDTH * 3 + (CELL_WIDTH / 2) * 3, y * CELL_HEIGHT * 3 + (CELL_HEIGHT / 2) * 3,
                 (CELL_WIDTH / 2) * 3 - indentX, mPaint);
         return true;
