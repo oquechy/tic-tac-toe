@@ -64,12 +64,17 @@ public class Logic {
         return Result.DRAW;
     }
 
-    int getLittleWinCoords() {
+    public int getLittleWinCoords() {
         return lastTurn.getInnerBoard();
     }
 
     public boolean isEndOfGame(){
         return board.getGameStatus() != Status.GAME_CONTINUES;
+    }
+
+
+    public Board getBoard(){
+        return board;
     }
 
 }

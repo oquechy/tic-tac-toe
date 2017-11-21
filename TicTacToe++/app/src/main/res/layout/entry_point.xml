@@ -26,11 +26,17 @@
             android:text="Single game" />
 
         <Button
-            android:id="@+id/multiplayButton"
+            android:id="@+id/inviteFriendButton"
             style="@style/Widget.AppCompat.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="MultiPlay" />
+            android:text="Invite Friend" />
+
+        <Button
+            android:id="@+id/joinAFriendButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Join a friend" />
 
         <Button
             android:id="@+id/settingsButton"

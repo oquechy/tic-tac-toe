@@ -190,7 +190,7 @@ public class Board {
         }
         currentPlayer =
                 currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
-        return status != GAME_CONTINUES;
+        return blockIsOver;
     }
 
     /**
@@ -225,7 +225,7 @@ public class Board {
             }
         }
         currentPlayer = currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
-        return status != GAME_CONTINUES;
+        return blockIsOver;
     }
 
     public Status getGameStatus() {
@@ -272,6 +272,7 @@ public class Board {
 
     public boolean verifyTurn(Turn turn){
         return (currentInnerBoard == -1 || turn.getInnerBoard() == currentInnerBoard) &&
+                board[turn.getInnerBoard()].getStatus() == GAME_CONTINUES &&
                 board[turn.getInnerBoard()].getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
     }
 }

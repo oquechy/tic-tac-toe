@@ -1,17 +1,22 @@
-package ru.spbau.tictactoe.AnotherPlayer.Bot;
-
-import java.util.Random;
-
-import ru.spbau.tictactoe.AnotherPlayer.AnotherPlayer;
+package ru.spbau.tictactoe;
+/*
+import ru.spbau.tictactoe.Bot;
 import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
 
-public class Bot implements AnotherPlayer {
-    private Random rand = new Random();
+public class CleverBot extends Bot {
+    public CleverBot(Board board){
+        super(board);
+    }
+
+    protected int analyzeBlock(int block){
+        for()
+    }
+
     @Override
-    public Turn makeTurn(Board board) {
+    public Turn makeTurn() {
         int cur = board.getCurrentInnerBoard();
         if(cur == -1){
             while(cur == -1 || board.getBlockStatus(cur) != Status.GAME_CONTINUES){
@@ -19,14 +24,10 @@ public class Bot implements AnotherPlayer {
             }
         }
         int x = rand.nextInt(9);
-        while(board.getSquare(cur, 9) != Status.GAME_CONTINUES){
+        while(board.getSquare(cur, x) != Status.GAME_CONTINUES){
             x = rand.nextInt(9);
         }
         return new Turn(cur, x);
     }
-
-    @Override
-    public String getName() {
-        return "Robert";
-    }
 }
+*/
