@@ -5,8 +5,10 @@ import android.app.Activity;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import ru.spbau.tictactoe.Logic.Logic;
+import ru.spbau.tictactoe.Logic.Result.Result;
 import ru.spbau.tictactoe.Network.Client;
 import ru.spbau.tictactoe.Network.IPGetter;
 import ru.spbau.tictactoe.Network.NetAnotherPlayer;
@@ -130,7 +132,12 @@ public class Controller {
 
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
-            ui.displayResult(logic.getResult());
+            ui.displayResult(logic.getResult() == Result.CROSS ? 1 : -1);
+            try {
+                TimeUnit.SECONDS.sleep(8);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             ui.setUpField();
             return true;
         }
