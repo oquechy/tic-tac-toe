@@ -139,7 +139,7 @@ public class Controller {
 
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
-            ui.displayResult(logic.getResult() == Result.CROSS ? 1 : -1);
+            ui.displayResult(logic.getResult());
             try {
                 TimeUnit.SECONDS.sleep(8);
             } catch (InterruptedException e) {
