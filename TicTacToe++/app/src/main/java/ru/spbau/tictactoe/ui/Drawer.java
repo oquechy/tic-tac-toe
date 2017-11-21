@@ -27,6 +27,13 @@ class Drawer {
         canvas.drawColor(Color.WHITE);
 
         mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(Color.GRAY);
+
+        if (UI.Hx >= 0 && UI.Hy >= 0) {
+            canvas.drawRect(UI.Hx * 3 * CELL_WIDTH, UI.Hy * 3 * CELL_HEIGHT,
+                    (UI.Hx + 1) * 3 * CELL_WIDTH, (UI.Hy + 1) * 3 * CELL_HEIGHT, mPaint);
+        }
+
         mPaint.setColor(Color.BLACK);
         mPaint.setStrokeWidth(3);
         mPaintFat.setColor(Color.BLACK);
