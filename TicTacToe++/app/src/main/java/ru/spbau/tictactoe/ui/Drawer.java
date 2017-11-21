@@ -117,4 +117,12 @@ class Drawer {
     static void drawEverything(Canvas canvas) {
         drawBackground(canvas);
     }
+
+    static void writeWin(Canvas canvas, int who) {
+        mPaint.setColor(Color.BLACK);
+        if (who * UI.crossOrZero == 1)
+            canvas.drawText("YOU WIN!", CELL_WIDTH, CELL_HEIGHT * 10, mPaint);
+        else
+            canvas.drawText("YOU LOSE!", CELL_WIDTH, CELL_HEIGHT * 10, mPaint);
+    }
 }

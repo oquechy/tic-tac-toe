@@ -104,6 +104,13 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         redraw();
     }
 
+    public void displayResult(int who) {
+        Canvas canvas = surfaceHolder.lockCanvas();
+        Drawer.drawEverything(canvas);
+        Drawer.writeWin(canvas, who);
+        surfaceHolder.unlockCanvasAndPost(canvas);
+    }
+
     public void redraw() {
         Canvas canvas = surfaceHolder.lockCanvas();
         Drawer.drawEverything(canvas);
