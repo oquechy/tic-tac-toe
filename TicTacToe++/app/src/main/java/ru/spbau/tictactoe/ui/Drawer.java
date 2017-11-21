@@ -70,7 +70,7 @@ class Drawer {
             }
         }
 
-        mPaintFat.setStyle(Paint.Style.STROKE);
+        mPaintFat.setStyle(Paint.Style.FILL);
         mPaintFat.setColor(Color.RED);
 
         if (UI.Hx >= 0 && UI.Hy >= 0) {
@@ -126,12 +126,15 @@ class Drawer {
     }
 
     static void writeWin(Canvas canvas, Result r) {
-        mPaint.setColor(Color.BLACK);
-        if (r == Result.DRAW)
-            canvas.drawText("YOU WIN!", CELL_WIDTH, CELL_HEIGHT * 10, mPaint);
+        mPaint.setColor(Color.RED);
+        mPaint.setTextSize(100);
+        if (r == Result.DRAW) {
+            canvas.drawText("DRAW!", CELL_WIDTH * 3 + Math.round(CELL_WIDTH / 3), CELL_HEIGHT * 10, mPaint);
+            return;
+        }
         if (r == Result.CROSS && UI.crossOrZero == 1 || r == Result.NOUGHT && UI.crossOrZero == -1)
-            canvas.drawText("YOU WIN!", CELL_WIDTH, CELL_HEIGHT * 10, mPaint);
+            canvas.drawText("YOU WIN!", CELL_WIDTH * 3 - Math.round(CELL_WIDTH / 3), CELL_HEIGHT * 10, mPaint);
         else
-            canvas.drawText("YOU LOSE!", CELL_WIDTH, CELL_HEIGHT * 10, mPaint);
+            canvas.drawText("YOU LOSE!", CELL_WIDTH * 3 - Math.round(CELL_WIDTH / 3), CELL_HEIGHT * 10, mPaint);
     }
 }
