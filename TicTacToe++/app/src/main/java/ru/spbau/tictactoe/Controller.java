@@ -141,16 +141,21 @@ public class Controller {
             state = State.END_OF_GAME;
             ui.displayResult(logic.getResult());
             try {
-                TimeUnit.SECONDS.sleep(8);
+                TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            ui.setUpField();
-            logic.reset();
+            newGame();
             return true;
         }
 
         return false;
+    }
+
+    private static void newGame() {
+        logic = new Logic();
+        ui.setUpField();
+        optionGameWithBot();
     }
 
     private static int getPlayer(Turn newTurn) {
@@ -172,12 +177,12 @@ public class Controller {
             logic.applyOpponentsTurn(turn.convertToTurn());
             ui.applyTurn(turn.x + 1, turn.y + 1, myType ? -1 : 1);
             int innerSquare = turn.convertToTurn().getInnerSquare();
-            ui.setHighlight(innerSquare % 3 + 1, innerSquare / 3 + 1);
 //            System.out.println(turn.toString());
 
             if (!checkForWins(turn)) {
                 state = State.MY_TURN;
 //                ui.switchTurn(true);
+                ui.setHighlight(innerSquare % 3 + 1, innerSquare / 3 + 1);
             }
         } else {
             System.err.println("incorrect turn time");
