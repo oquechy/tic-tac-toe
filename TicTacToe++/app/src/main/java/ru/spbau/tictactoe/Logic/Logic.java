@@ -58,7 +58,7 @@ public class Logic {
         if(board.getGameStatus() == Status.CROSS){
             return Result.CROSS;
         }
-        if(board.getGameStatus() == Status.CROSS){
+        if(board.getGameStatus() == Status.NOUGHT){
             return Result.NOUGHT;
         }
         return Result.DRAW;
