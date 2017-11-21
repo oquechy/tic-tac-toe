@@ -13,10 +13,12 @@ import ru.spbau.tictactoe.R;
 
 public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouchListener {
 
-    public static int[][] board = new int[9][9];
-    public static int[][] smallBoard = new int[3][3];
+    static int[][] board = new int[9][9];
+    static int[][] smallBoard = new int[3][3];
+    static int Hx = -1;
+    static int Hy = -1;
 
-    public static int crossOrZero = 1;
+    static int crossOrZero = 1;
 
     static private SurfaceHolder surfaceHolder;
 
@@ -54,16 +56,14 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Pair<Integer, Integer> p = getCoordinates(x, y);
+                System.err.println("get from user: " + p.first + " " + p.second);
                  Controller.verifyTurn(p.first - 1, p.second - 1);
         }
         return true;
     }
 
     public void applyTurn(int x, int y, int who) {
-        System.out.print("x = ");
-        System.out.println(x);
-        System.out.print("\ny= ");
-        System.out.println(y);
+        System.err.println("sasha's from " + (who == 1 ? "ui" : "bot") + ": " + x + " " + y);
         board[x - 1][y - 1] = who;
         redraw();
     }
@@ -74,6 +74,26 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         crossOrZero = i;
     }
 
+    public void setUpField() {
+        board = new int[9][9];
+        smallBoard = new int[3][3];
+        Hx = -1;
+        Hy = -1;
+        redraw();
+    }
+
+    public void setHighlight(int x, int y) {
+        Hx = x - 1;
+        Hy = y - 1;
+        redraw();
+    }
+
+    public void disableHighlight() {
+        Hx = -1;
+        Hy = -1;
+        redraw();
+    }
+
     public void smallWin(int x, int y, int who) {
         smallBoard[x - 1][y - 1] = who;
         for (int i = 0; i < 3; i++) {
@@ -82,6 +102,13 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
             }
         }
         redraw();
+    }
+
+    public void displayResult(int who) {
+        Canvas canvas = surfaceHolder.lockCanvas();
+        Drawer.drawEverything(canvas);
+        Drawer.writeWin(canvas, who);
+        surfaceHolder.unlockCanvasAndPost(canvas);
     }
 
     public void redraw() {

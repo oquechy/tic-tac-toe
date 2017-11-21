@@ -27,6 +27,13 @@ class Drawer {
         canvas.drawColor(Color.WHITE);
 
         mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(Color.GRAY);
+
+        if (UI.Hx >= 0 && UI.Hy >= 0) {
+            canvas.drawRect(UI.Hx * 3 * CELL_WIDTH, UI.Hy * 3 * CELL_HEIGHT,
+                    (UI.Hx + 1) * 3 * CELL_WIDTH, (UI.Hy + 1) * 3 * CELL_HEIGHT, mPaint);
+        }
+
         mPaint.setColor(Color.BLACK);
         mPaint.setStrokeWidth(3);
         mPaintFat.setColor(Color.BLACK);
@@ -109,5 +116,13 @@ class Drawer {
     }
     static void drawEverything(Canvas canvas) {
         drawBackground(canvas);
+    }
+
+    static void writeWin(Canvas canvas, int who) {
+        mPaint.setColor(Color.BLACK);
+        if (who * UI.crossOrZero == 1)
+            canvas.drawText("YOU WIN!", CELL_WIDTH, CELL_HEIGHT * 10, mPaint);
+        else
+            canvas.drawText("YOU LOSE!", CELL_WIDTH, CELL_HEIGHT * 10, mPaint);
     }
 }
