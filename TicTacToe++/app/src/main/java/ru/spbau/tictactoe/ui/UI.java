@@ -31,6 +31,16 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         Controller.initController(this);
     }
 
+    static private class Pair<T, S> {
+        T first;
+        S second;
+
+        Pair(T f, S s) {
+            first = f;
+            second = s;
+        }
+    }
+
     private Pair<Integer, Integer> getCoordinates(float x, float y) {
         int x1 = 0;
         int y1 = 0;
@@ -54,16 +64,16 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Pair<Integer, Integer> p = getCoordinates(x, y);
+                System.err.println("get from user: " + p.first + " " + p.second);
                  Controller.verifyTurn(p.first - 1, p.second - 1);
+                    board[p.first - 1][p.second - 1] = 1;
+                    redraw();
         }
         return true;
     }
 
     public void applyTurn(int x, int y, int who) {
-        System.out.print("x = ");
-        System.out.println(x);
-        System.out.print("\ny= ");
-        System.out.println(y);
+        System.err.println("sasha's from " + (who == 1 ? "ui" : "bot") + ": " + x + " " + y);
         board[x - 1][y - 1] = who;
         redraw();
     }
@@ -102,15 +112,5 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-    }
-
-    static private class Pair<T, S> {
-        T first;
-        S second;
-
-        Pair(T f, S s) {
-            first = f;
-            second = s;
-        }
     }
 }

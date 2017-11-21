@@ -22,13 +22,6 @@ public class Turn {
 
     }
 
-    public static Turn fromString(String s) {
-        String[] tokens = s.split(" ");
-        return new Turn(Integer.parseInt(tokens[0]) != 0,
-                Integer.parseInt(tokens[1]),
-                Integer.parseInt(tokens[2]));
-    }
-
     public ru.spbau.tictactoe.Logic.Turn.Turn convertToTurn() {
         int[][] bigBoard = new int[9][9];
         int[][] littleBoard = new int[9][9];
@@ -55,7 +48,7 @@ public class Turn {
         System.err.println("Little:");
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                System.err.print(littleBoard[i][j] + " ");
+                System.err.print(littleBoard[i][j] + " " );
             }
             System.err.println("");
         }
@@ -69,5 +62,12 @@ public class Turn {
     @Override
     public String toString() {
         return (player ? "1" : "0") + " " + x + " " + y;
+    }
+
+    public static Turn fromString(String s) {
+        String[] tokens = s.split(" ");
+        return new Turn(Integer.parseInt(tokens[0]) != 0,
+                Integer.parseInt(tokens[1]),
+                Integer.parseInt(tokens[2]));
     }
 }
