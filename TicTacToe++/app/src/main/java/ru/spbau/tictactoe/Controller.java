@@ -1,7 +1,5 @@
 package ru.spbau.tictactoe;
 
-import android.app.Activity;
-
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -47,14 +45,14 @@ public class Controller {
 
     public void fromGameToMainMenu() {
         paused = true;
-
+        state = State.MAIN_MENU;
 //        ui.toMainMenu();
     }
 
     public static void optionGameWithBot() {
 //        newGameWarningIfPaused();
 
-        state = State.CREATE_FIELD;
+              state = State.CREATE_FIELD;
         myType = true;
 
         final Bot bot = new Bot(logic.getBoard());
@@ -122,24 +120,35 @@ public class Controller {
     }
 
 
-    private static boolean checkForWins(Turn newTurn) {  // turn: who and where
-        if (logic.isLittleWin()) {         // applies new turn & checks for little win
+    private static boolean checkForWins(Turn newTurn) {
+        if (logic.isLittleWin()) {
             int littleWinCoords = logic.getLittleWinCoords();
-            ui.smallWin(littleWinCoords % 3 + 1, littleWinCoords / 3 + 1, myType ? 1 : -1);
+            ui.smallWin(getXPosOfLittleWin(littleWinCoords),
+                    getYPosOfLittleWin(littleWinCoords),
+                    getPlayer());
         }
 
-        if (logic.isEndOfGame()) {                // first player wins/second player wins/draw
+        if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
-
-//            GameLog gameLog = logic.getGameLog(); // am I a winner? how many turns?
-//            gameLog.writeFriendsName(friend.getName());
-//            stats.getNewRecord(gameLog);
-//            ui.displayResult(logic.getResult());  // and go to main menu then
-
             return true;
         }
+
         return false;
     }
+
+    private static int getPlayer() {
+        return myType ? 1 : -1;
+    }
+
+    private static int getXPosOfLittleWin(int littleWinCoords) {
+        return littleWinCoords % 3 + 1;
+    }
+
+    private static int getYPosOfLittleWin(int littleWinCoords) {
+        return littleWinCoords / 3 + 1;
+    }
+
+
 
     public static void setOpponentTurn(Turn turn) {
         if (state == State.FRIENDS_TURN) {

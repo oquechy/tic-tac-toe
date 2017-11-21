@@ -16,6 +16,7 @@ class Drawer {
     private static float indentY = 0;
 
     private static void drawBackground(Canvas canvas) {
+        canvas.drawColor(Color.rgb(218, 195, 148));
         int width = canvas.getWidth();
         int height = width;
 

@@ -64,6 +64,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Pair<Integer, Integer> p = getCoordinates(x, y);
+                System.err.println("get from user: " + p.first + " " + p.second);
                  Controller.verifyTurn(p.first - 1, p.second - 1);
                     board[p.first - 1][p.second - 1] = 1;
                     redraw();
@@ -72,6 +73,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
     }
 
     public void applyTurn(int x, int y, int who) {
+        System.err.println("sasha's from " + (who == 1 ? "ui" : "bot") + ": " + x + " " + y);
         board[x - 1][y - 1] = who;
         redraw();
     }
