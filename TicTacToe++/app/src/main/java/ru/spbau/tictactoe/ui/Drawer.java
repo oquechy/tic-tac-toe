@@ -70,7 +70,7 @@ class Drawer {
             }
         }
 
-        mPaintFat.setStyle(Paint.Style.FILL);
+        mPaintFat.setStyle(Paint.Style.STROKE);
         mPaintFat.setColor(Color.RED);
 
         if (UI.Hx >= 0 && UI.Hy >= 0) {
@@ -127,6 +127,7 @@ class Drawer {
 
     static void writeWin(Canvas canvas, Result r) {
         mPaint.setColor(Color.RED);
+        mPaint.setStyle(Paint.Style.FILL);
         mPaint.setTextSize(100);
         if (r == Result.DRAW) {
             canvas.drawText("DRAW!", CELL_WIDTH * 3 + Math.round(CELL_WIDTH / 3), CELL_HEIGHT * 10, mPaint);

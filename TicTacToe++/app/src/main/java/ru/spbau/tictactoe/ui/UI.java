@@ -57,8 +57,8 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Pair<Integer, Integer> p = getCoordinates(x, y);
-                System.err.println("get from user: " + p.first + " " + p.second);
-                 Controller.verifyTurn(p.first - 1, p.second - 1);
+                if (p.first - 1 < 9 && p.second - 1 < 9)
+                    Controller.verifyTurn(p.first - 1, p.second - 1);
         }
         return true;
     }
