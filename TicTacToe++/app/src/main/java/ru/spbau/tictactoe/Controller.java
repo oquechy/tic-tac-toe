@@ -102,6 +102,7 @@ public class Controller {
         Turn newTurn = new Turn(myType, x, y);
 
         if (state == State.MY_TURN && logic.verifyTurn(newTurn.convertToTurn())) {
+            ui.disableHighlight();
             ui.applyTurn(newTurn.x + 1, newTurn.y + 1, myType ? 1 : -1);
             friend.setOpponentTurn(newTurn);
             logic.applyMyTurn(newTurn.convertToTurn());
@@ -129,6 +130,8 @@ public class Controller {
 
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
+            ui.displayResult(logic.getResult());
+            ui.setUpField();
             return true;
         }
 
@@ -153,6 +156,8 @@ public class Controller {
         if (state == State.FRIENDS_TURN) {
             logic.applyOpponentsTurn(turn.convertToTurn());
             ui.applyTurn(turn.x + 1, turn.y + 1, myType ? -1 : 1);
+            int innerSquare = turn.convertToTurn().getInnerSquare();
+            ui.setHighlight(innerSquare % 3 + 1, innerSquare / 3 + 1);
 //            System.out.println(turn.toString());
 
             if (!checkForWins(turn)) {
