@@ -166,13 +166,14 @@ public class Board {
      * @param innerSquare is the id of the square to be marked
      * @throws IncorrectMoveException if the inner square is busy or current square must be specified.
      */
-    public boolean makeMove(
+    public Status makeMove(
             int innerSquare) throws IncorrectMoveException {
         if (currentInnerBoard == -1) {
             throw new IncorrectMoveException(
                     "The inner board must be also specified");
         }
         boolean blockIsOver = board[currentInnerBoard].setSquare(innerSquare, currentPlayer);
+        Status res = board[currentInnerBoard].status;
         if (blockIsOver) {
             numberOfInvalidBlocks++;
         }
@@ -190,7 +191,7 @@ public class Board {
         }
         currentPlayer =
                 currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
-        return blockIsOver;
+        return res;
     }
 
     /**
@@ -201,7 +202,7 @@ public class Board {
      * @param innerSquare is the id of the inner square to be marked
      * @throws IncorrectMoveException if the inner board could not be specified
      */
-    public boolean makeMoveToAnyOuterSquare(
+    public Status makeMoveToAnyOuterSquare(
             int block, int innerSquare) throws IncorrectMoveException {
 
         if (currentInnerBoard != -1) {
@@ -225,7 +226,7 @@ public class Board {
             }
         }
         currentPlayer = currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
-        return blockIsOver;
+        return board[block].status;
     }
 
     public Status getGameStatus() {
