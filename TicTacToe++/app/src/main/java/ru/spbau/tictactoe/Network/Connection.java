@@ -43,7 +43,7 @@ public class Connection {
             }
 
             @Override
-            public boolean getFirstPlayer() {
+            public boolean amIFirstPlayer() {
                 return Boolean.parseBoolean(getFrom());
             }
 

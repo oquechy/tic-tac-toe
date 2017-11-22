@@ -7,7 +7,7 @@ public interface NetAnotherPlayer {
 
     Turn getOpponentTurn();
 
-    public boolean getFirstPlayer();
+    public boolean amIFirstPlayer();
 
     String getName();
 }
