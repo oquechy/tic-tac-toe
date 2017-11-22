@@ -1,6 +1,8 @@
 package ru.spbau.tictactoe.Network;
 
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.text.format.Formatter;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -9,12 +11,15 @@ import java.net.SocketException;
 import java.util.Collections;
 import java.util.List;
 
+import static android.content.Context.WIFI_SERVICE;
+
 public class IPGetter extends AsyncTask<Void, Void, String> {
 
     Exception exception;
 
     @Override
     protected String doInBackground(Void... voids) {
+
         List<NetworkInterface> interfaces;
 
         try {

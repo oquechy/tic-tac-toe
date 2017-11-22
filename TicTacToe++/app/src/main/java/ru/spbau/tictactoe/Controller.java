@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
 
+import java.io.IOException;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import ru.spbau.tictactoe.Logic.Logic;
@@ -232,8 +234,76 @@ public class Controller {
      * @return ip string or error message
      */
     public static String getIPtoShow(Activity activity) {
-        WifiManager wm = (WifiManager) activity.getApplicationContext().getSystemService(WIFI_SERVICE);
-        int ipAddress = wm.getConnectionInfo().getIpAddress();
-        return ipAddress == 0 ? "No connection" : Formatter.formatIpAddress(ipAddress);
+        int ipAddress = getIP(activity);
+        return ipAddress == 0 ? "No connection" : formatIpAddress(ipAddress);
+    }
+
+    private static int getIP(Activity activity) {
+        WifiManager service = (WifiManager) activity.getApplicationContext()
+                .getSystemService(WIFI_SERVICE);
+        return service.getConnectionInfo().getIpAddress();
+    }
+
+    private static String formatIpAddress(int ip) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 3; ++i) {
+            builder.append(ip % (1 << 8)).append('.');
+            ip >>= 8;
+        }
+        builder.append(ip % (1 << 8));
+        return builder.toString();
+    }
+
+
+    public static void optionConnectToFriend() {
+        state = State.CONNECT_TO_FRIEND;
+
+//        ui.getGameCode();           // could be possible to return to main menu
+        setGameCode("");
+    }
+
+    public static void setGameCode(String gameCode) {
+        client = new Client();
+        try {
+            client.start("Client", "192.168.1.49", "3030");
+            boolean myTurn = Boolean.parseBoolean(client.getFrom());
+//            ui.switchTurn(myTurn);
+            friend = client.getPlayer("Server");
+            if (!myTurn) {
+                state = State.FRIENDS_TURN;
+                setOpponentTurn(friend.getOpponentTurn());
+            } else {
+                state = State.MY_TURN;
+                verifyTurn( 1, 1);
+            }
+        } catch (IOException e) {
+//            ui.networkError();
+//            ui.getGameCode();
+            e.printStackTrace();
+        }
+    }
+
+    public static void optionInviteFriend() {
+        state = State.SHARE_IP;
+
+        server = new Server();
+        try {
+            server.start("Server", 3030);
+            boolean myTurn = new Random().nextBoolean();
+//            ui.switchTurn(myTurn);
+            server.passTo(Boolean.toString(!myTurn));
+            friend = server.getPlayer("Client");
+            if (!myTurn) {
+                state = State.FRIENDS_TURN;
+                Turn opponentTurn = friend.getOpponentTurn();
+                setOpponentTurn(opponentTurn);
+            } else {
+                state = State.MY_TURN;
+                verifyTurn(3, 3);
+            }
+        } catch (IOException e) {
+//            ui.networkError();
+            e.printStackTrace();
+        }
     }
 }
