@@ -45,7 +45,7 @@ public class EntryPoint extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(),
-                        "Input server's address",
+                        "Input address of server",
                         Toast.LENGTH_LONG).show();
             }
         };
