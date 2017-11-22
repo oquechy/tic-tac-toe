@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Network.Client;
 import ru.spbau.tictactoe.Network.NetAnotherPlayer;
@@ -127,7 +128,7 @@ public class Controller {
 
             friend.setOpponentTurn(newTurn);
 
-            if (!checkForWins(newTurn)) {
+            if (!checkForWins()) {
                 state = State.FRIENDS_TURN;
                 setOpponentTurn(friend.getOpponentTurn());
             }
@@ -148,15 +149,15 @@ public class Controller {
      * end of game on little board causes drawing of big sign
      * end of game on whole board causes start of new game
      *
-     * @param newTurn is last made turn
      * @return whether game was ended
      */
-    private static boolean checkForWins(Turn newTurn) {
-        if (logic.isLittleWin()) {
+    private static boolean checkForWins() {
+        Status littleWin = logic.isLittleWin();
+        if (littleWin != Status.GAME_CONTINUES && littleWin != Status.DRAW) {
             int littleWinCoords = logic.getLittleWinCoords();
             ui.smallWin(getXOfBoard(littleWinCoords),
                     getYOfBoard(littleWinCoords),
-                    getPlayer(newTurn));
+                    getPlayer(littleWin));
         }
 
         if (logic.isEndOfGame()) {
@@ -180,8 +181,8 @@ public class Controller {
         optionGameWithBot();
     }
 
-    private static int getPlayer(Turn newTurn) {
-        return newTurn.player ? 1 : -1;
+    private static int getPlayer(Status status) {
+        return status == Status.CROSS ? 1 : status == Status.NOUGHT ? -1 : 0;
     }
 
     private static int getXOfBoard(int littleWinCoords) {
@@ -203,7 +204,7 @@ public class Controller {
             logic.applyOpponentsTurn(turn.convertToTurn());
             ui.applyTurn(getX(turn), getY(turn), getFriendsType());
 
-            if (!checkForWins(turn)) {
+            if (!checkForWins()) {
                 state = State.MY_TURN;
                 ui.setHighlight(getXOfNextBoard(turn), getYOfNextBoard(turn));
             }
