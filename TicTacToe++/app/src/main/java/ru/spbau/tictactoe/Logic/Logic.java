@@ -79,5 +79,9 @@ public class Logic {
     public void reset(){
         board = new Board();
     }
+    
+    public Status getStatusOfInner(int block){
+        return board.getBlockStatus(block);
+    }
 
 }
