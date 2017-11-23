@@ -3,9 +3,13 @@ package ru.spbau.tictactoe;
 import android.app.Activity;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
+import android.widget.Toast;
 
+import java.io.IOException;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Network.Client;
 import ru.spbau.tictactoe.Network.NetAnotherPlayer;
@@ -90,8 +94,8 @@ public class Controller {
 
     /**
      * ui calls this method to verify new user's move
-     * move is rejected if:
-     * a) it is not my turn or
+     * move is rejected if: <br>
+     * a) it is not my turn or <br>
      * b) place to move into is incorrect
      * <p>
      * if move is correct, it is drawn and sent to friend
@@ -110,7 +114,7 @@ public class Controller {
 
             friend.setOpponentTurn(newTurn);
 
-            if (!checkForWins(newTurn)) {
+            if (!checkForWins()) {
                 state = State.FRIENDS_TURN;
                 setOpponentTurn(friend.getOpponentTurn());
             }
@@ -131,15 +135,15 @@ public class Controller {
      * end of game on little board causes drawing of big sign
      * end of game on whole board causes start of new game
      *
-     * @param newTurn is last made turn
      * @return whether game was ended
      */
-    private static boolean checkForWins(Turn newTurn) {
-        if (logic.isLittleWin()) {
+    private static boolean checkForWins() {
+        Status littleWin = logic.isLittleWin();
+        if (littleWin != Status.GAME_CONTINUES && littleWin != Status.DRAW) {
             int littleWinCoords = logic.getLittleWinCoords();
             ui.smallWin(getXOfBoard(littleWinCoords),
                     getYOfBoard(littleWinCoords),
-                    getPlayer(newTurn));
+                    getPlayer(littleWin));
         }
 
         if (logic.isEndOfGame()) {
@@ -163,8 +167,8 @@ public class Controller {
         optionGameWithBot();
     }
 
-    private static int getPlayer(Turn newTurn) {
-        return newTurn.player ? 1 : -1;
+    private static int getPlayer(Status status) {
+        return status == Status.CROSS ? 1 : status == Status.NOUGHT ? -1 : 0;
     }
 
     private static int getXOfBoard(int littleWinCoords) {
@@ -186,13 +190,21 @@ public class Controller {
             logic.applyOpponentsTurn(turn.convertToTurn());
             ui.applyTurn(getX(turn), getY(turn), getFriendsType());
 
-            if (!checkForWins(turn)) {
+            if (!checkForWins()) {
                 state = State.MY_TURN;
-                ui.setHighlight(getXOfNextBoard(turn), getYOfNextBoard(turn));
+                if (logic.getStatusOfInner(nextInnerBoard(turn)) == Status.GAME_CONTINUES) {
+                    ui.setHighlight(getXOfNextBoard(turn), getYOfNextBoard(turn));
+                } else {
+                    ui.highlightAll();
+                }
             }
         } else {
             System.err.println("incorrect turn time");
         }
+    }
+
+    private static int nextInnerBoard(Turn turn) {
+        return turn.y % 3 * 3 + turn.x % 3;
     }
 
     private static int getYOfNextBoard(Turn turn) {
@@ -217,9 +229,77 @@ public class Controller {
      * @return ip string or error message
      */
     public static String getIPtoShow(Activity activity) {
-        WifiManager wm = (WifiManager) activity.getApplicationContext().getSystemService(WIFI_SERVICE);
-        int ipAddress = wm.getConnectionInfo().getIpAddress();
-        return ipAddress == 0 ? "No connection" : Formatter.formatIpAddress(ipAddress);
+        int ipAddress = getIP(activity);
+        return ipAddress == 0 ? "No connection" : formatIpAddress(ipAddress);
+    }
+
+    private static int getIP(Activity activity) {
+        WifiManager service = (WifiManager) activity.getApplicationContext()
+                .getSystemService(WIFI_SERVICE);
+        return service.getConnectionInfo().getIpAddress();
+    }
+
+    private static String formatIpAddress(int ip) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 3; ++i) {
+            builder.append(ip % (1 << 8)).append('.');
+            ip >>= 8;
+        }
+        builder.append(ip % (1 << 8));
+        return builder.toString();
+    }
+
+
+    public static void optionConnectToFriend() {
+        state = State.CONNECT_TO_FRIEND;
+
+//        ui.getGameCode();           // could be possible to return to main menu
+        setGameCode("");
+    }
+
+    public static void setGameCode(String gameCode) {
+        client = new Client();
+        try {
+            client.start("Client", "192.168.1.49", "3030");
+            boolean myTurn = Boolean.parseBoolean(client.getFrom());
+//            ui.switchTurn(myTurn);
+            friend = client.getPlayer("Server");
+            if (!myTurn) {
+                state = State.FRIENDS_TURN;
+                setOpponentTurn(friend.getOpponentTurn());
+            } else {
+                state = State.MY_TURN;
+                verifyTurn( 1, 1);
+            }
+        } catch (IOException e) {
+//            ui.networkError();
+//            ui.getGameCode();
+            e.printStackTrace();
+        }
+    }
+
+    public static void optionInviteFriend() {
+        state = State.SHARE_IP;
+
+        server = new Server();
+        try {
+            server.start("Server", 3030);
+            boolean myTurn = new Random().nextBoolean();
+//            ui.switchTurn(myTurn);
+            server.passTo(Boolean.toString(!myTurn));
+            friend = server.getPlayer("Client");
+            if (!myTurn) {
+                state = State.FRIENDS_TURN;
+                Turn opponentTurn = friend.getOpponentTurn();
+                setOpponentTurn(opponentTurn);
+            } else {
+                state = State.MY_TURN;
+                verifyTurn(3, 3);
+            }
+        } catch (IOException e) {
+//            ui.networkError();
+            e.printStackTrace();
+        }
     }
 
     private enum State {
