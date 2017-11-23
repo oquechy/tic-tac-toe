@@ -84,9 +84,9 @@ class Drawer {
                     9 * CELL_WIDTH, 9 * CELL_HEIGHT, mPaintFat);
         }
         if (UI.Lx >= 0 && UI.Ly >= 0)
-            drawCircle(canvas, UI.Lx, UI.Ly, Color.BLUE);
+            drawCircle(canvas, UI.Lx, UI.Ly, Color.MAGENTA);
         if (UI.Lbx >= 0 && UI.Lby >= 0)
-            drawBigCircle(canvas, UI.Lbx, UI.Lby, Color.BLUE);
+            drawBigCircle(canvas, UI.Lbx, UI.Lby, Color.MAGENTA);
     }
 
     static private boolean drawCircle(Canvas mCanvas, int x, int y, int color) {

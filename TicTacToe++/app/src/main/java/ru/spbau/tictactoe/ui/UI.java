@@ -107,6 +107,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
     public void highlightAll() {
         Hx = -2;
         Hy = -2;
+        redraw();
     }
 
     public void disableHighlight() {
