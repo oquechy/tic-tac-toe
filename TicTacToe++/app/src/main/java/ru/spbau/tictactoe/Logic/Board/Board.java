@@ -5,7 +5,10 @@ import java.util.Arrays;
 
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
-import static ru.spbau.tictactoe.Logic.Board.Status.*;
+import static ru.spbau.tictactoe.Logic.Board.Status.CROSS;
+import static ru.spbau.tictactoe.Logic.Board.Status.DRAW;
+import static ru.spbau.tictactoe.Logic.Board.Status.GAME_CONTINUES;
+import static ru.spbau.tictactoe.Logic.Board.Status.NOUGHT;
 
 
 /**
@@ -16,6 +19,170 @@ import static ru.spbau.tictactoe.Logic.Board.Status.*;
  * At any moment there is a block where the next move will happen (initially it is the medium block).
  */
 public class Board {
+
+    /**
+     * Board consists of grid of nine inner boards.
+     */
+    private InnerBoard[] board = new InnerBoard[9];
+    /**
+     * The inner board where the next will be made.
+     * Initially, it is the block in the center.
+     * After each move the currentInnerBoard changes to the id
+     * of the inner square that was changed during the move.
+     * If the relevant block is busy (somebody won there or it is completely filled), it becomes -1,
+     * which means that the next move can be made to any block.
+     */
+    private int currentInnerBoard = 4;
+    /**
+     * There are four opportunities:
+     * the game continues - GAME_CONTINUES,
+     * the first player won - CROSS,
+     * the second player won - NOUGHT,
+     * nobody won but the moves cannot be made - BLOCK.
+     */
+    private Status status = GAME_CONTINUES;
+    /**
+     * The player who makes next move.
+     */
+    private Turn.Player currentPlayer = Turn.Player.CROSS;
+    /**
+     * Number of blocks where the game is over.
+     */
+    private int numberOfInvalidBlocks;
+
+    public Board() {
+        for (int i = 0; i < 9; i++) {
+            board[i] = new InnerBoard();
+        }
+    }
+
+    public int getCurrentInnerBoard() {
+        return currentInnerBoard;
+    }
+
+    public Status getSquare(int outerSquare, int innerSquare) {
+        return board[outerSquare].innerBoard[innerSquare];
+    }
+
+    public Status getBlockStatus(int outerSquare) {
+        return board[outerSquare].status;
+    }
+
+    /**
+     * Marks the specified square on current inner board with the sign of the specified player.
+     *
+     * @param innerSquare is the id of the square to be marked
+     * @throws IncorrectMoveException if the inner square is busy or current square must be specified.
+     */
+    public boolean makeMove(
+            int innerSquare) throws IncorrectMoveException {
+        if (currentInnerBoard == -1) {
+            throw new IncorrectMoveException(
+                    "The inner board must be also specified");
+        }
+        boolean blockIsOver = board[currentInnerBoard].setSquare(innerSquare, currentPlayer);
+        if (blockIsOver) {
+            numberOfInvalidBlocks++;
+        }
+        if (board[innerSquare].status == Status.GAME_CONTINUES) {
+            currentInnerBoard = innerSquare;
+        } else {
+            currentInnerBoard = -1;
+        }
+        if (isOver()) {
+            status = currentPlayer == Turn.Player.CROSS ? CROSS : NOUGHT;
+        } else {
+            if (numberOfInvalidBlocks == 9) {
+                status = DRAW;
+            }
+        }
+        currentPlayer =
+                currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
+        return blockIsOver;
+    }
+
+    /**
+     * Marks the specified square on specified inner board with the sign of the given player
+     * if the current inner square is not specified yet.
+     *
+     * @param block       is the block id where a square will be marked
+     * @param innerSquare is the id of the inner square to be marked
+     * @throws IncorrectMoveException if the inner board could not be specified
+     */
+    public boolean makeMoveToAnyOuterSquare(
+            int block, int innerSquare) throws IncorrectMoveException {
+
+        if (currentInnerBoard != -1) {
+            throw new IncorrectMoveException(
+                    "The inner board is already assigned");
+        }
+        boolean blockIsOver = board[block].setSquare(innerSquare, currentPlayer);
+        if (blockIsOver) {
+            numberOfInvalidBlocks++;
+        }
+        if (board[innerSquare].status == GAME_CONTINUES) {
+            currentInnerBoard = innerSquare;
+        } else {
+            currentInnerBoard = -1;
+        }
+        if (isOver()) {
+            status = currentPlayer == Turn.Player.CROSS ? CROSS : NOUGHT;
+        } else {
+            if (numberOfInvalidBlocks == 9) {
+                status = DRAW;
+            }
+        }
+        currentPlayer = currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
+        return blockIsOver;
+    }
+
+    public Status getGameStatus() {
+        return status;
+    }
+
+    /**
+     * Checks if the game on board is over.
+     * Checks every row, column and diagonal if there are three squares
+     * with the same status which is not GAME_CONTINUES or BLOCK.
+     *
+     * @return true if the game is over
+     * (three squares in row, column or diagonal were marked by the same player)
+     */
+    public boolean isOver() {
+        //check columns
+        for (int i = 0; i < 3; i++) {
+            if (board[i].status != GAME_CONTINUES
+                    && board[i].status != DRAW
+                    && board[i].status == board[i + 3].status
+                    && board[i].status == board[i + 6].status) {
+                return true;
+            }
+        }
+        //check rows
+        for (int i = 0; i < 9; i += 3) {
+            if (board[i].status != GAME_CONTINUES
+                    && board[i].status != DRAW
+                    && board[i].status == board[i + 1].status
+                    && board[i].status == board[i + 2].status) {
+                return true;
+            }
+        }
+        //check diagonals
+        return board[4].status != GAME_CONTINUES && board[4].status != DRAW
+                && (board[0].status == board[4].status
+                && board[4].status == board[8].status ||
+                board[2].status == board[4].status && board[4].status == board[6].status);
+    }
+
+    public InnerBoard[] getBoard() {
+        return Arrays.copyOf(board, board.length);
+    }
+
+    public boolean verifyTurn(Turn turn){
+        return (currentInnerBoard == -1 || turn.getInnerBoard() == currentInnerBoard) &&
+                board[turn.getInnerBoard()].getStatus() == GAME_CONTINUES &&
+                board[turn.getInnerBoard()].getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
+    }
 
     /**
      * An outer square or an inner board.
@@ -106,175 +273,4 @@ public class Board {
             return status;
         }
     }
-
-    /**
-     * Board consists of grid of nine inner boards.
-     */
-    private InnerBoard[] board = new InnerBoard[9];
-
-    /**
-     * The inner board where the next will be made.
-     * Initially, it is the block in the center.
-     * After each move the currentInnerBoard changes to the id
-     * of the inner square that was changed during the move.
-     * If the relevant block is busy (somebody won there or it is completely filled), it becomes -1,
-     * which means that the next move can be made to any block.
-     */
-    private int currentInnerBoard = 4;
-
-    /**
-     * There are four opportunities:
-     * the game continues - GAME_CONTINUES,
-     * the first player won - CROSS,
-     * the second player won - NOUGHT,
-     * nobody won but the moves cannot be made - BLOCK.
-     */
-    private Status status = GAME_CONTINUES;
-
-    /**
-     * The player who makes next move.
-     */
-    private Turn.Player currentPlayer = Turn.Player.CROSS;
-
-    /**
-     * Number of blocks where the game is over.
-     */
-    private int numberOfInvalidBlocks;
-
-    public Board() {
-        for (int i = 0; i < 9; i++) {
-            board[i] = new InnerBoard();
-        }
-    }
-
-    public int getCurrentInnerBoard() {
-        return currentInnerBoard;
-    }
-
-    public Status getSquare(int outerSquare, int innerSquare) {
-        return board[outerSquare].innerBoard[innerSquare];
-    }
-
-    public Status getBlockStatus(int outerSquare) {
-        return board[outerSquare].status;
-    }
-
-
-    /**
-     * Marks the specified square on current inner board with the sign of the specified player.
-     *
-     * @param innerSquare is the id of the square to be marked
-     * @throws IncorrectMoveException if the inner square is busy or current square must be specified.
-     */
-    public Status makeMove(
-            int innerSquare) throws IncorrectMoveException {
-        if (currentInnerBoard == -1) {
-            throw new IncorrectMoveException(
-                    "The inner board must be also specified");
-        }
-        boolean blockIsOver = board[currentInnerBoard].setSquare(innerSquare, currentPlayer);
-        Status res = board[currentInnerBoard].status;
-        if (blockIsOver) {
-            numberOfInvalidBlocks++;
-        }
-        if (board[innerSquare].status == Status.GAME_CONTINUES) {
-            currentInnerBoard = innerSquare;
-        } else {
-            currentInnerBoard = -1;
-        }
-        if (isOver()) {
-            status = currentPlayer == Turn.Player.CROSS ? CROSS : NOUGHT;
-        } else {
-            if (numberOfInvalidBlocks == 9) {
-                status = DRAW;
-            }
-        }
-        currentPlayer =
-                currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
-        return res;
-    }
-
-    /**
-     * Marks the specified square on specified inner board with the sign of the given player
-     * if the current inner square is not specified yet.
-     *
-     * @param block       is the block id where a square will be marked
-     * @param innerSquare is the id of the inner square to be marked
-     * @throws IncorrectMoveException if the inner board could not be specified
-     */
-    public Status makeMoveToAnyOuterSquare(
-            int block, int innerSquare) throws IncorrectMoveException {
-
-        if (currentInnerBoard != -1) {
-            throw new IncorrectMoveException(
-                    "The inner board is already assigned");
-        }
-        boolean blockIsOver = board[block].setSquare(innerSquare, currentPlayer);
-        if (blockIsOver) {
-            numberOfInvalidBlocks++;
-        }
-        if (board[innerSquare].status == GAME_CONTINUES) {
-            currentInnerBoard = innerSquare;
-        } else {
-            currentInnerBoard = -1;
-        }
-        if (isOver()) {
-            status = currentPlayer == Turn.Player.CROSS ? CROSS : NOUGHT;
-        } else {
-            if (numberOfInvalidBlocks == 9) {
-                status = DRAW;
-            }
-        }
-        currentPlayer = currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
-        return board[block].status;
-    }
-
-    public Status getGameStatus() {
-        return status;
-    }
-
-    /**
-     * Checks if the game on board is over.
-     * Checks every row, column and diagonal if there are three squares
-     * with the same status which is not GAME_CONTINUES or BLOCK.
-     *
-     * @return true if the game is over
-     * (three squares in row, column or diagonal were marked by the same player)
-     */
-    public boolean isOver() {
-        //check columns
-        for (int i = 0; i < 3; i++) {
-            if (board[i].status != GAME_CONTINUES
-                    && board[i].status != DRAW
-                    && board[i].status == board[i + 3].status
-                    && board[i].status == board[i + 6].status) {
-                return true;
-            }
-        }
-        //check rows
-        for (int i = 0; i < 9; i += 3) {
-            if (board[i].status != GAME_CONTINUES
-                    && board[i].status != DRAW
-                    && board[i].status == board[i + 1].status
-                    && board[i].status == board[i + 2].status) {
-                return true;
-            }
-        }
-        //check diagonals
-        return board[4].status != GAME_CONTINUES && board[4].status != DRAW
-                && (board[0].status == board[4].status
-                && board[4].status == board[8].status ||
-                board[2].status == board[4].status && board[4].status == board[6].status);
-    }
-
-    public InnerBoard[] getBoard() {
-        return Arrays.copyOf(board, board.length);
-    }
-
-    public boolean verifyTurn(Turn turn){
-        return (currentInnerBoard == -1 || turn.getInnerBoard() == currentInnerBoard) &&
-                board[turn.getInnerBoard()].getStatus() == GAME_CONTINUES &&
-                board[turn.getInnerBoard()].getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
-    }
 }
-

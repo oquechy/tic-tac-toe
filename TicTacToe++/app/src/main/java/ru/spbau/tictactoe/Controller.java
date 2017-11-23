@@ -21,35 +21,20 @@ import static android.content.Context.WIFI_SERVICE;
  */
 public class Controller {
 
-    private enum State {
-        MAIN_MENU,                 // game with friend, game with bot, stats
-        SHARE_IP,                  // allows friend to connect
-        CONNECT_TO_FRIEND,         // get server's ip
-        CREATE_FIELD,
-        MY_TURN,
-        FRIENDS_TURN,
-        END_OF_GAME,
-        STATS
-    }
-
-    private boolean paused = false;
-
     /**
      * cross is true and nought is false
      */
     private static boolean myType;
-
     private static State state;
     private static UI ui;
     private static Server server;
     private static Client client;
     private static Logic logic = new Logic();
-
-
     /**
      * either bot or net friend
      */
     private static NetAnotherPlayer friend;
+    private boolean paused = false;
 
     /**
      * provides access to ui as a static field
@@ -80,12 +65,12 @@ public class Controller {
         final Bot bot = new Bot(logic.getBoard());
         friend = new NetAnotherPlayer() {
             @Override
-            public void setOpponentTurn(Turn t) {
+            public Turn getOpponentTurn() {
+                return new Turn(bot.makeTurn());
             }
 
             @Override
-            public Turn getOpponentTurn() {
-                return new Turn(bot.makeTurn());
+            public void setOpponentTurn(Turn t) {
             }
 
             @Override
@@ -159,7 +144,7 @@ public class Controller {
 
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
-            ui.displayResult(logic.getResult() == Result.CROSS ? 1 : -1);
+            ui.displayResult(logic.getResult());
             try {
                 TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException e) {
@@ -235,5 +220,16 @@ public class Controller {
         WifiManager wm = (WifiManager) activity.getApplicationContext().getSystemService(WIFI_SERVICE);
         int ipAddress = wm.getConnectionInfo().getIpAddress();
         return ipAddress == 0 ? "No connection" : Formatter.formatIpAddress(ipAddress);
+    }
+
+    private enum State {
+        MAIN_MENU,                 // game with friend, game with bot, stats
+        SHARE_IP,                  // allows friend to connect
+        CONNECT_TO_FRIEND,         // get server's ip
+        CREATE_FIELD,
+        MY_TURN,
+        FRIENDS_TURN,
+        END_OF_GAME,
+        STATS
     }
 }

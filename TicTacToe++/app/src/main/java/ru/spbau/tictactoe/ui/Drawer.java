@@ -18,7 +18,8 @@ class Drawer {
     private static void drawBackground(Canvas canvas) {
         canvas.drawColor(Color.rgb(218, 195, 148));
         int width = canvas.getWidth();
-        int height = width;
+        int height = canvas.getHeight();
+        width = height = Math.min(width, height);
 
         CELL_WIDTH = width / 9;
         CELL_HEIGHT = width / 9;
@@ -52,20 +53,20 @@ class Drawer {
         for (int i = 0 ; i < 9; i++) {
             for (int j = 0 ; j < 9; j++) {
                 if (UI.board[i][j] * UI.crossOrZero == 1) {
-                    drawCross(canvas, i, j);
+                    drawCross(canvas, i, j, Color.BLACK);
                 }
                 if (UI.board[i][j] * UI.crossOrZero == -1) {
-                    drawCircle(canvas, i, j);
+                    drawCircle(canvas, i, j, Color.BLACK);
                 }
             }
         }
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (UI.smallBoard[i][j] * UI.crossOrZero == 1) {
-                    drawBigCross(canvas, i, j);
+                    drawBigCross(canvas, i, j, Color.BLACK);
                 }
                 if (UI.smallBoard[i][j] * UI.crossOrZero == -1) {
-                    drawBigCircle(canvas, i, j);
+                    drawBigCircle(canvas, i, j, Color.BLACK);
                 }
             }
         }
@@ -82,10 +83,14 @@ class Drawer {
             canvas.drawRect(0, 0,
                     9 * CELL_WIDTH, 9 * CELL_HEIGHT, mPaintFat);
         }
+        if (UI.Lx >= 0 && UI.Ly >= 0)
+            drawCircle(canvas, UI.Lx, UI.Ly, Color.BLUE);
+        if (UI.Lbx >= 0 && UI.Lby >= 0)
+            drawBigCircle(canvas, UI.Lbx, UI.Lby, Color.BLUE);
     }
 
-    static private boolean drawCircle(Canvas mCanvas, int x, int y) {
-        mPaint.setColor(Color.BLACK);
+    static private boolean drawCircle(Canvas mCanvas, int x, int y, int color) {
+        mPaint.setColor(color);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(6);
         mCanvas.drawCircle(x * CELL_WIDTH + (CELL_WIDTH / 2), y * CELL_HEIGHT + (CELL_HEIGHT / 2),
@@ -93,8 +98,8 @@ class Drawer {
         return true;
     }
 
-    static private boolean drawCross(Canvas mCanvas, int x, int y) {
-        mPaint.setColor(Color.BLACK);
+    static private boolean drawCross(Canvas mCanvas, int x, int y, int color) {
+        mPaint.setColor(color);
         mPaint.setStrokeWidth(6);
         mCanvas.drawLine(x * CELL_WIDTH + indentX, (y + 1) * CELL_HEIGHT - indentY,
                 (x + 1) * CELL_WIDTH - indentX, y * CELL_HEIGHT + indentY, mPaint);
@@ -103,8 +108,8 @@ class Drawer {
         return true;
     }
 
-    static private boolean drawBigCross(Canvas mCanvas, int x, int y) {
-        mPaint.setColor(Color.BLACK);
+    static private boolean drawBigCross(Canvas mCanvas, int x, int y, int color) {
+        mPaint.setColor(color);
         mPaint.setStrokeWidth(6);
         mCanvas.drawLine(x * CELL_WIDTH * 3 + indentX, (y + 1) * CELL_HEIGHT * 3 - indentY,
                 (x + 1) * CELL_WIDTH * 3 - indentX, y * CELL_HEIGHT * 3 + indentY, mPaint);
@@ -113,8 +118,8 @@ class Drawer {
         return true;
     }
 
-    static private boolean drawBigCircle(Canvas mCanvas, int x, int y) {
-        mPaint.setColor(Color.BLACK);
+    static private boolean drawBigCircle(Canvas mCanvas, int x, int y, int color) {
+        mPaint.setColor(color);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(6);
         mCanvas.drawCircle(x * CELL_WIDTH * 3 + (CELL_WIDTH / 2) * 3, y * CELL_HEIGHT * 3 + (CELL_HEIGHT / 2) * 3,

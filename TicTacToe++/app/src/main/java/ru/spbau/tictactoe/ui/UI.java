@@ -18,6 +18,10 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
     static int[][] smallBoard = new int[3][3];
     static int Hx = 1;
     static int Hy = 1;
+    static int Lx = -1;
+    static int Ly = -1;
+    static int Lbx = -1;
+    static int Lby = -1;
 
     static int crossOrZero = 1;
 
@@ -67,6 +71,12 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
     public void applyTurn(int x, int y, int who) {
         System.err.println("sasha's from " + (who == 1 ? "ui" : "bot") + ": " + x + " " + y);
         board[x - 1][y - 1] = who;
+        if (who * crossOrZero < 0) {
+            Lx = x - 1;
+            Ly = y - 1;
+            Lby = -1;
+            Lbx = -1;
+        }
         redraw();
     }
 
@@ -81,6 +91,10 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         smallBoard = new int[3][3];
         Hx = 1;
         Hy = 1;
+        Lx = -1;
+        Ly = -1;
+        Lbx = -1;
+        Lby = -1;
         redraw();
     }
 
@@ -90,7 +104,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         redraw();
     }
 
-    public void HighlightAll() {
+    public void highlightAll() {
         Hx = -2;
         Hy = -2;
     }
@@ -103,6 +117,12 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
 
     public void smallWin(int x, int y, int who) {
         smallBoard[x - 1][y - 1] = who;
+        if (who * crossOrZero < 0) {
+            Lx = -1;
+            Ly = -1;
+            Lbx = x - 1;
+            Lby = y - 1;
+        }
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 board[(x - 1) * 3 + i][(y - 1) * 3 + j] = 0;
