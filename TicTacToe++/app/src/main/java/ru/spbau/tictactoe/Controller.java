@@ -236,7 +236,7 @@ public class Controller {
      */
     public static String getIPtoShow(Activity activity) {
         int ipAddress = getIP(activity);
-        return ipAddress == 0 ? "No connection" : formatIpAddress(ipAddress);
+        return ipAddress == 0 ? "No connection" : Formatter.formatIpAddress(ipAddress);
     }
 
     private static int getIP(Activity activity) {
