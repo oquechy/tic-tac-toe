@@ -188,6 +188,11 @@ public class Controller {
     public static void setOpponentTurn(Turn turn) {
         if (state == State.FRIENDS_TURN) {
             logic.applyOpponentsTurn(turn.convertToTurn());
+            try {
+                TimeUnit.MILLISECONDS.sleep(75);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             ui.applyTurn(getX(turn), getY(turn), getFriendsType());
 
             if (!checkForWins()) {
@@ -233,7 +238,7 @@ public class Controller {
         return ipAddress == 0 ? "No connection" : Formatter.formatIpAddress(ipAddress);
     }
 
-    private static int getIP(Activity activity) {
+    public static int getIP(Activity activity) {
         WifiManager service = (WifiManager) activity.getApplicationContext()
                 .getSystemService(WIFI_SERVICE);
         return service.getConnectionInfo().getIpAddress();

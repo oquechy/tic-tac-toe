@@ -39,6 +39,9 @@ public class EntryPoint extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         Controller.getIPtoShow(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),
+                        WordCoder.encode(Controller.getIP(EntryPoint.this)),
+                        Toast.LENGTH_LONG).show();
             }
         };
         View.OnClickListener oclJoinFriendButton = new View.OnClickListener() {
