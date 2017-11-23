@@ -277,4 +277,3 @@ public class Board {
                 board[turn.getInnerBoard()].getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
     }
 }
-

@@ -18,6 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.UI" />
+        <activity android:name=".ui.InviteFriend"></activity>
     </application>
 
 </manifest>

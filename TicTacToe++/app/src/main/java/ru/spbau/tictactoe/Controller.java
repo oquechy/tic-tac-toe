@@ -3,6 +3,7 @@ package ru.spbau.tictactoe;
 import android.app.Activity;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.Random;
@@ -24,35 +25,20 @@ import static android.content.Context.WIFI_SERVICE;
  */
 public class Controller {
 
-    private enum State {
-        MAIN_MENU,                 // game with friend, game with bot, stats
-        SHARE_IP,                  // allows friend to connect
-        CONNECT_TO_FRIEND,         // get server's ip
-        CREATE_FIELD,
-        MY_TURN,
-        FRIENDS_TURN,
-        END_OF_GAME,
-        STATS
-    }
-
-    private boolean paused = false;
-
     /**
      * cross is true and nought is false
      */
     private static boolean myType;
-
     private static State state;
     private static UI ui;
     private static Server server;
     private static Client client;
     private static Logic logic = new Logic();
-
-
     /**
      * either bot or net friend
      */
     private static NetAnotherPlayer friend;
+    private boolean paused = false;
 
     /**
      * provides access to ui as a static field
@@ -83,12 +69,12 @@ public class Controller {
         final Bot bot = new Bot(logic.getBoard());
         friend = new NetAnotherPlayer() {
             @Override
-            public void setOpponentTurn(Turn t) {
+            public Turn getOpponentTurn() {
+                return new Turn(bot.makeTurn());
             }
 
             @Override
-            public Turn getOpponentTurn() {
-                return new Turn(bot.makeTurn());
+            public void setOpponentTurn(Turn t) {
             }
 
             @Override
@@ -108,8 +94,8 @@ public class Controller {
 
     /**
      * ui calls this method to verify new user's move
-     * move is rejected if:
-     * a) it is not my turn or
+     * move is rejected if: <br>
+     * a) it is not my turn or <br>
      * b) place to move into is incorrect
      * <p>
      * if move is correct, it is drawn and sent to friend
@@ -206,11 +192,19 @@ public class Controller {
 
             if (!checkForWins()) {
                 state = State.MY_TURN;
-                ui.setHighlight(getXOfNextBoard(turn), getYOfNextBoard(turn));
+                if (logic.getStatusOfInner(nextInnerBoard(turn)) == Status.GAME_CONTINUES) {
+                    ui.setHighlight(getXOfNextBoard(turn), getYOfNextBoard(turn));
+                } else {
+                    ui.highlightAll();
+                }
             }
         } else {
             System.err.println("incorrect turn time");
         }
+    }
+
+    private static int nextInnerBoard(Turn turn) {
+        return turn.y % 3 * 3 + turn.x % 3;
     }
 
     private static int getYOfNextBoard(Turn turn) {
@@ -306,5 +300,16 @@ public class Controller {
 //            ui.networkError();
             e.printStackTrace();
         }
+    }
+
+    private enum State {
+        MAIN_MENU,                 // game with friend, game with bot, stats
+        SHARE_IP,                  // allows friend to connect
+        CONNECT_TO_FRIEND,         // get server's ip
+        CREATE_FIELD,
+        MY_TURN,
+        FRIENDS_TURN,
+        END_OF_GAME,
+        STATS
     }
 }
