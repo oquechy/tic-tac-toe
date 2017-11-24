@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import ru.spbau.tictactoe.ui.InviteFriend;
 import ru.spbau.tictactoe.ui.UI;
 
 public class EntryPoint extends AppCompatActivity {
@@ -40,8 +41,11 @@ public class EntryPoint extends AppCompatActivity {
                         Controller.getIPtoShow(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
                 Toast.makeText(getApplicationContext(),
-                        WordCoder.encode(Controller.getIP(EntryPoint.this)),
+                        Controller.getEncodedIP(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(EntryPoint.this, InviteFriend.class);
+                startActivity(intent);
             }
         };
         View.OnClickListener oclJoinFriendButton = new View.OnClickListener() {

@@ -244,6 +244,18 @@ public class Controller {
         return service.getConnectionInfo().getIpAddress();
     }
 
+    public static String getEncodedIP(Activity activity) {
+        int ipAddress = getIP(activity);
+        if (ipAddress == 0) {
+            return "No connection";
+        }
+
+        String[] ipString = Formatter.formatIpAddress(ipAddress).split(".");
+        int ipTail = Integer.parseInt(ipString[2]) << 8 + Integer.parseInt(ipString[3]);
+
+        return WordCoder.encode(ipTail);
+    }
+
     private static String formatIpAddress(int ip) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 3; ++i) {
