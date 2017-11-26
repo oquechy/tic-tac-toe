@@ -29,8 +29,7 @@ public class EntryPoint extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Controller.optionGameWithBot();
-                Intent intent = new Intent(EntryPoint.this, UI.class);
-                startActivity(intent);
+                newGame();
             }
         };
 
@@ -44,16 +43,20 @@ public class EntryPoint extends AppCompatActivity {
                         Controller.getEncodedIP(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
 
-                Intent intent = new Intent(EntryPoint.this, InviteFriend.class);
-                startActivity(intent);
+                Controller.optionInviteFriend();
+                newGame();
+//                Intent intent = new Intent(EntryPoint.this, InviteFriend.class);
+//                startActivity(intent);
             }
         };
         View.OnClickListener oclJoinFriendButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(),
-                        "Input address of server",
+                        Controller.getDecodedIP(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
+                Controller.optionConnectToFriend();
+                newGame();
             }
         };
         View.OnClickListener oclSettingsButton = new View.OnClickListener() {
@@ -74,5 +77,10 @@ public class EntryPoint extends AppCompatActivity {
         joinAFriendButton.setOnClickListener(oclJoinFriendButton);
         settingsButton.setOnClickListener(oclSettingsButton);
         recordsButton.setOnClickListener(oclRecordsButton);
+    }
+
+    private void newGame() {
+        Intent intent = new Intent(EntryPoint.this, UI.class);
+        startActivity(intent);
     }
 }
