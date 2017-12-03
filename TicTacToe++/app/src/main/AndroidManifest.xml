@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/icon"
@@ -20,7 +21,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.UI" />
-        <activity android:name=".ui.InviteFriend"></activity>
+        <activity android:name=".ui.InviteFriend" />
+        <activity android:name=".WriteLogin" />
+        <activity android:name=".ReadLogin"></activity>
     </application>
 
 </manifest>

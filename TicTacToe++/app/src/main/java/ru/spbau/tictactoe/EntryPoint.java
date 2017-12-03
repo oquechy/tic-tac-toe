@@ -1,14 +1,12 @@
 package ru.spbau.tictactoe;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import ru.spbau.tictactoe.ui.InviteFriend;
 import ru.spbau.tictactoe.ui.UI;
 
 public class EntryPoint extends AppCompatActivity {
@@ -47,6 +45,8 @@ public class EntryPoint extends AppCompatActivity {
                 newGame();
 //                Intent intent = new Intent(EntryPoint.this, InviteFriend.class);
 //                startActivity(intent);
+                Intent intent = new Intent(EntryPoint.this, WriteLogin.class);
+                startActivity(intent);
             }
         };
         View.OnClickListener oclJoinFriendButton = new View.OnClickListener() {
@@ -57,6 +57,8 @@ public class EntryPoint extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
                 Controller.optionConnectToFriend();
                 newGame();
+                Intent intent = new Intent(EntryPoint.this, ReadLogin.class);
+                startActivity(intent);
             }
         };
         View.OnClickListener oclSettingsButton = new View.OnClickListener() {
