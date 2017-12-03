@@ -13,6 +13,7 @@ public class Logic {
     private GameLog gameLog = new GameLog();
     private Turn lastTurn;
     private Status isLittleWin;
+    private int turnCounter;
     public Board setUpField(){
         return board;
     }
@@ -43,7 +44,12 @@ public class Logic {
     }
 
     public void applyMyTurn(Turn turn){
+        turnCounter++;
         applyOpponentsTurn(turn);
+    }
+
+    public int getTurnCounter(){
+        return turnCounter;
     }
 
     public Status isLittleWin() {
