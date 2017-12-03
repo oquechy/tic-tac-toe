@@ -3,6 +3,7 @@ package ru.spbau.tictactoe;
 import android.app.Activity;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.Random;
@@ -93,8 +94,8 @@ public class Controller {
 
     /**
      * ui calls this method to verify new user's move
-     * move is rejected if:
-     * a) it is not my turn or
+     * move is rejected if: <br>
+     * a) it is not my turn or <br>
      * b) place to move into is incorrect
      * <p>
      * if move is correct, it is drawn and sent to friend
@@ -191,11 +192,19 @@ public class Controller {
 
             if (!checkForWins()) {
                 state = State.MY_TURN;
-                ui.setHighlight(getXOfNextBoard(turn), getYOfNextBoard(turn));
+                if (logic.getStatusOfInner(nextInnerBoard(turn)) == Status.GAME_CONTINUES) {
+                    ui.setHighlight(getXOfNextBoard(turn), getYOfNextBoard(turn));
+                } else {
+                    ui.highlightAll();
+                }
             }
         } else {
             System.err.println("incorrect turn time");
         }
+    }
+
+    private static int nextInnerBoard(Turn turn) {
+        return turn.y % 3 * 3 + turn.x % 3;
     }
 
     private static int getYOfNextBoard(Turn turn) {
