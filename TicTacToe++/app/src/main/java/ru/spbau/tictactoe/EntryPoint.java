@@ -41,10 +41,6 @@ public class EntryPoint extends AppCompatActivity {
                         Controller.getEncodedIP(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
 
-                Controller.optionInviteFriend();
-                newGame();
-//                Intent intent = new Intent(EntryPoint.this, InviteFriend.class);
-//                startActivity(intent);
                 Intent intent = new Intent(EntryPoint.this, WriteLogin.class);
                 startActivity(intent);
             }
@@ -53,10 +49,8 @@ public class EntryPoint extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(),
-                        Controller.getDecodedIP(EntryPoint.this),
+                        Controller.getDecodedIP("manuda"),
                         Toast.LENGTH_LONG).show();
-                Controller.optionConnectToFriend();
-                newGame();
                 Intent intent = new Intent(EntryPoint.this, ReadLogin.class);
                 startActivity(intent);
             }

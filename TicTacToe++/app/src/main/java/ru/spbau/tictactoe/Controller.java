@@ -24,6 +24,8 @@ import static android.content.Context.WIFI_SERVICE;
  */
 public class Controller {
 
+    public static boolean myTurn;
+
     public static void main(String[] args) {
         System.err.println(LOCAL_NET_MASK);
     }
@@ -144,7 +146,7 @@ public class Controller {
      */
     private static boolean checkForWins() {
         Status littleWin = logic.isLittleWin();
-        if (littleWin != Status.GAME_CONTINUES && littleWin != Status.DRAW) {
+        if (littleWin == Status.NOUGHT && littleWin == Status.CROSS) {
             int littleWinCoords = logic.getLittleWinCoords();
             ui.smallWin(getXOfBoard(littleWinCoords),
                     getYOfBoard(littleWinCoords),
@@ -166,7 +168,7 @@ public class Controller {
         return false;
     }
 
-    private static void newGame() {
+    public static void newGame() {
         logic = new Logic();
         ui.setUpField();
         optionGameWithBot();
@@ -260,32 +262,31 @@ public class Controller {
     }
 
 
-    public static void optionConnectToFriend() {
+    public static void optionConnectToFriend(String text) {
         state = State.CONNECT_TO_FRIEND;
-
-//        ui.getGameCode();           // could be possible to return to main menu
-
-        int ipTail = WordCoder.decode("magunik");
+        int ipTail = WordCoder.decode(text);
 
         String ip = Formatter.formatIpAddress(LOCAL_NET_MASK | ipTail << 16);
+        System.err.println(ip);
         connectToServer(ip);
     }
 
-    public static void connectToServer(String ip) {
+    private static void connectToServer(String ip) {
         client = new Client();
         try {
             client.start("Client", ip, "3030");
-            boolean myTurn = Boolean.parseBoolean(client.getFrom());
-            friend = client.getPlayer("Server");
-            newGame(myTurn);
+            friend = client.getClientPlayer("Server");
+            myTurn = friend.getFirstPlayer();
+//            newGame(myTurn);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void newGame(boolean myTurn) {
+    public static void newGame(boolean myTurn) {
         if (!myTurn) {
             state = State.FRIENDS_TURN;
+
             setOpponentTurn(friend.getOpponentTurn());
         } else {
             state = State.MY_TURN;
@@ -298,13 +299,21 @@ public class Controller {
         server = new Server();
         try {
             server.start("Server", 3030);
-            boolean myTurn = new Random().nextBoolean();
-            server.passTo(Boolean.toString(!myTurn));
-            friend = server.getPlayer("Client");
-            newGame();
+
+            myTurn = choosePlayer();
+
+            friend = server.getClientPlayer("Client");
+//            newGame(myTurn);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean choosePlayer() {
+        myTurn = new Random().nextBoolean();
+        server.passToClient(Boolean.toString(!myTurn));
+        System.err.println("myTurn: " + myTurn);
+        return myTurn;
     }
 
     public static String getEncodedIP(Activity activity) {
@@ -320,8 +329,8 @@ public class Controller {
         return WordCoder.encode(ipTail);
     }
 
-    public static String getDecodedIP(EntryPoint entryPoint) {
-        int ipTail = WordCoder.decode("magunik");
+    public static String getDecodedIP(String manuda) {
+        int ipTail = WordCoder.decode(manuda);
 
         String ip = Formatter.formatIpAddress(LOCAL_NET_MASK | ipTail << 16);
         return ip;

@@ -7,24 +7,23 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import ru.spbau.tictactoe.Controller;
+import ru.spbau.tictactoe.Turn;
 
 
 public class LinuxClient {
 
     public static void main(String[] args) throws IOException {
-        new LinuxClient().start(args);
+        new LinuxClient().start();
     }
 
-    public void start(String[] args) throws IOException {
+    public void start() throws IOException {
 
-        if (args.length != 2) {
-            System.err.println(
-                    "Usage: java EchoClient <host name> <port number>");
-            System.exit(1);
-        }
-
-        String hostName = args[0];
-        int portNumber = Integer.parseInt(args[1]);
+        String hostName = "192.168.1.39";
+        int portNumber = 3030;
 
         try (
                 Socket kkSocket = new Socket(hostName, portNumber);
@@ -37,17 +36,22 @@ public class LinuxClient {
             String fromServer;
             String fromUser;
 
-            while ((fromServer = in.readLine()) != null) {
-                System.out.println("Server: " + fromServer);
-                if (fromServer.equals("Bye."))
-                    break;
+            fromUser = "Client";
+            System.out.println("LinuxClient: " + fromUser);
+            out.println(fromUser);
 
-//                fromUser = stdIn.readLine();
-                fromUser = "Who's there?";
-                if (fromUser != null) {
-                    System.out.println("Client: " + fromUser);
-                    out.println(fromUser);
+
+            Random random = new Random();
+
+            for (int i = 0; i < 10000; ++i) {
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                fromUser = new Turn(false, Math.abs(random.nextInt() % 9), Math.abs(random.nextInt() % 9)).toString();
+                System.out.println("LinuxClient: " + fromUser);
+                out.println(fromUser);
             }
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
@@ -55,8 +59,8 @@ public class LinuxClient {
         } catch (IOException e) {
             System.err.println("Couldn't get I/O for the connection to " +
                     hostName);
-            String s = Arrays.toString(e.getStackTrace());
-            System.exit(1);
+            e.printStackTrace();
+//            start();
         }
     }
 }
