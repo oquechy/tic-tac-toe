@@ -1,4 +1,4 @@
-package ru.spbau.tictactoe;
+package ru.spbau.tictactoe.Bot;
 
 import java.util.Random;
 
@@ -8,7 +8,7 @@ import ru.spbau.tictactoe.Logic.Turn.Turn;
 
 
 public class Bot {
-    private Random rand = new Random();
+    protected Random rand = new Random();
     protected Board board;
     public Bot(Board board){
         this.board = board;

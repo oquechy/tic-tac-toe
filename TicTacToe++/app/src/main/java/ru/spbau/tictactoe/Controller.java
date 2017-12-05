@@ -3,12 +3,12 @@ package ru.spbau.tictactoe;
 import android.app.Activity;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import ru.spbau.tictactoe.Bot.Bot;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Network.Client;

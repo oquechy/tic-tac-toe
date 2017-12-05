@@ -1,13 +1,11 @@
-package ru.spbau.tictactoe;
+package ru.spbau.tictactoe.Bot;
 
 import java.util.HashSet;
 import java.util.Random;
 
-import ru.spbau.tictactoe.Bot;
+import ru.spbau.tictactoe.Bot.Bot;
 import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.IncorrectMoveException;
-import ru.spbau.tictactoe.Logic.Board.Status;
-import ru.spbau.tictactoe.Logic.Turn.Turn;
 
 
 public class CleverBot extends Bot {
@@ -31,7 +29,7 @@ public class CleverBot extends Bot {
 
             }
         }
-        Random rand = new Random();
         return rand.nextInt(possibleMoves.size());
     }
+
 }

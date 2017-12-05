@@ -2,7 +2,7 @@ package ru.spbau.tictactoe.Logic;
 
 import java.util.Scanner;
 
-import ru.spbau.tictactoe.Bot;
+import ru.spbau.tictactoe.Bot.Bot;
 import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.IncorrectMoveException;
 import ru.spbau.tictactoe.Logic.Board.Status;
