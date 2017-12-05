@@ -9,14 +9,21 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import ru.spbau.tictactoe.Controller;
+import ru.spbau.tictactoe.Logic.Result.Result;
 import ru.spbau.tictactoe.R;
 
 public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouchListener {
 
-    public static int[][] board = new int[9][9];
-    public static int[][] smallBoard = new int[3][3];
+    static int[][] board = new int[9][9];
+    static int[][] smallBoard = new int[3][3];
+    static int Hx = 1;
+    static int Hy = 1;
+    static int Lx = -1;
+    static int Ly = -1;
+    static int Lbx = -1;
+    static int Lby = -1;
 
-    public static int crossOrZero = 1;
+    static int crossOrZero = 1;
 
     static private SurfaceHolder surfaceHolder;
 
@@ -29,6 +36,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         surfaceHolder.addCallback(this);
         surface.setOnTouchListener(UI.this);
         Controller.initController(this);
+//
     }
 
     private Pair<Integer, Integer> getCoordinates(float x, float y) {
@@ -54,17 +62,21 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Pair<Integer, Integer> p = getCoordinates(x, y);
-                 Controller.verifyTurn(p.first - 1, p.second - 1);
+                if (p.first - 1 < 9 && p.second - 1 < 9)
+                    Controller.verifyTurn(p.first - 1, p.second - 1);
         }
         return true;
     }
 
     public void applyTurn(int x, int y, int who) {
-        System.out.print("x = ");
-        System.out.println(x);
-        System.out.print("\ny= ");
-        System.out.println(y);
+        System.err.println("sasha's from " + (who == 1 ? "ui" : "bot") + ": " + x + " " + y);
         board[x - 1][y - 1] = who;
+        if (who * crossOrZero < 0) {
+            Lx = x - 1;
+            Ly = y - 1;
+            Lby = -1;
+            Lbx = -1;
+        }
         redraw();
     }
 
@@ -74,14 +86,57 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         crossOrZero = i;
     }
 
+    public void setUpField() {
+        board = new int[9][9];
+        smallBoard = new int[3][3];
+        Hx = 1;
+        Hy = 1;
+        Lx = -1;
+        Ly = -1;
+        Lbx = -1;
+        Lby = -1;
+        redraw();
+    }
+
+    public void setHighlight(int x, int y) {
+        Hx = x - 1;
+        Hy = y - 1;
+        redraw();
+    }
+
+    public void highlightAll() {
+        Hx = -2;
+        Hy = -2;
+        redraw();
+    }
+
+    public void disableHighlight() {
+        Hx = -1;
+        Hy = -1;
+        redraw();
+    }
+
     public void smallWin(int x, int y, int who) {
         smallBoard[x - 1][y - 1] = who;
+        if (who * crossOrZero < 0) {
+            Lx = -1;
+            Ly = -1;
+            Lbx = x - 1;
+            Lby = y - 1;
+        }
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 board[(x - 1) * 3 + i][(y - 1) * 3 + j] = 0;
             }
         }
         redraw();
+    }
+
+    public void displayResult(Result r) {
+        Canvas canvas = surfaceHolder.lockCanvas();
+        Drawer.drawEverything(canvas);
+        Drawer.writeWin(canvas, r);
+        surfaceHolder.unlockCanvasAndPost(canvas);
     }
 
     public void redraw() {
@@ -92,6 +147,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        Controller.initBoard();
         redraw();
     }
 

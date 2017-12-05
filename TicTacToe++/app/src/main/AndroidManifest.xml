@@ -2,11 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.spbau.tictactoe">
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".EntryPoint">
@@ -17,6 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.UI" />
+        <activity android:name=".ui.InviteFriend"></activity>
     </application>
 
 </manifest>

@@ -12,7 +12,7 @@ public class Logic {
     private Board board = new Board();
     private GameLog gameLog = new GameLog();
     private Turn lastTurn;
-    private boolean isLittleWin;
+    private Status isLittleWin;
     public Board setUpField(){
         return board;
     }
@@ -46,7 +46,7 @@ public class Logic {
         applyOpponentsTurn(turn);
     }
 
-    public boolean isLittleWin() {
+    public Status isLittleWin() {
         return isLittleWin;
     }
 
@@ -58,7 +58,7 @@ public class Logic {
         if(board.getGameStatus() == Status.CROSS){
             return Result.CROSS;
         }
-        if(board.getGameStatus() == Status.CROSS){
+        if(board.getGameStatus() == Status.NOUGHT){
             return Result.NOUGHT;
         }
         return Result.DRAW;
@@ -79,6 +79,9 @@ public class Logic {
 
     public void reset(){
         board = new Board();
+    }
+    public Status getStatusOfInner(int block){
+        return board.getBlockStatus(block);
     }
 
 }

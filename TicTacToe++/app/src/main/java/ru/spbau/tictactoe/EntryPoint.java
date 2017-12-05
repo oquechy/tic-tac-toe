@@ -36,17 +36,20 @@ public class EntryPoint extends AppCompatActivity {
         View.OnClickListener oclInviteFriendButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast toast = Toast.makeText(EntryPoint.this,
-                        Controller.getIPtoShow(), Toast.LENGTH_LONG);
-                toast.show();
-
-                Controller.optionInviteFriend();
+                Toast.makeText(getApplicationContext(),
+                        Controller.getIPtoShow(EntryPoint.this),
+                        Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),
+                        WordCoder.encode(Controller.getIP(EntryPoint.this)),
+                        Toast.LENGTH_LONG).show();
             }
         };
         View.OnClickListener oclJoinFriendButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Controller.optionConnectToFriend();
+                Toast.makeText(getApplicationContext(),
+                        "Input address of server",
+                        Toast.LENGTH_LONG).show();
             }
         };
         View.OnClickListener oclSettingsButton = new View.OnClickListener() {
