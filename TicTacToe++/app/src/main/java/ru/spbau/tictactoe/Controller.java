@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Logic;
+import ru.spbau.tictactoe.Logic.Result.Result;
 import ru.spbau.tictactoe.Network.Client;
 import ru.spbau.tictactoe.Network.NetAnotherPlayer;
 import ru.spbau.tictactoe.Network.Server;
@@ -36,7 +37,7 @@ public class Controller {
     private static Server server;
     private static Client client;
     private static Logic logic = new Logic();
-    public static DataBase dataBase;
+    private static DataBase dataBase;
 
     /**
      * either bot or net friend
@@ -51,6 +52,7 @@ public class Controller {
      */
     public static void initController(UI ui) {
         Controller.ui = ui;
+        Controller.initDB(ui);
     }
 
     /**
@@ -143,7 +145,7 @@ public class Controller {
      */
     private static boolean checkForWins() {
         Status littleWin = logic.isLittleWin();
-        if (littleWin != Status.GAME_CONTINUES && littleWin != Status.DRAW) {
+        if (littleWin == Status.NOUGHT || littleWin == Status.CROSS) {
             int littleWinCoords = logic.getLittleWinCoords();
             ui.smallWin(getXOfBoard(littleWinCoords),
                     getYOfBoard(littleWinCoords),
@@ -152,7 +154,9 @@ public class Controller {
 
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
-            ui.displayResult(logic.getResult());
+            Result result = logic.getResult();
+            ui.displayResult(result);
+            dataBase.addRecord(result, friend.getName(), logic.getTurnCounter());
             try {
                 TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException e) {
