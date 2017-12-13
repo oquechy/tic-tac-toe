@@ -49,9 +49,9 @@ public class EntryPoint extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(),
-                        Controller.getDecodedIP("manuda"),
+                        Controller.getIPtoShow(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(EntryPoint.this, ReadLogin.class);
+                    Intent intent = new Intent(EntryPoint.this, ReadLogin.class);
                 startActivity(intent);
             }
         };

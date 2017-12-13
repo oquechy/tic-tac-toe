@@ -312,7 +312,7 @@ public class Controller {
 
     private static boolean choosePlayer() {
         myTurn = new Random().nextBoolean();
-        server.passToClient(Boolean.toString(!myTurn));
+        server.directPassTo(Boolean.toString(!myTurn));
         System.err.println("myTurn: " + myTurn);
         return myTurn;
     }
