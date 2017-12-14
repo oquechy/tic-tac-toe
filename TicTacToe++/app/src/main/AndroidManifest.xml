@@ -21,7 +21,9 @@
         <activity android:name=".ui.UI" />
         <activity android:name=".ui.InviteFriend" />
         <activity android:name=".WriteLogin" />
-        <activity android:name=".ReadLogin"></activity>
+        <activity android:name=".ReadLogin" />
+        <activity android:name=".RecordActivity" />
+        <activity android:name=".SelectLevelActivity"></activity>
     </application>
 
 </manifest>

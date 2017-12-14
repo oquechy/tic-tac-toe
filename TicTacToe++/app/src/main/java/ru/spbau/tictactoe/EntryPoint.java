@@ -1,21 +1,11 @@
 package ru.spbau.tictactoe;
 
-import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import java.sql.SQLException;
-
-import ru.spbau.tictactoe.Statistic.DataBase;
-import ru.spbau.tictactoe.ui.UI;
 
 public class EntryPoint extends AppCompatActivity {
 
@@ -34,8 +24,7 @@ public class EntryPoint extends AppCompatActivity {
         View.OnClickListener oclSingleButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Controller.optionGameWithBot();
-                Intent intent = new Intent(EntryPoint.this, UI.class);
+                Intent intent = new Intent(EntryPoint.this, SelectLevelActivity.class);
                 startActivity(intent);
             }
         };
@@ -62,7 +51,8 @@ public class EntryPoint extends AppCompatActivity {
         View.OnClickListener oclSettingsButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO
+                Intent intent = new Intent(EntryPoint.this, RecordActivity.class);
+                startActivity(intent);
             }
         };
         View.OnClickListener oclRecordsButton = new View.OnClickListener() {
