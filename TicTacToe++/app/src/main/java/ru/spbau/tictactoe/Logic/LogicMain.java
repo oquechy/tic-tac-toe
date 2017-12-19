@@ -1,5 +1,5 @@
 package ru.spbau.tictactoe.Logic;
-
+/*
 import java.util.Scanner;
 
 import ru.spbau.tictactoe.Bot.Bot;
@@ -100,3 +100,4 @@ public class LogicMain {
         }
     }
 }
+*/

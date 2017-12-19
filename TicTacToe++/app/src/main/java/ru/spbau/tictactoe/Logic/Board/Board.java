@@ -49,13 +49,7 @@ public class Board {
          * @param player   is a player who makes move (CROSS or NOUGHT)
          * @throws IncorrectMoveException if the square is already marked or the game on this block is over
          */
-        public boolean setSquare(int squareId, Turn.Player player) throws IncorrectMoveException {
-            if (status != GAME_CONTINUES) {
-                throw new IncorrectMoveException("This block is invalid");
-            }
-            if (innerBoard[squareId] != GAME_CONTINUES) {
-                throw new IncorrectMoveException("The square is busy");
-            }
+        public boolean setSquare(int squareId, Turn.Player player){
             innerBoard[squareId] = player == Turn.Player.CROSS ? CROSS : NOUGHT;
             numberOfMarkedSquares++;
             if (isOver()) {
@@ -67,6 +61,12 @@ public class Board {
                 return true;
             }
             return false;
+        }
+
+        public void discardChanges(int squareId){
+            innerBoard[squareId] = GAME_CONTINUES;
+            numberOfMarkedSquares--;
+            status = GAME_CONTINUES;
         }
 
         /**
@@ -110,7 +110,7 @@ public class Board {
     /**
      * Board consists of grid of nine inner boards.
      */
-    private InnerBoard[] board = new InnerBoard[9];
+    public InnerBoard[] board = new InnerBoard[9];
 
     /**
      * The inner board where the next will be made.
@@ -147,6 +147,14 @@ public class Board {
         }
     }
 
+    public Board(Board other){
+        board = other.getBoard();
+        currentInnerBoard = other.currentInnerBoard;
+        currentPlayer = other.currentPlayer;
+        numberOfInvalidBlocks = other.numberOfInvalidBlocks;
+        status = other.status;
+    }
+
     public int getCurrentInnerBoard() {
         return currentInnerBoard;
     }
@@ -164,14 +172,9 @@ public class Board {
      * Marks the specified square on current inner board with the sign of the specified player.
      *
      * @param innerSquare is the id of the square to be marked
-     * @throws IncorrectMoveException if the inner square is busy or current square must be specified.
      */
     public Status makeMove(
-            int innerSquare) throws IncorrectMoveException {
-        if (currentInnerBoard == -1) {
-            throw new IncorrectMoveException(
-                    "The inner board must be also specified");
-        }
+            int innerSquare) {
         boolean blockIsOver = board[currentInnerBoard].setSquare(innerSquare, currentPlayer);
         Status res = board[currentInnerBoard].status;
         if (blockIsOver) {
@@ -200,15 +203,10 @@ public class Board {
      *
      * @param block       is the block id where a square will be marked
      * @param innerSquare is the id of the inner square to be marked
-     * @throws IncorrectMoveException if the inner board could not be specified
      */
     public Status makeMoveToAnyOuterSquare(
-            int block, int innerSquare) throws IncorrectMoveException {
+            int block, int innerSquare) {
 
-        if (currentInnerBoard != -1) {
-            throw new IncorrectMoveException(
-                    "The inner board is already assigned");
-        }
         boolean blockIsOver = board[block].setSquare(innerSquare, currentPlayer);
         if (blockIsOver) {
             numberOfInvalidBlocks++;
@@ -276,4 +274,6 @@ public class Board {
                 board[turn.getInnerBoard()].getStatus() == GAME_CONTINUES &&
                 board[turn.getInnerBoard()].getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
     }
+
+    //public void discardChanges()
 }

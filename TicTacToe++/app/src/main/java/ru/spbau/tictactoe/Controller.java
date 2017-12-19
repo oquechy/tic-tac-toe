@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import ru.spbau.tictactoe.Bot.Bot;
+import ru.spbau.tictactoe.Bot.CleverBot;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Network.Client;
@@ -66,7 +67,7 @@ public class Controller {
         state = State.CREATE_FIELD;
         myType = true;
 
-        final Bot bot = new Bot(logic.getBoard());
+        final Bot bot = new CleverBot(logic.getBoard());
         friend = new NetAnotherPlayer() {
             @Override
             public Turn getOpponentTurn() {

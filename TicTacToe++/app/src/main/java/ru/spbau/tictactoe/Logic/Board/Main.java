@@ -1,6 +1,6 @@
 package ru.spbau.tictactoe.Logic.Board;
 
-
+/*
 import java.util.Scanner;
 
 import ru.spbau.tictactoe.Bot.Bot;
@@ -47,7 +47,7 @@ public class Main {
             if(board.getCurrentInnerBoard() == -1){
                 int x = reader.nextInt();
                 int y = reader.nextInt();
-                try {
+
                     board.makeMoveToAnyOuterSquare(x, y);
                 }
                 catch(IncorrectMoveException e){
@@ -71,3 +71,4 @@ public class Main {
         go();
     }
 }
+*/
