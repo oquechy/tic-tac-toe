@@ -50,10 +50,10 @@ public class Board {
          * @throws IncorrectMoveException if the square is already marked or the game on this block is over
          */
         public boolean setSquare(int squareId, Turn.Player player){
-            innerBoard[squareId] = player == Turn.Player.CROSS ? CROSS : NOUGHT;
+            innerBoard[squareId] = Status.playerToStatus(player);
             numberOfMarkedSquares++;
             if (isOver()) {
-                status = player == Turn.Player.CROSS ? CROSS : NOUGHT;
+                status = Status.playerToStatus(player);
                 return true;
             }
             if (numberOfMarkedSquares == 9) {
@@ -186,7 +186,7 @@ public class Board {
             currentInnerBoard = -1;
         }
         if (isOver()) {
-            status = currentPlayer == Turn.Player.CROSS ? CROSS : NOUGHT;
+            status = Status.playerToStatus(currentPlayer);;
         } else {
             if (numberOfInvalidBlocks == 9) {
                 status = DRAW;
@@ -217,7 +217,7 @@ public class Board {
             currentInnerBoard = -1;
         }
         if (isOver()) {
-            status = currentPlayer == Turn.Player.CROSS ? CROSS : NOUGHT;
+            status = Status.playerToStatus(currentPlayer);
         } else {
             if (numberOfInvalidBlocks == 9) {
                 status = DRAW;
