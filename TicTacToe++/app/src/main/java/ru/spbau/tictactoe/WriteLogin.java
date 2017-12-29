@@ -7,13 +7,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-<<<<<<< HEAD
-import java.util.concurrent.ExecutionException;
 
 import ru.spbau.tictactoe.ui.UI;
-=======
+
 import ru.spbau.tictactoe.Statistic.DataBase;
->>>>>>> stats
+
 
 public class WriteLogin extends AppCompatActivity {
 
@@ -33,12 +31,9 @@ public class WriteLogin extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_login);
         TextView id = (TextView) findViewById(R.id.textView);
-<<<<<<< HEAD
+
         id.setText(Controller.getEncodedIP(this));
         new ServerRunner().execute(this);
-//        Intent intent = new Intent(WriteLogin.this, UI.class);
-//        startActivity(intent);
-=======
 
         DataBase dataBase = new DataBase(this);
         DataBase.Entry[] entries = dataBase.readRecords();
@@ -56,7 +51,6 @@ public class WriteLogin extends AppCompatActivity {
         }
 
         id.setText(recordString.toString());
->>>>>>> stats
     }
 
 }
