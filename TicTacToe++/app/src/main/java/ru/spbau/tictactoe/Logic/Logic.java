@@ -13,6 +13,7 @@ public class Logic {
     private GameLog gameLog = new GameLog();
     private Turn lastTurn;
     private Status isLittleWin;
+    private int turnCounter;
     public Board setUpField(){
         return board;
     }
@@ -24,26 +25,21 @@ public class Logic {
     public void applyOpponentsTurn(Turn turn){
         lastTurn = turn;
         if(board.getCurrentInnerBoard() == -1){
-           try {
-                isLittleWin = board.makeMoveToAnyOuterSquare(
-                        turn.getInnerBoard(), turn.getInnerSquare());
-            }
-            catch(IncorrectMoveException e){
-
-            }
+            isLittleWin = board.makeMoveToAnyOuterSquare(
+                    turn.getInnerBoard(), turn.getInnerSquare());
         }
         else{
-            try {
-                isLittleWin = board.makeMove(turn.getInnerSquare());
-            }
-            catch(IncorrectMoveException e){
-
-            }
+            isLittleWin = board.makeMove(turn.getInnerSquare());
         }
     }
 
     public void applyMyTurn(Turn turn){
+        turnCounter++;
         applyOpponentsTurn(turn);
+    }
+
+    public int getTurnCounter(){
+        return turnCounter;
     }
 
     public Status isLittleWin() {

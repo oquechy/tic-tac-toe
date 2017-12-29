@@ -146,7 +146,7 @@ public class Controller {
      */
     private static boolean checkForWins() {
         Status littleWin = logic.isLittleWin();
-        if (littleWin == Status.NOUGHT && littleWin == Status.CROSS) {
+        if (littleWin == Status.NOUGHT || littleWin == Status.CROSS) {
             int littleWinCoords = logic.getLittleWinCoords();
             ui.smallWin(getXOfBoard(littleWinCoords),
                     getYOfBoard(littleWinCoords),
@@ -156,6 +156,7 @@ public class Controller {
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
             ui.displayResult(logic.getResult());
+
             try {
                 TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException e) {
@@ -311,7 +312,7 @@ public class Controller {
 
     private static boolean choosePlayer() {
         myTurn = new Random().nextBoolean();
-        server.passToClient(Boolean.toString(!myTurn));
+        server.directPassTo(Boolean.toString(!myTurn));
         System.err.println("myTurn: " + myTurn);
         return myTurn;
     }
