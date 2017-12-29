@@ -48,12 +48,11 @@ public class EntryPoint extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         Controller.getEncodedIP(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
-<<<<<<< HEAD
+
 
                 Intent intent = new Intent(EntryPoint.this, WriteLogin.class);
                 startActivity(intent);
-=======
->>>>>>> stats
+
             }
         };
         View.OnClickListener oclJoinFriendButton = new View.OnClickListener() {
@@ -62,11 +61,10 @@ public class EntryPoint extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         Controller.getIPtoShow(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
-<<<<<<< HEAD
+
                     Intent intent = new Intent(EntryPoint.this, ReadLogin.class);
                 startActivity(intent);
-=======
->>>>>>> stats
+
             }
         };
         View.OnClickListener oclSettingsButton = new View.OnClickListener() {
