@@ -1,12 +1,20 @@
 package ru.spbau.tictactoe;
 
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
-import android.os.Bundle;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.sql.SQLException;
+
+import ru.spbau.tictactoe.Statistic.DataBase;
 import ru.spbau.tictactoe.ui.UI;
 
 public class EntryPoint extends AppCompatActivity {
@@ -40,9 +48,12 @@ public class EntryPoint extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         Controller.getEncodedIP(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
+<<<<<<< HEAD
 
                 Intent intent = new Intent(EntryPoint.this, WriteLogin.class);
                 startActivity(intent);
+=======
+>>>>>>> stats
             }
         };
         View.OnClickListener oclJoinFriendButton = new View.OnClickListener() {
@@ -51,8 +62,11 @@ public class EntryPoint extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         Controller.getIPtoShow(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
+<<<<<<< HEAD
                     Intent intent = new Intent(EntryPoint.this, ReadLogin.class);
                 startActivity(intent);
+=======
+>>>>>>> stats
             }
         };
         View.OnClickListener oclSettingsButton = new View.OnClickListener() {
@@ -64,8 +78,10 @@ public class EntryPoint extends AppCompatActivity {
         View.OnClickListener oclRecordsButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO
+                Intent intent = new Intent(EntryPoint.this, WriteLogin.class);
+                startActivity(intent);
             }
+
         };
 
         singleButton.setOnClickListener(oclSingleButton);

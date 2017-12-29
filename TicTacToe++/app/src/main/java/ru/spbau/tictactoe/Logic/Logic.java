@@ -14,31 +14,31 @@ public class Logic {
     private Turn lastTurn;
     private Status isLittleWin;
     private int turnCounter;
-    public Board setUpField(){
+
+    public Board setUpField() {
         return board;
     }
 
-    public boolean verifyTurn(Turn turn){
+    public boolean verifyTurn(Turn turn) {
         return board.verifyTurn(turn);
     }
 
-    public void applyOpponentsTurn(Turn turn){
+    public void applyOpponentsTurn(Turn turn) {
         lastTurn = turn;
-        if(board.getCurrentInnerBoard() == -1){
+        if (board.getCurrentInnerBoard() == -1) {
             isLittleWin = board.makeMoveToAnyOuterSquare(
                     turn.getInnerBoard(), turn.getInnerSquare());
-        }
-        else{
+        } else {
             isLittleWin = board.makeMove(turn.getInnerSquare());
         }
     }
 
-    public void applyMyTurn(Turn turn){
+    public void applyMyTurn(Turn turn) {
         turnCounter++;
         applyOpponentsTurn(turn);
     }
 
-    public int getTurnCounter(){
+    public int getTurnCounter() {
         return turnCounter;
     }
 
@@ -46,15 +46,15 @@ public class Logic {
         return isLittleWin;
     }
 
-    public GameLog getGameLog(){
+    public GameLog getGameLog() {
         return gameLog;
     }
 
-    public Result getResult(){
-        if(board.getGameStatus() == Status.CROSS){
+    public Result getResult() {
+        if (board.getGameStatus() == Status.CROSS) {
             return Result.CROSS;
         }
-        if(board.getGameStatus() == Status.NOUGHT){
+        if (board.getGameStatus() == Status.NOUGHT) {
             return Result.NOUGHT;
         }
         return Result.DRAW;
@@ -64,20 +64,20 @@ public class Logic {
         return lastTurn.getInnerBoard();
     }
 
-    public boolean isEndOfGame(){
+    public boolean isEndOfGame() {
         return board.getGameStatus() != Status.GAME_CONTINUES;
     }
 
 
-    public Board getBoard(){
+    public Board getBoard() {
         return board;
     }
 
-    public void reset(){
+    public void reset() {
         board = new Board();
     }
-    
-    public Status getStatusOfInner(int block){
+
+    public Status getStatusOfInner(int block) {
         return board.getBlockStatus(block);
     }
 }
