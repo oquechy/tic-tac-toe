@@ -1,9 +1,8 @@
 package ru.spbau.tictactoe;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -28,25 +27,32 @@ public class EntryPoint extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Controller.optionGameWithBot();
-                Intent intent = new Intent(EntryPoint.this, UI.class);
-                startActivity(intent);
+                newGame();
             }
         };
 
         View.OnClickListener oclInviteFriendButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast toast = Toast.makeText(EntryPoint.this,
-                        Controller.getIPtoShow(), Toast.LENGTH_LONG);
-                toast.show();
+                Toast.makeText(getApplicationContext(),
+                        Controller.getIPtoShow(EntryPoint.this),
+                        Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),
+                        Controller.getEncodedIP(EntryPoint.this),
+                        Toast.LENGTH_LONG).show();
 
-                Controller.optionInviteFriend();
+                Intent intent = new Intent(EntryPoint.this, WriteLogin.class);
+                startActivity(intent);
             }
         };
         View.OnClickListener oclJoinFriendButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Controller.optionConnectToFriend();
+                Toast.makeText(getApplicationContext(),
+                        Controller.getIPtoShow(EntryPoint.this),
+                        Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(EntryPoint.this, ReadLogin.class);
+                startActivity(intent);
             }
         };
         View.OnClickListener oclSettingsButton = new View.OnClickListener() {
@@ -67,5 +73,10 @@ public class EntryPoint extends AppCompatActivity {
         joinAFriendButton.setOnClickListener(oclJoinFriendButton);
         settingsButton.setOnClickListener(oclSettingsButton);
         recordsButton.setOnClickListener(oclRecordsButton);
+    }
+
+    private void newGame() {
+        Intent intent = new Intent(EntryPoint.this, UI.class);
+        startActivity(intent);
     }
 }

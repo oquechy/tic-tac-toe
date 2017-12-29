@@ -12,26 +12,40 @@ public class Server extends Connection {
 
     Socket clientSocket;
 
-    public void start(String serverName, int portNumber) throws IOException {
-
+    Socket getClientSocket(int portNumber) {
+        System.err.println("in server creator method");
+        ServerSocket serverSocket;
+        Socket clientSocket = null;
         try {
-            clientSocket = new ServerSocketCreator().execute(portNumber).get();
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
-
-            String clientName;
-
-            new SocketWriter(out).execute(serverName);
-            System.out.println("ServerName: " + serverName);
-            clientName = new SocketReader().execute(in).get();
-            System.out.println("ClientName: " + clientName);
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+            serverSocket = new ServerSocket(portNumber);
+            clientSocket = serverSocket.accept();
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        return clientSocket;
+    }
+
+    protected String readFromSocket(BufferedReader in) {
+        try {
+            return in.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public void start(String serverName, int portNumber) throws IOException {
+
+        clientSocket = getClientSocket(portNumber); //new ServerSocketCreator().execute(portNumber).get();
+        out = new PrintWriter(clientSocket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+
+        String clientName;
+
+        out.println(serverName);
+        System.out.println("ServerName: " + serverName);
+        clientName = in.readLine();
+        System.out.println("ClientName: " + clientName);
     }
 
 }

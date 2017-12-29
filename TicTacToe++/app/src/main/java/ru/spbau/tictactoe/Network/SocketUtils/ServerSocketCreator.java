@@ -8,10 +8,15 @@ import java.net.Socket;
 
 public class ServerSocketCreator extends AsyncTask<Integer, Void, Socket> {
 
+    static {
+        System.err.println("server creator loaded");
+    }
+
     Exception exception;
 
     @Override
     protected Socket doInBackground(Integer... portNumber) {
+        System.err.println("in server creator method");
         ServerSocket serverSocket;
         Socket clientSocket = null;
         try {
