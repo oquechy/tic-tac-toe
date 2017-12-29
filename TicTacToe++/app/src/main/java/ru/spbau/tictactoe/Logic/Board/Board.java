@@ -15,17 +15,20 @@ import static ru.spbau.tictactoe.Logic.Board.Status.*;
  * could be considered as a standard tic-tac-toe board.
  * At any moment there is a block where the next move will happen (initially it is the medium block).
  */
-public class Board {
+public class Board implements Cloneable {
 
     /**
      * An outer square or an inner board.
      */
-    public static class InnerBoard {
-        public int numberOfMarkedSquares;
+    public static class InnerBoard implements Cloneable {
+        /**
+         * Number of squares on inner board that are not empty.
+         */
+        private int numberOfMarkedSquares;
         /**
          * Each box could be empty (GAME_CONTINUES), or marked as CROSS or NOUGHT (the BLOCK is not used here).
          */
-        public Status[] innerBoard = new Status[9];
+        private Status[] innerBoard = new Status[9];
         /**
          * If the game in this block is not finished, the status is GAME_CONTINUES.
          * If one of the players won on this block the status is the player who won (CROSS or NOUGHT).
@@ -37,7 +40,7 @@ public class Board {
          * Initializes the values of squares in innerBoard with GAME_CONTINUES, as they should be empty in
          * the beginning of game.
          */
-        public InnerBoard() {
+        private InnerBoard() {
             Arrays.fill(innerBoard, GAME_CONTINUES);
         }
 
@@ -47,9 +50,8 @@ public class Board {
          *
          * @param squareId is a number square from 0 to 8 to be changed
          * @param player   is a player who makes move (CROSS or NOUGHT)
-         * @throws IncorrectMoveException if the square is already marked or the game on this block is over
          */
-        public boolean setSquare(int squareId, Turn.Player player){
+        public boolean setSquare(int squareId, Turn.Player player) {
             innerBoard[squareId] = Status.playerToStatus(player);
             numberOfMarkedSquares++;
             if (isOver()) {
@@ -63,7 +65,12 @@ public class Board {
             return false;
         }
 
-        public void discardChanges(int squareId){
+        /**
+         * Makes the specified square empty. Used in class Bot and its derived classes to calculate the turn.
+         *
+         * @param squareId is a square to be freed
+         */
+        public void discardChanges(int squareId) {
             innerBoard[squareId] = GAME_CONTINUES;
             numberOfMarkedSquares--;
             status = GAME_CONTINUES;
@@ -105,6 +112,11 @@ public class Board {
         public Status getStatus() {
             return status;
         }
+
+        @Override
+        public Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
     }
 
     /**
@@ -120,7 +132,7 @@ public class Board {
      * If the relevant block is busy (somebody won there or it is completely filled), it becomes -1,
      * which means that the next move can be made to any block.
      */
-    public int currentInnerBoard = 4;
+    private int currentInnerBoard = 4;
 
     /**
      * There are four opportunities:
@@ -134,25 +146,21 @@ public class Board {
     /**
      * The player who makes next move.
      */
-    public Turn.Player currentPlayer = Turn.Player.CROSS;
+    private Turn.Player currentPlayer = Turn.Player.CROSS;
+
+    public Turn.Player getCurrentPlayer() {
+        return currentPlayer;
+    }
 
     /**
      * Number of blocks where the game is over.
      */
-    public int numberOfInvalidBlocks;
+    private int numberOfInvalidBlocks;
 
     public Board() {
         for (int i = 0; i < 9; i++) {
             board[i] = new InnerBoard();
         }
-    }
-
-    public Board(Board other){
-        board = other.getBoard();
-        currentInnerBoard = other.currentInnerBoard;
-        currentPlayer = other.currentPlayer;
-        numberOfInvalidBlocks = other.numberOfInvalidBlocks;
-        status = other.status;
     }
 
     public int getCurrentInnerBoard() {
@@ -186,7 +194,8 @@ public class Board {
             currentInnerBoard = -1;
         }
         if (isOver()) {
-            status = Status.playerToStatus(currentPlayer);;
+            status = Status.playerToStatus(currentPlayer);
+            ;
         } else {
             if (numberOfInvalidBlocks == 9) {
                 status = DRAW;
@@ -269,11 +278,15 @@ public class Board {
         return Arrays.copyOf(board, board.length);
     }
 
-    public boolean verifyTurn(Turn turn){
+    /**
+     * Checks if the given turn is valid.
+     *
+     * @param turn is the turn to be checked
+     * @return true if the turn is valid, false otherwise
+     */
+    public boolean verifyTurn(Turn turn) {
         return (currentInnerBoard == -1 || turn.getInnerBoard() == currentInnerBoard) &&
                 board[turn.getInnerBoard()].getStatus() == GAME_CONTINUES &&
                 board[turn.getInnerBoard()].getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
     }
-
-    //public void discardChanges()
 }

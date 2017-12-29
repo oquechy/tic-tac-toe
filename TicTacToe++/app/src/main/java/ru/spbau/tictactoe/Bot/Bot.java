@@ -6,7 +6,10 @@ import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
-
+/**
+ * First version of Bot
+ * Makes random turns.
+ */
 public class Bot {
     protected Random rand = new Random();
     protected Board board;
@@ -14,6 +17,10 @@ public class Bot {
         this.board = board;
     }
 
+    /**
+     * Returns the turn to make on board.
+     * @return the turn to make on board
+     */
     public Turn makeTurn() {
         int cur = board.getCurrentInnerBoard();
         if(cur == -1){
