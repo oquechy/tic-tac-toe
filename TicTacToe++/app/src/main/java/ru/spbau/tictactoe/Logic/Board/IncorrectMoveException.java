@@ -1,7 +1,6 @@
 package ru.spbau.tictactoe.Logic.Board;
 
-
-public class IncorrectMoveException extends Exception {
+public class IncorrectMoveException extends RuntimeException {
     public IncorrectMoveException(){
         super();
     }

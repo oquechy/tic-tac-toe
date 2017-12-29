@@ -1,9 +1,12 @@
 package ru.spbau.tictactoe.Logic.Turn;
 
 
-public class Turn {
-    public enum Player {
+public class Turn implements Cloneable {
+    public enum Player implements Cloneable {
         CROSS, NOUGHT;
+        public Player opponent(){
+            return this == CROSS ? NOUGHT : CROSS;
+        }
     }
 
     public Turn(int innerBoard, int innerSquare){

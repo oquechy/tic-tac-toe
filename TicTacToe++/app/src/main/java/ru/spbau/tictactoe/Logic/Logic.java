@@ -2,7 +2,6 @@ package ru.spbau.tictactoe.Logic;
 
 
 import ru.spbau.tictactoe.Logic.Board.Board;
-import ru.spbau.tictactoe.Logic.Board.IncorrectMoveException;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.GameLog.GameLog;
 import ru.spbau.tictactoe.Logic.Result.Result;
@@ -25,10 +24,11 @@ public class Logic {
 
     public void applyOpponentsTurn(Turn turn) {
         lastTurn = turn;
-        if (board.getCurrentInnerBoard() == -1) {
-            isLittleWin = board.makeMoveToAnyOuterSquare(
-                    turn.getInnerBoard(), turn.getInnerSquare());
-        } else {
+        if(board.getCurrentInnerBoard() == -1){
+                isLittleWin = board.makeMoveToAnyOuterSquare(
+                        turn.getInnerBoard(), turn.getInnerSquare());
+        }
+        else {
             isLittleWin = board.makeMove(turn.getInnerSquare());
         }
     }
@@ -77,7 +77,7 @@ public class Logic {
         board = new Board();
     }
 
-    public Status getStatusOfInner(int block) {
+    public Status getStatusOfInner(int block){
         return board.getBlockStatus(block);
     }
 }

@@ -3,16 +3,14 @@ package ru.spbau.tictactoe;
 import android.app.Activity;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
-<<<<<<< HEAD
-=======
-import android.view.View;
-import android.widget.Toast;
->>>>>>> stats
+
 
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import ru.spbau.tictactoe.Bot.Bot;
+import ru.spbau.tictactoe.Bot.CleverBot;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Logic.Result.Result;
@@ -83,7 +81,7 @@ public class Controller {
         state = State.CREATE_FIELD;
         myType = true;
 
-        final Bot bot = new Bot(logic.getBoard());
+        final Bot bot = new CleverBot(logic.getBoard());
         friend = new NetAnotherPlayer() {
             @Override
             public Turn getOpponentTurn() {
@@ -165,14 +163,9 @@ public class Controller {
 
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
-<<<<<<< HEAD
-            ui.displayResult(logic.getResult());
-
-=======
             Result result = logic.getResult();
             ui.displayResult(result);
             dataBase.addRecord(result, friend.getName(), logic.getTurnCounter());
->>>>>>> stats
             try {
                 TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException e) {
@@ -326,7 +319,7 @@ public class Controller {
         }
     }
 
-<<<<<<< HEAD
+
     private static boolean choosePlayer() {
         myTurn = new Random().nextBoolean();
         server.directPassTo(Boolean.toString(!myTurn));
@@ -352,10 +345,10 @@ public class Controller {
 
         String ip = Formatter.formatIpAddress(LOCAL_NET_MASK | ipTail << 16);
         return ip;
-=======
+    }
+
     public static void initDB(Activity activity) {
         dataBase = new DataBase(activity.getApplicationContext());
->>>>>>> stats
     }
 
     private enum State {

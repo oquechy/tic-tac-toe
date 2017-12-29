@@ -1,21 +1,26 @@
-package ru.spbau.tictactoe;
-/*
-import ru.spbau.tictactoe.Bot;
+package ru.spbau.tictactoe.Bot;
+
+import java.util.Random;
+
 import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
-
-public class CleverBot extends Bot {
-    public CleverBot(Board board){
-        super(board);
+/**
+ * First version of Bot
+ * Makes random turns.
+ */
+public class Bot {
+    protected Random rand = new Random();
+    protected Board board;
+    public Bot(Board board){
+        this.board = board;
     }
 
-    protected int analyzeBlock(int block){
-        for()
-    }
-
-    @Override
+    /**
+     * Returns the turn to make on board.
+     * @return the turn to make on board
+     */
     public Turn makeTurn() {
         int cur = board.getCurrentInnerBoard();
         if(cur == -1){
@@ -29,5 +34,8 @@ public class CleverBot extends Bot {
         }
         return new Turn(cur, x);
     }
+
+    public String getName() {
+        return "Robert";
+    }
 }
-*/
