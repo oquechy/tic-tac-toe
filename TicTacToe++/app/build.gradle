@@ -28,4 +28,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'org.xerial:sqlite-jdbc:3.21.0'
     testCompile 'junit:junit:4.12'
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
 }

@@ -15,33 +15,35 @@ import static ru.spbau.tictactoe.Logic.Board.Status.*;
  * could be considered as a standard tic-tac-toe board.
  * At any moment there is a block where the next move will happen (initially it is the medium block).
  */
-public class Board implements Cloneable {
+public class Board extends AbstractBoard implements Cloneable {
 
     /**
      * An outer square or an inner board.
      */
-    public static class InnerBoard implements Cloneable {
+    public static class InnerBoard  extends AbstractBoard implements Cloneable {
         /**
          * Number of squares on inner board that are not empty.
          */
         private int numberOfMarkedSquares;
-        /**
-         * Each box could be empty (GAME_CONTINUES), or marked as CROSS or NOUGHT (the BLOCK is not used here).
-         */
-        private Status[] innerBoard = new Status[9];
+
         /**
          * If the game in this block is not finished, the status is GAME_CONTINUES.
          * If one of the players won on this block the status is the player who won (CROSS or NOUGHT).
          * If nobody won but all boxes are filled, the status is BLOCK.
          */
-        public Status status = GAME_CONTINUES;
+        private Status status = GAME_CONTINUES;
 
         /**
          * Initializes the values of squares in innerBoard with GAME_CONTINUES, as they should be empty in
          * the beginning of game.
          */
         private InnerBoard() {
-            Arrays.fill(innerBoard, GAME_CONTINUES);
+            Arrays.fill(board, new AbstractBoard() {
+                @Override
+                public boolean isOver() {
+                    return super.isOver();
+                }
+            });
         }
 
         /**
@@ -52,7 +54,7 @@ public class Board implements Cloneable {
          * @param player   is a player who makes move (CROSS or NOUGHT)
          */
         public boolean setSquare(int squareId, Turn.Player player) {
-            innerBoard[squareId] = Status.playerToStatus(player);
+            board[squareId].status = Status.playerToStatus(player);
             numberOfMarkedSquares++;
             if (isOver()) {
                 status = Status.playerToStatus(player);
@@ -71,46 +73,13 @@ public class Board implements Cloneable {
          * @param squareId is a square to be freed
          */
         public void discardChanges(int squareId) {
-            innerBoard[squareId] = GAME_CONTINUES;
+            board[squareId].status = GAME_CONTINUES;
             numberOfMarkedSquares--;
             status = GAME_CONTINUES;
         }
 
-        /**
-         * Checks if the game on this block is over.
-         * Checks every row, column and diagonal if there are three squares
-         * with the same status which is not GAME_CONTINUES.
-         *
-         * @return true if the game on this block is over
-         * (three squares in row, column or diagonal were marked by the same player)
-         */
-        public boolean isOver() {
-            //check columns
-            for (int i = 0; i < 3; i++) {
-                if (innerBoard[i] != GAME_CONTINUES && innerBoard[i] == innerBoard[i + 3]
-                        && innerBoard[i] == innerBoard[i + 6]) {
-                    return true;
-                }
-            }
-            //check rows
-            for (int i = 0; i < 9; i += 3) {
-                if (innerBoard[i] != GAME_CONTINUES && innerBoard[i] == innerBoard[i + 1]
-                        && innerBoard[i] == innerBoard[i + 2]) {
-                    return true;
-                }
-            }
-            //check diagonals
-            return innerBoard[4] != GAME_CONTINUES && (innerBoard[0] == innerBoard[4]
-                    && innerBoard[4] == innerBoard[8] ||
-                    innerBoard[2] == innerBoard[4] && innerBoard[4] == innerBoard[6]);
-        }
-
         public Status getSquare(int squareId) {
-            return innerBoard[squareId];
-        }
-
-        public Status getStatus() {
-            return status;
+            return board[squareId].status;
         }
 
         @Override
@@ -141,7 +110,7 @@ public class Board implements Cloneable {
      * the second player won - NOUGHT,
      * nobody won but the moves cannot be made - BLOCK.
      */
-    public Status status = GAME_CONTINUES;
+    private Status status = GAME_CONTINUES;
 
     /**
      * The player who makes next move.
@@ -168,7 +137,7 @@ public class Board implements Cloneable {
     }
 
     public Status getSquare(int outerSquare, int innerSquare) {
-        return board[outerSquare].innerBoard[innerSquare];
+        return board[outerSquare].board[innerSquare].status;
     }
 
     public Status getBlockStatus(int outerSquare) {
@@ -240,39 +209,6 @@ public class Board implements Cloneable {
         return status;
     }
 
-    /**
-     * Checks if the game on board is over.
-     * Checks every row, column and diagonal if there are three squares
-     * with the same status which is not GAME_CONTINUES or BLOCK.
-     *
-     * @return true if the game is over
-     * (three squares in row, column or diagonal were marked by the same player)
-     */
-    public boolean isOver() {
-        //check columns
-        for (int i = 0; i < 3; i++) {
-            if (board[i].status != GAME_CONTINUES
-                    && board[i].status != DRAW
-                    && board[i].status == board[i + 3].status
-                    && board[i].status == board[i + 6].status) {
-                return true;
-            }
-        }
-        //check rows
-        for (int i = 0; i < 9; i += 3) {
-            if (board[i].status != GAME_CONTINUES
-                    && board[i].status != DRAW
-                    && board[i].status == board[i + 1].status
-                    && board[i].status == board[i + 2].status) {
-                return true;
-            }
-        }
-        //check diagonals
-        return board[4].status != GAME_CONTINUES && board[4].status != DRAW
-                && (board[0].status == board[4].status
-                && board[4].status == board[8].status ||
-                board[2].status == board[4].status && board[4].status == board[6].status);
-    }
 
     public InnerBoard[] getBoard() {
         return Arrays.copyOf(board, board.length);
