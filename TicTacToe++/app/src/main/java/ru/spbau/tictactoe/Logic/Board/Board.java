@@ -1,6 +1,9 @@
 package ru.spbau.tictactoe.Logic.Board;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 
 import ru.spbau.tictactoe.Logic.Turn.Turn;
@@ -20,30 +23,21 @@ public class Board extends AbstractBoard implements Cloneable {
     /**
      * An outer square or an inner board.
      */
-    public static class InnerBoard  extends AbstractBoard implements Cloneable {
+    public static class InnerBoard extends AbstractBoard implements Cloneable {
         /**
          * Number of squares on inner board that are not empty.
          */
         private int numberOfMarkedSquares;
 
         /**
-         * If the game in this block is not finished, the status is GAME_CONTINUES.
-         * If one of the players won on this block the status is the player who won (CROSS or NOUGHT).
-         * If nobody won but all boxes are filled, the status is BLOCK.
-         */
-        private Status status = GAME_CONTINUES;
-
-        /**
          * Initializes the values of squares in innerBoard with GAME_CONTINUES, as they should be empty in
          * the beginning of game.
          */
         private InnerBoard() {
-            Arrays.fill(board, new AbstractBoard() {
-                @Override
-                public boolean isOver() {
-                    return super.isOver();
-                }
-            });
+            super();
+            for (int i = 0; i < 9; i++) {
+                board[i] = new AbstractBoard();
+            }
         }
 
         /**
@@ -88,10 +82,7 @@ public class Board extends AbstractBoard implements Cloneable {
         }
     }
 
-    /**
-     * Board consists of grid of nine inner boards.
-     */
-    public InnerBoard[] board = new InnerBoard[9];
+    private static final Logger logger = LoggerFactory.getLogger(Board.class);
 
     /**
      * The inner board where the next will be made.
@@ -102,15 +93,6 @@ public class Board extends AbstractBoard implements Cloneable {
      * which means that the next move can be made to any block.
      */
     private int currentInnerBoard = 4;
-
-    /**
-     * There are four opportunities:
-     * the game continues - GAME_CONTINUES,
-     * the first player won - CROSS,
-     * the second player won - NOUGHT,
-     * nobody won but the moves cannot be made - BLOCK.
-     */
-    private Status status = GAME_CONTINUES;
 
     /**
      * The player who makes next move.
@@ -127,6 +109,7 @@ public class Board extends AbstractBoard implements Cloneable {
     private int numberOfInvalidBlocks;
 
     public Board() {
+        super();
         for (int i = 0; i < 9; i++) {
             board[i] = new InnerBoard();
         }
@@ -152,7 +135,8 @@ public class Board extends AbstractBoard implements Cloneable {
      */
     public Status makeMove(
             int innerSquare) {
-        boolean blockIsOver = board[currentInnerBoard].setSquare(innerSquare, currentPlayer);
+        boolean blockIsOver = ((InnerBoard) board[currentInnerBoard])
+                .setSquare(innerSquare, currentPlayer);
         Status res = board[currentInnerBoard].status;
         if (blockIsOver) {
             numberOfInvalidBlocks++;
@@ -164,14 +148,12 @@ public class Board extends AbstractBoard implements Cloneable {
         }
         if (isOver()) {
             status = Status.playerToStatus(currentPlayer);
-            ;
         } else {
             if (numberOfInvalidBlocks == 9) {
                 status = DRAW;
             }
         }
-        currentPlayer =
-                currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
+        currentPlayer = currentPlayer.opponent();
         return res;
     }
 
@@ -185,7 +167,8 @@ public class Board extends AbstractBoard implements Cloneable {
     public Status makeMoveToAnyOuterSquare(
             int block, int innerSquare) {
 
-        boolean blockIsOver = board[block].setSquare(innerSquare, currentPlayer);
+        boolean blockIsOver = ((InnerBoard) board[block])
+                .setSquare(innerSquare, currentPlayer);
         if (blockIsOver) {
             numberOfInvalidBlocks++;
         }
@@ -201,17 +184,12 @@ public class Board extends AbstractBoard implements Cloneable {
                 status = DRAW;
             }
         }
-        currentPlayer = currentPlayer == Turn.Player.CROSS ? Turn.Player.NOUGHT : Turn.Player.CROSS;
+        currentPlayer = currentPlayer.opponent();
         return board[block].status;
     }
 
-    public Status getGameStatus() {
-        return status;
-    }
-
-
     public InnerBoard[] getBoard() {
-        return Arrays.copyOf(board, board.length);
+        return Arrays.copyOf(board, board.length, InnerBoard[].class);
     }
 
     /**
@@ -221,8 +199,10 @@ public class Board extends AbstractBoard implements Cloneable {
      * @return true if the turn is valid, false otherwise
      */
     public boolean verifyTurn(Turn turn) {
-        return (currentInnerBoard == -1 || turn.getInnerBoard() == currentInnerBoard) &&
-                board[turn.getInnerBoard()].getStatus() == GAME_CONTINUES &&
-                board[turn.getInnerBoard()].getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
+        return (currentInnerBoard == -1 || turn.getInnerBoard() == currentInnerBoard)
+                && board[turn.getInnerBoard()].getStatus() == GAME_CONTINUES
+                && ((InnerBoard) board[turn.getInnerBoard()])
+                        .getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
     }
+
 }

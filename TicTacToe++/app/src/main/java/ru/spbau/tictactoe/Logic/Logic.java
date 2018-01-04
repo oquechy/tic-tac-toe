@@ -51,10 +51,10 @@ public class Logic {
     }
 
     public Result getResult() {
-        if (board.getGameStatus() == Status.CROSS) {
+        if (board.getStatus() == Status.CROSS) {
             return Result.CROSS;
         }
-        if (board.getGameStatus() == Status.NOUGHT) {
+        if (board.getStatus() == Status.NOUGHT) {
             return Result.NOUGHT;
         }
         return Result.DRAW;
@@ -65,7 +65,7 @@ public class Logic {
     }
 
     public boolean isEndOfGame() {
-        return board.getGameStatus() != Status.GAME_CONTINUES;
+        return board.getStatus() != Status.GAME_CONTINUES;
     }
 
 

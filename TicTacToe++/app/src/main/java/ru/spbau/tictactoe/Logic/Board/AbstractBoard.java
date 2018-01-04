@@ -1,12 +1,33 @@
 package ru.spbau.tictactoe.Logic.Board;
 
 
+
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static ru.spbau.tictactoe.Logic.Board.Status.DRAW;
 import static ru.spbau.tictactoe.Logic.Board.Status.GAME_CONTINUES;
 
-public abstract class AbstractBoard {
+/**
+ * General class for board. Also used for square because inner board is both board and square and
+ * there is no multiple inheritance in Java.
+ */
+public class AbstractBoard {
+    /**
+     * Game status on this board or square.
+     * There are four opportunities:
+     * the game continues - GAME_CONTINUES,
+     * the first player won - CROSS,
+     * the second player won - NOUGHT,
+     * nobody won but the moves cannot be made - BLOCK.
+     */
     protected Status status = GAME_CONTINUES;
-    protected AbstractBoard[] board;
+    /**
+     * Squares of this board. All squares are null, if it is a square of the inner board.
+     */
+    protected AbstractBoard[] board = new AbstractBoard[9];
     /**
      * Checks if the game on board is over.
      * Checks every row, column and diagonal if there are three squares
@@ -35,10 +56,12 @@ public abstract class AbstractBoard {
             }
         }
         //check diagonals
-        return board[4].status != GAME_CONTINUES && board[4].status != DRAW
+        return board[4].status != GAME_CONTINUES
+                && board[4].status != DRAW
                 && (board[0].status == board[4].status
-                && board[4].status == board[8].status ||
-                board[2].status == board[4].status && board[4].status == board[6].status);
+                && board[4].status == board[8].status
+                || board[2].status == board[4].status
+                && board[4].status == board[6].status);
     }
 
     public Status getStatus() {

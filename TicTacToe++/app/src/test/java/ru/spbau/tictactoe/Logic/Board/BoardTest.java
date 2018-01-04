@@ -19,7 +19,7 @@ public class BoardTest {
         board.makeMove(1);
         assertEquals(Status.CROSS, board.getSquare(4, 1));
         assertEquals(1, board.getCurrentInnerBoard());
-        assertEquals(Status.GAME_CONTINUES, board.getGameStatus());
+        assertEquals(Status.GAME_CONTINUES, board.getStatus());
     }
 
 
@@ -45,7 +45,8 @@ public class BoardTest {
 
     @Test
     public void isOver() throws Exception {
-
+        Board board = new Board();
+        assertFalse(board.isOver());
     }
 
 }
