@@ -11,8 +11,10 @@ import ru.spbau.tictactoe.Logic.Turn.Turn;
  * Makes random turns.
  */
 public class Bot {
-    protected Random rand = new Random();
-    protected Board board;
+    private Random rand = new Random();
+    protected final Board board;
+    protected Board boardCopy;
+    protected Turn.Player player = Turn.Player.NOUGHT;
     public Bot(Board board){
         this.board = board;
     }

@@ -31,9 +31,7 @@ public class CleverBot extends Bot {
      * @return TurnStatistics for every square on board
      */
     protected TurnStatistics[] analyzeBlock(int block, Turn.Player player) {
-        logger.info("Analyzing block " +
-                (Integer.valueOf(block)).toString() + ",player " + player.name());
-        Board.InnerBoard[] realBoard = board.getBoard();
+        Board.InnerBoard[] realBoard = boardCopy.getBoard();
         TurnStatistics[] res = new TurnStatistics[9];
         ArrayList<Integer> indexes = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
@@ -45,17 +43,11 @@ public class CleverBot extends Bot {
             int i = indexes.get(ind);
             res[ind].pos = i;
             res[ind].block = block;
-            Board.InnerBoard square = null;
-            try {
-                square = (Board.InnerBoard) realBoard[block].clone();
-            } catch (CloneNotSupportedException e) {
-                //TODO
-            }
+            Board.InnerBoard square = realBoard[block];
             if (square.getSquare(i) == Status.GAME_CONTINUES) {
                 square.setSquare(i, player);
-                if (board.getBlockStatus(i) == Status.GAME_CONTINUES) {
+                if (boardCopy.getBlockStatus(i) == Status.GAME_CONTINUES) {
                     if (square.isOver() && square.getStatus() != Status.DRAW) {
-                        logger.info(player.name() + " can win " + Integer.valueOf(i).toString());
                         res[ind].isWin = true;
                         if (i == block) {
                             res[ind].nextMoveToAnySquare = true;
@@ -66,7 +58,6 @@ public class CleverBot extends Bot {
                 }
                 square.discardChanges(i);
                 if (analyzeBlockForLose(i, player)) {
-                    logger.info(player.opponent().name() + " can win " + Integer.valueOf(i).toString());
                     res[ind].sendToSquareWhereOpponentWins = true;
                 }
                 square.discardChanges(i);
@@ -76,8 +67,6 @@ public class CleverBot extends Bot {
                 }
                 square.discardChanges(i);
             } else {
-                logger.info(Integer.valueOf(block).toString()
-                        + ", " + Integer.valueOf(i).toString() + " is busy");
                 res[ind].isBusy = true;
             }
         }
@@ -85,30 +74,21 @@ public class CleverBot extends Bot {
     }
 
     /**
-     * Analyses if the opponent can win on this board.
+     * Analyses if the opponent can win on this block.
      *
      * @param block  is a block to be analysed
      * @param player is a player who makes a turn
-     * @return true if player's opponent can win on board, false otherwise
+     * @return true if player's opponent can win on block, false otherwise
      */
     public boolean analyzeBlockForLose(int block, Turn.Player player) {
-        logger.info("analyse block for lose " + Integer.valueOf(block).toString());
-        Board.InnerBoard[] realBoard = board.getBoard();
+        Board.InnerBoard[] realBoard = boardCopy.getBoard();
         for (int i = 0; i < 9; i++) {
-            Board.InnerBoard square = null;
-            try {
-                square = (Board.InnerBoard) realBoard[block].clone();
-            } catch (CloneNotSupportedException e) {
-                //TODO
-            }
+            Board.InnerBoard square = realBoard[block];
             if (square.getSquare(i) == Status.GAME_CONTINUES) {
                 square.setSquare(i, player.opponent());
-                if (board.getBlockStatus(i) == Status.GAME_CONTINUES) {
+                if (boardCopy.getBlockStatus(i) == Status.GAME_CONTINUES) {
                     if (square.isOver() && square.getStatus() != Status.DRAW) {
                         square.discardChanges(i);
-                        logger.info("can win on " +
-                                Integer.valueOf(block).toString() +
-                                " square " + Integer.valueOf(i).toString());
                         return true;
                     }
                 }
@@ -125,7 +105,8 @@ public class CleverBot extends Bot {
      */
     @Override
     public Turn makeTurn() {
-        int cur = board.getCurrentInnerBoard();
+        boardCopy = board.deepCopy();
+        int cur = boardCopy.getCurrentInnerBoard();
         ArrayList<Integer> indexes = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
             indexes.add(i);
@@ -134,8 +115,8 @@ public class CleverBot extends Bot {
         if (cur == -1) {
             TurnStatistics[] bestInBlock = new TurnStatistics[9];
             for (int i : indexes) {
-                if (board.getBlockStatus(i) == Status.GAME_CONTINUES) {
-                    TurnStatistics[] statistics = analyzeBlock(i, board.getCurrentPlayer());
+                if (boardCopy.getBlockStatus(i) == Status.GAME_CONTINUES) {
+                    TurnStatistics[] statistics = analyzeBlock(i, boardCopy.getCurrentPlayer());
                     Arrays.sort(statistics);
                     bestInBlock[i] = statistics[8];
                 } else {
@@ -147,7 +128,7 @@ public class CleverBot extends Bot {
             Arrays.sort(bestInBlock);
             return new Turn(bestInBlock[8].block, bestInBlock[8].pos);
         }
-        TurnStatistics[] statistics = analyzeBlock(cur, board.getCurrentPlayer());
+        TurnStatistics[] statistics = analyzeBlock(cur, boardCopy.getCurrentPlayer());
         for (int i = 0; i < 9; i++) {
             logger.info(Integer.valueOf(statistics[i].pos).toString() + (i == 8 ? "\n" : " "));
         }
@@ -164,7 +145,7 @@ public class CleverBot extends Bot {
      * @param t is a Status to be transformed
      * @return char relevant to the given status
      */
-    private static char toChar(Status t) {
+    protected static char toChar(Status t) {
         if (t == Status.CROSS) {
             return 'x';
         }
@@ -179,7 +160,7 @@ public class CleverBot extends Bot {
      *
      * @param board is a board to be printed
      */
-    private static void printBoard(Board board) {
+     static void printBoard(Board board) {
         Board.InnerBoard[] innerBoards = (Board.InnerBoard[])board.getBoard();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -203,7 +184,7 @@ public class CleverBot extends Bot {
     /**
      * Launches console version for debug.
      */
-    private void go() {
+    protected void go() {
         Bot bot = new Bot(board);
         Scanner reader = new Scanner(System.in);
         for(int i = 0; i < 9; i++){

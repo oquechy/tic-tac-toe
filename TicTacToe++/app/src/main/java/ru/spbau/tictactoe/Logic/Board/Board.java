@@ -4,6 +4,12 @@ package ru.spbau.tictactoe.Logic.Board;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import ru.spbau.tictactoe.Logic.Turn.Turn;
@@ -18,12 +24,12 @@ import static ru.spbau.tictactoe.Logic.Board.Status.*;
  * could be considered as a standard tic-tac-toe board.
  * At any moment there is a block where the next move will happen (initially it is the medium block).
  */
-public class Board extends AbstractBoard implements Cloneable {
+public class Board extends AbstractBoard implements Serializable {
 
     /**
      * An outer square or an inner board.
      */
-    public static class InnerBoard extends AbstractBoard implements Cloneable {
+    public static class InnerBoard extends AbstractBoard implements Serializable {
         /**
          * Number of squares on inner board that are not empty.
          */
@@ -188,6 +194,13 @@ public class Board extends AbstractBoard implements Cloneable {
         return board[block].status;
     }
 
+    public Status makeMove(Turn turn){
+        if(currentInnerBoard == -1){
+            return makeMoveToAnyOuterSquare(turn.getInnerBoard(), turn.getInnerSquare());
+        }
+        return makeMove(turn.getInnerSquare());
+    }
+
     public InnerBoard[] getBoard() {
         return Arrays.copyOf(board, board.length, InnerBoard[].class);
     }
@@ -203,6 +216,37 @@ public class Board extends AbstractBoard implements Cloneable {
                 && board[turn.getInnerBoard()].getStatus() == GAME_CONTINUES
                 && ((InnerBoard) board[turn.getInnerBoard()])
                         .getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
+    }
+
+    /**
+     * Creates a copy of this board without any shared references.
+     * @return a copy of this board
+     */
+    public Board deepCopy(){
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        Board boardCopy = null;
+        try{
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(this);
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bis);
+            boardCopy = (Board) ois.readObject();
+        }
+        catch(IOException | ClassNotFoundException e){
+            //TODO
+        }
+        return boardCopy;
+    }
+
+    public void discardChanges(Turn turn, int innerBoard){
+        Logger logger = LoggerFactory.getLogger(Board.class);
+        //logger.debug(Integer.toString(turn.getInnerBoard()) + " " + Integer.toString(turn.getInnerSquare()));
+        //logger.debug(((InnerBoard) board[turn.getInnerBoard()]).getSquare(turn.getInnerSquare()).name());
+        ((InnerBoard) board[turn.getInnerBoard()]).
+                discardChanges(turn.getInnerSquare());
+        currentInnerBoard = innerBoard;
+        currentPlayer = currentPlayer.opponent();
+        //logger.debug(((InnerBoard) board[turn.getInnerBoard()]).getSquare(turn.getInnerSquare()).name());
     }
 
 }

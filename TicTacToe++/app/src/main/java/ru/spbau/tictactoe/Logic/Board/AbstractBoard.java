@@ -7,6 +7,8 @@ package ru.spbau.tictactoe.Logic.Board;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
+
 import static ru.spbau.tictactoe.Logic.Board.Status.DRAW;
 import static ru.spbau.tictactoe.Logic.Board.Status.GAME_CONTINUES;
 
@@ -14,7 +16,7 @@ import static ru.spbau.tictactoe.Logic.Board.Status.GAME_CONTINUES;
  * General class for board. Also used for square because inner board is both board and square and
  * there is no multiple inheritance in Java.
  */
-public class AbstractBoard {
+public class AbstractBoard implements Serializable{
     /**
      * Game status on this board or square.
      * There are four opportunities:
@@ -66,5 +68,9 @@ public class AbstractBoard {
 
     public Status getStatus() {
         return status;
+    }
+
+    public AbstractBoard getBox(int index){
+        return board[index];
     }
 }
