@@ -7,13 +7,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Random;
 
 import ru.spbau.tictactoe.Logic.Board.AbstractBoard;
 import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
+import static ru.spbau.tictactoe.Bot.BoardAnalyzer.*;
 
 
 public class MiniMaxBot extends CleverBot {
@@ -24,27 +24,6 @@ public class MiniMaxBot extends CleverBot {
     public MiniMaxBot(Board board) {
         super(board);
         maxPly = 4;
-    }
-
-    protected ArrayList<Turn> getAvailableMovesOnBlock(int block) {
-        ArrayList<Turn> possibleMoves = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            if (board.getBoard()[block].getSquare(i) == Status.GAME_CONTINUES) {
-                possibleMoves.add(new Turn(block, i));
-            }
-        }
-        return possibleMoves;
-    }
-
-    protected ArrayList<Turn> getAvailableMoves(Board board) {
-        if (board.getCurrentInnerBoard() == -1) {
-            ArrayList<Turn> possibleMoves = new ArrayList<>();
-            for (int i = 0; i < 9; i++) {
-                possibleMoves.addAll(getAvailableMovesOnBlock(i));
-            }
-            return possibleMoves;
-        }
-        return getAvailableMovesOnBlock(board.getCurrentInnerBoard());
     }
 
     public Turn makeTurn() {
@@ -63,9 +42,12 @@ public class MiniMaxBot extends CleverBot {
      * @return the score of the board
      */
     private TurnWithScore miniMax( Board givenBoard, int currentPly, Turn turn) {
+        if(turn != null){
+            //logger.debug("current play = {}, turn = {} {}", currentPly, turn.getInnerBoard(), turn.getInnerSquare());
+            //printBoard(givenBoard);
+        }
         if (currentPly++ == maxPly || givenBoard.isOver()) {
-            logger.debug("{} {} score = {}", turn.getInnerBoard(), turn.getInnerSquare(), score(givenBoard));
-            printBoard(givenBoard);
+            //logger.debug("{} {} score = {}", turn.getInnerBoard(), turn.getInnerSquare(), score(givenBoard));
             return new TurnWithScore(turn, score(givenBoard));
         }
         if (givenBoard.getCurrentPlayer() == player) {
@@ -85,6 +67,7 @@ public class MiniMaxBot extends CleverBot {
         ArrayList<TurnWithScore> turnWithScores = new ArrayList<>();
         //int bestScore = Integer.MIN_VALUE;
         int currentInnerBoard = givenBoard.getCurrentInnerBoard();
+        assert givenBoard.getCurrentPlayer() == player;
         for (Turn turn : getAvailableMoves(givenBoard)) {
             givenBoard.makeMove(turn);
             //logger.debug("current inner board before changes " + Integer.toString(currentInnerBoard));
@@ -107,7 +90,7 @@ public class MiniMaxBot extends CleverBot {
     }
 
     private TurnWithScore randomBestTurn(ArrayList<TurnWithScore> turns, boolean max){
-        int bestScore = 0;
+        int bestScore;
         if(max){
             bestScore = Collections.max(turns).score;
         }
@@ -133,12 +116,14 @@ public class MiniMaxBot extends CleverBot {
      * @return the score of the board
      */
     TurnWithScore getMin(Board givenBoard, int currentPly) {
+        assert givenBoard.getCurrentPlayer() == player.opponent();
         //printBoard(givenBoard);
         //logger.debug("current inner board = {}", givenBoard.getCurrentInnerBoard());
         ArrayList<TurnWithScore> turnWithScores = new ArrayList<>();
         int currentInnerBoard = givenBoard.getCurrentInnerBoard();
         for (Turn turn : getAvailableMoves(givenBoard)) {
             givenBoard.makeMove(turn);
+            printBoard(givenBoard);
             int score = miniMax(givenBoard, currentPly, turn).score;
             turnWithScores.add(new TurnWithScore(turn, score));
             givenBoard.discardChanges(turn, currentInnerBoard);

@@ -195,6 +195,9 @@ public class Board extends AbstractBoard implements Serializable {
     }
 
     public Status makeMove(Turn turn){
+        if(!verifyTurn(turn)){
+            throw new IncorrectMoveException();
+        }
         if(currentInnerBoard == -1){
             return makeMoveToAnyOuterSquare(turn.getInnerBoard(), turn.getInnerSquare());
         }

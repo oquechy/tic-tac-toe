@@ -30,8 +30,11 @@ public class CleverBot extends Bot {
      * @param player is a player who makes a turn
      * @return TurnStatistics for every square on board
      */
-    protected TurnStatistics[] analyzeBlock(int block, Turn.Player player) {
-        Board.InnerBoard[] realBoard = boardCopy.getBoard();
+    protected TurnStatistics[] analyzeBlock(int block, Turn.Player player, Board copy) {
+        logger.info("Analyzing block " +
+                (Integer.valueOf(block)).toString() + ",player " + player.name());
+
+        Board.InnerBoard[] realBoard = copy.getBoard();
         TurnStatistics[] res = new TurnStatistics[9];
         ArrayList<Integer> indexes = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
@@ -46,8 +49,9 @@ public class CleverBot extends Bot {
             Board.InnerBoard square = realBoard[block];
             if (square.getSquare(i) == Status.GAME_CONTINUES) {
                 square.setSquare(i, player);
-                if (boardCopy.getBlockStatus(i) == Status.GAME_CONTINUES) {
+                if (board.getBlockStatus(i) == Status.GAME_CONTINUES) {
                     if (square.isOver() && square.getStatus() != Status.DRAW) {
+                        logger.info(player.name() + " can win " + Integer.valueOf(i).toString());
                         res[ind].isWin = true;
                         if (i == block) {
                             res[ind].nextMoveToAnySquare = true;
@@ -57,7 +61,8 @@ public class CleverBot extends Bot {
                     res[ind].nextMoveToAnySquare = true;
                 }
                 square.discardChanges(i);
-                if (analyzeBlockForLose(i, player)) {
+                if (analyzeBlockForLose(i, player, copy)) {
+                    logger.info(player.opponent().name() + " can win " + Integer.valueOf(i).toString());
                     res[ind].sendToSquareWhereOpponentWins = true;
                 }
                 square.discardChanges(i);
@@ -67,6 +72,8 @@ public class CleverBot extends Bot {
                 }
                 square.discardChanges(i);
             } else {
+                logger.info(Integer.valueOf(block).toString()
+                        + ", " + Integer.valueOf(i).toString() + " is busy");
                 res[ind].isBusy = true;
             }
         }
@@ -74,21 +81,25 @@ public class CleverBot extends Bot {
     }
 
     /**
-     * Analyses if the opponent can win on this block.
+     * Analyses if the opponent can win on this board.
      *
      * @param block  is a block to be analysed
      * @param player is a player who makes a turn
-     * @return true if player's opponent can win on block, false otherwise
+     * @return true if player's opponent can win on board, false otherwise
      */
-    public boolean analyzeBlockForLose(int block, Turn.Player player) {
-        Board.InnerBoard[] realBoard = boardCopy.getBoard();
+    public boolean analyzeBlockForLose(int block, Turn.Player player, Board board) {
+        logger.info("analyse block for lose " + Integer.valueOf(block).toString());
+        Board.InnerBoard[] realBoard = board.getBoard();
         for (int i = 0; i < 9; i++) {
             Board.InnerBoard square = realBoard[block];
             if (square.getSquare(i) == Status.GAME_CONTINUES) {
                 square.setSquare(i, player.opponent());
-                if (boardCopy.getBlockStatus(i) == Status.GAME_CONTINUES) {
+                if (board.getBlockStatus(i) == Status.GAME_CONTINUES) {
                     if (square.isOver() && square.getStatus() != Status.DRAW) {
                         square.discardChanges(i);
+                        logger.info("can win on " +
+                                Integer.valueOf(block).toString() +
+                                " square " + Integer.valueOf(i).toString());
                         return true;
                     }
                 }
@@ -105,8 +116,8 @@ public class CleverBot extends Bot {
      */
     @Override
     public Turn makeTurn() {
-        boardCopy = board.deepCopy();
-        int cur = boardCopy.getCurrentInnerBoard();
+        int cur = board.getCurrentInnerBoard();
+        Board copy = board.deepCopy();
         ArrayList<Integer> indexes = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
             indexes.add(i);
@@ -115,8 +126,8 @@ public class CleverBot extends Bot {
         if (cur == -1) {
             TurnStatistics[] bestInBlock = new TurnStatistics[9];
             for (int i : indexes) {
-                if (boardCopy.getBlockStatus(i) == Status.GAME_CONTINUES) {
-                    TurnStatistics[] statistics = analyzeBlock(i, boardCopy.getCurrentPlayer());
+                if (board.getBlockStatus(i) == Status.GAME_CONTINUES) {
+                    TurnStatistics[] statistics = analyzeBlock(i, board.getCurrentPlayer(), copy);
                     Arrays.sort(statistics);
                     bestInBlock[i] = statistics[8];
                 } else {
@@ -128,7 +139,7 @@ public class CleverBot extends Bot {
             Arrays.sort(bestInBlock);
             return new Turn(bestInBlock[8].block, bestInBlock[8].pos);
         }
-        TurnStatistics[] statistics = analyzeBlock(cur, boardCopy.getCurrentPlayer());
+        TurnStatistics[] statistics = analyzeBlock(cur, board.getCurrentPlayer(), copy);
         for (int i = 0; i < 9; i++) {
             logger.info(Integer.valueOf(statistics[i].pos).toString() + (i == 8 ? "\n" : " "));
         }
@@ -145,7 +156,7 @@ public class CleverBot extends Bot {
      * @param t is a Status to be transformed
      * @return char relevant to the given status
      */
-    protected static char toChar(Status t) {
+    private static char toChar(Status t) {
         if (t == Status.CROSS) {
             return 'x';
         }
@@ -160,7 +171,7 @@ public class CleverBot extends Bot {
      *
      * @param board is a board to be printed
      */
-     static void printBoard(Board board) {
+    protected static void printBoard(Board board) {
         Board.InnerBoard[] innerBoards = (Board.InnerBoard[])board.getBoard();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {

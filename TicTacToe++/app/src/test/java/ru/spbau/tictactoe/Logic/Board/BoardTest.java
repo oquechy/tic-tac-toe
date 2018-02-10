@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.util.Scanner;
 
+import ru.spbau.tictactoe.Logic.Turn.Turn;
+
 import static org.junit.Assert.*;
 
 public class BoardTest {
@@ -24,29 +26,27 @@ public class BoardTest {
 
 
     @Test
-    public void makeMoveToAnyOuterSquare() throws Exception {
-
-    }
-
-    @Test
-    public void getSquare() throws Exception {
-
-    }
-
-    @Test
-    public void getBlockStatus() throws Exception {
-
-    }
-
-    @Test
-    public void getGameStatus() throws Exception {
-
-    }
-
-    @Test
-    public void isOver() throws Exception {
+    public void winOnSmallBoard(){
         Board board = new Board();
-        assertFalse(board.isOver());
+        board.makeMove(5);
+        board.makeMove(4);
+        board.makeMove(2);
+        board.makeMove(4);
+        board.makeMove(8);
+        assertEquals(Status.CROSS, board.getBlockStatus(4));
     }
 
+    @Test
+    public void discardChanges(){
+        Board board = new Board();
+        board.makeMove(5);
+        board.makeMove(4);
+        board.makeMove(2);
+        board.makeMove(4);
+        board.makeMove(8);
+        board.discardChanges(new Turn(4, 8), 4);
+        assertEquals(Status.GAME_CONTINUES, board.getBlockStatus(4));
+        assertEquals(4, board.getCurrentInnerBoard());
+        assertEquals(Status.GAME_CONTINUES, board.getSquare(4, 8));
+    }
 }
