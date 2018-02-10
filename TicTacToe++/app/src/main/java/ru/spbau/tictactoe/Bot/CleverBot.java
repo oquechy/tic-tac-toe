@@ -11,6 +11,7 @@ import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
+import static ru.spbau.tictactoe.Bot.BoardAnalyzer.printBoard;
 
 
 /**
@@ -150,56 +151,15 @@ public class CleverBot extends Bot {
         return new Turn(cur, statistics[8].pos);
     }
 
-    /**
-     * Transforms square status to char. Used for console output in debug.
-     *
-     * @param t is a Status to be transformed
-     * @return char relevant to the given status
-     */
-    private static char toChar(Status t) {
-        if (t == Status.CROSS) {
-            return 'x';
-        }
-        if (t == Status.NOUGHT) {
-            return '0';
-        }
-        return '-';
-    }
 
-    /**
-     * Prints board in console. Used for debug.
-     *
-     * @param board is a board to be printed
-     */
-    protected static void printBoard(Board board) {
-        Board.InnerBoard[] innerBoards = (Board.InnerBoard[])board.getBoard();
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                System.out.print(toChar(innerBoards[3 * i].getSquare(3 * j)));
-                System.out.print(toChar(innerBoards[3 * i].getSquare(3 * j + 1)));
-                System.out.print(toChar(innerBoards[3 * i].getSquare(3 * j + 2)));
-                System.out.print(' ');
-                System.out.print(toChar(innerBoards[3 * i + 1].getSquare(3 * j)));
-                System.out.print(toChar(innerBoards[3 * i + 1].getSquare(3 * j + 1)));
-                System.out.print(toChar(innerBoards[3 * i + 1].getSquare(3 * j + 2)));
-                System.out.print(' ');
-                System.out.print(toChar(innerBoards[3 * i + 2].getSquare(3 * j)));
-                System.out.print(toChar(innerBoards[3 * i + 2].getSquare(3 * j + 1)));
-                System.out.print(toChar(innerBoards[3 * i + 2].getSquare(3 * j + 2)));
-                System.out.print('\n');
-            }
-            System.out.print('\n');
-        }
-    }
 
     /**
      * Launches console version for debug.
      */
     protected void go() {
-        Bot bot = new Bot(board);
         Scanner reader = new Scanner(System.in);
         for(int i = 0; i < 9; i++){
-            logger.debug(bot.board.getBoard()[i].toString());
+            logger.debug(board.getBoard()[i].toString());
         }
         while (!board.isOver()) {
             System.out.printf("Current board is %d\n", board.getCurrentInnerBoard());

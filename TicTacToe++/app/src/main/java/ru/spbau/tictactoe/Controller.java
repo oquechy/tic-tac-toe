@@ -83,7 +83,7 @@ public class Controller {
         state = State.CREATE_FIELD;
         myType = true;
 
-        final Bot bot = new CleverBot(logic.getBoard());
+        final Bot bot = new MonteCarloBot(logic.getBoard());
         friend = new NetAnotherPlayer() {
             @Override
             public Turn getOpponentTurn() {
@@ -92,6 +92,7 @@ public class Controller {
 
             @Override
             public void setOpponentTurn(Turn t) {
+                bot.getTurn(t);
             }
 
             @Override

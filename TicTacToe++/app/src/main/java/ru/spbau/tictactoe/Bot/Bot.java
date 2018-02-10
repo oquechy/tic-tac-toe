@@ -11,6 +11,7 @@ import ru.spbau.tictactoe.Logic.Turn.Turn;
  * Makes random turns.
  */
 public class Bot {
+    protected Turn lastOpponentsTurn;
     private Random rand = new Random();
     protected final Board board;
     protected Board boardCopy;
@@ -35,6 +36,10 @@ public class Bot {
             x = rand.nextInt(9);
         }
         return new Turn(cur, x);
+    }
+
+    public void getTurn(ru.spbau.tictactoe.Turn turn){
+       lastOpponentsTurn = turn.convertToTurn();
     }
 
     public String getName() {

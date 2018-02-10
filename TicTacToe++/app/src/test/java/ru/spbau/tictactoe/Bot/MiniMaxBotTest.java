@@ -25,7 +25,7 @@ public class MiniMaxBotTest {
         for(int i = 0; i < 1; i++){
             board.makeMove(i);
             System.out.println(bot.score(board));
-            CleverBot.printBoard(board);
+            BoardAnalyzer.printBoard(board);
             board.discardChanges(new Turn(6, i), 6);
         }
     }
@@ -38,10 +38,10 @@ public class MiniMaxBotTest {
         board.makeMove(4);
         board.makeMove(2);
         board.makeMove(4);
-        for(Turn turn : bot.getAvailableMoves(board)){
+        for(Turn turn : BoardAnalyzer.getAvailableMoves(board)){
             board.makeMove(turn);
             System.out.println(bot.score(board));
-            CleverBot.printBoard(board);
+            BoardAnalyzer.printBoard(board);
             board.discardChanges(turn, 4);
         }
 
@@ -63,7 +63,7 @@ public class MiniMaxBotTest {
         board.makeMove(3);
         board.makeMove(8);
         board.makeMove(bot.makeTurn());
-        CleverBot.printBoard(board);
+        BoardAnalyzer.printBoard(board);
         /*board.makeMove(5);
         int min = Integer.MAX_VALUE;
         for(Turn turn : bot.getAvailableMoves()){
@@ -95,7 +95,7 @@ public class MiniMaxBotTest {
         board.makeMove(3);
         board.makeMove(8);
         board.makeMove(bot.makeTurn());
-        CleverBot.printBoard(board);
+        BoardAnalyzer.printBoard(board);
         /*board.makeMove(5);
         int min = Integer.MAX_VALUE;
         for(Turn turn : bot.getAvailableMoves()){
