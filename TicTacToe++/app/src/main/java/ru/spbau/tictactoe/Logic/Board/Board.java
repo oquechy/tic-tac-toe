@@ -29,11 +29,15 @@ public class Board extends AbstractBoard implements Serializable {
     /**
      * An outer square or an inner board.
      */
-    public static class InnerBoard extends AbstractBoard implements Serializable {
+    public static class InnerBoard extends AbstractBoard {
         /**
          * Number of squares on inner board that are not empty.
          */
         private int numberOfMarkedSquares;
+
+        public int getNumberOfMarkedSquares(){
+            return numberOfMarkedSquares;
+        }
 
         /**
          * Initializes the values of squares in innerBoard with GAME_CONTINUES, as they should be empty in
@@ -44,6 +48,11 @@ public class Board extends AbstractBoard implements Serializable {
             for (int i = 0; i < 9; i++) {
                 board[i] = new AbstractBoard();
             }
+        }
+
+        public InnerBoard(InnerBoard other){
+            super(other);
+            numberOfMarkedSquares = other.numberOfMarkedSquares;
         }
 
         /**
@@ -82,10 +91,6 @@ public class Board extends AbstractBoard implements Serializable {
             return board[squareId].status;
         }
 
-        @Override
-        public Object clone() throws CloneNotSupportedException {
-            return super.clone();
-        }
     }
 
     private static final Logger logger = LoggerFactory.getLogger(Board.class);
@@ -118,6 +123,17 @@ public class Board extends AbstractBoard implements Serializable {
         super();
         for (int i = 0; i < 9; i++) {
             board[i] = new InnerBoard();
+        }
+    }
+
+    public Board(Board other){
+        super();
+        status = other.status;
+        currentPlayer = other.currentPlayer;
+        currentInnerBoard = other.currentInnerBoard;
+        for(int i = 0; i < 9; i++){
+            assert other.board[i] != null;
+            board[i] = new InnerBoard((InnerBoard)other.board[i]);
         }
     }
 
@@ -226,19 +242,7 @@ public class Board extends AbstractBoard implements Serializable {
      * @return a copy of this board
      */
     public Board deepCopy(){
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        Board boardCopy = null;
-        try{
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            oos.writeObject(this);
-            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-            ObjectInputStream ois = new ObjectInputStream(bis);
-            boardCopy = (Board) ois.readObject();
-        }
-        catch(IOException | ClassNotFoundException e){
-            //TODO
-        }
-        return boardCopy;
+        return new Board(this);
     }
 
     public void discardChanges(Turn turn, int innerBoard){

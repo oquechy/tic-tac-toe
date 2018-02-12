@@ -39,7 +39,7 @@ public class BoardAnalyzer {
      *
      * @param board is a board to be printed
      */
-    protected static void printBoard(Board board) {
+    public static void printBoard(Board board) {
         Board.InnerBoard[] innerBoards = (Board.InnerBoard[])board.getBoard();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {

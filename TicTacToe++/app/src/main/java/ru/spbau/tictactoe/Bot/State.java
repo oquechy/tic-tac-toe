@@ -1,5 +1,8 @@
 package ru.spbau.tictactoe.Bot;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +100,8 @@ import ru.spbau.tictactoe.Logic.Turn.Turn;
         }
 
         void randomPlay() {
+            //Logger logger = LoggerFactory.getLogger(State.class);
+            //logger.debug(board.getCurrentPlayer().name());
             if(board.getCurrentPlayer() == Turn.Player.CROSS){
                 board.makeMove(cross.makeTurn());
             }

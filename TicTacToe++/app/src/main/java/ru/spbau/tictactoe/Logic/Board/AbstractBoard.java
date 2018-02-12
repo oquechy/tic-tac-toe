@@ -16,7 +16,7 @@ import static ru.spbau.tictactoe.Logic.Board.Status.GAME_CONTINUES;
  * General class for board. Also used for square because inner board is both board and square and
  * there is no multiple inheritance in Java.
  */
-public class AbstractBoard implements Serializable{
+public class AbstractBoard implements Cloneable {
     /**
      * Game status on this board or square.
      * There are four opportunities:
@@ -25,11 +25,34 @@ public class AbstractBoard implements Serializable{
      * the second player won - NOUGHT,
      * nobody won but the moves cannot be made - BLOCK.
      */
-    protected Status status = GAME_CONTINUES;
+    protected Status status;
     /**
      * Squares of this board. All squares are null, if it is a square of the inner board.
      */
-    protected AbstractBoard[] board = new AbstractBoard[9];
+    protected AbstractBoard[] board;
+
+    AbstractBoard(){
+        status = GAME_CONTINUES;
+        board = new AbstractBoard[9];
+    }
+
+    /**
+     * Copy constructor
+     * @param other is an object which deep copy is to be created
+     */
+    AbstractBoard(AbstractBoard other){
+        assert other != null;
+        assert other.status != null;
+        status = other.status;
+        if(other.board != null){
+            board = new AbstractBoard[9];
+            for(int i = 0; i < 9; i++){
+                if(other.board[i] != null){
+                    board[i] = new AbstractBoard(other.board[i]);
+                }
+            }
+        }
+    }
     /**
      * Checks if the game on board is over.
      * Checks every row, column and diagonal if there are three squares

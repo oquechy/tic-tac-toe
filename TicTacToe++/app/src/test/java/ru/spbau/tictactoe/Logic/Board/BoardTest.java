@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.Scanner;
 
+import ru.spbau.tictactoe.Bot.BoardAnalyzer;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
 import static org.junit.Assert.*;
@@ -48,5 +49,33 @@ public class BoardTest {
         assertEquals(Status.GAME_CONTINUES, board.getBlockStatus(4));
         assertEquals(4, board.getCurrentInnerBoard());
         assertEquals(Status.GAME_CONTINUES, board.getSquare(4, 8));
+    }
+
+    @Test
+    public void deepCopyIsCopy(){
+        Board board = new Board();
+        board.makeMove(8);
+        Board copy = board.deepCopy();
+        assertEquals(Status.GAME_CONTINUES, copy.getStatus());
+        assertEquals(8, copy.getCurrentInnerBoard());
+        assertEquals(Turn.Player.NOUGHT, copy.getCurrentPlayer());
+        for(int i = 0; i < 9; i++){
+            assertEquals(((Board.InnerBoard)board.getBox(i)).getNumberOfMarkedSquares(),
+                    ((Board.InnerBoard)copy.getBox(i)).getNumberOfMarkedSquares());
+            assertEquals(board.getBlockStatus(i), copy.getBlockStatus(i));
+            for(int j = 0; j < 9; j++){
+                assertEquals(board.getSquare(i, j), copy.getSquare(i, j));
+            }
+        }
+    }
+
+    @Test
+    public void deepCopyIsDeep(){
+        Board board = new Board();
+        board.makeMove(8);
+        Board copy = board.deepCopy();
+        board.makeMove(7);
+        assertEquals(Status.NOUGHT, board.getSquare(8, 7));
+        assertEquals(Status.GAME_CONTINUES, copy.getSquare(8, 7));
     }
 }

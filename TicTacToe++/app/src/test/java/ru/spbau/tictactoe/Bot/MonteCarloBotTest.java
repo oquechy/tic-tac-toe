@@ -17,7 +17,7 @@ public class MonteCarloBotTest {
     public void monteCarloTest(){
         int victories = 0;
         int draws = 0;
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < 1; i++){
             Board board = new Board();
             Bot bot = new MonteCarloBot(board);
             Bot opponent = new MonteCarloBot(board);

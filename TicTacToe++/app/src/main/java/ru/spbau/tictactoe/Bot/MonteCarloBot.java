@@ -14,7 +14,7 @@ import ru.spbau.tictactoe.Logic.Turn.Turn;
 public class MonteCarloBot extends CleverBot {
     public MonteCarloBot(Board board){
         super(board);
-        level = 11;
+        level = 3;
         tree = new Tree();
     }
 
@@ -35,15 +35,19 @@ public class MonteCarloBot extends CleverBot {
         Tree.Node rootNode = tree.getRoot();
         rootNode.getState().setBoard(board);
         int cnt = 0;
-        while (System.currentTimeMillis() < end || cnt < 900) {
+        while (System.currentTimeMillis() < end) {
+            logger.debug("{}", cnt);
             cnt++;
             // Phase 1 - Selection
+            logger.debug("select promising node");
             Tree.Node promisingNode = selectPromisingNode(rootNode);
             // Phase 2 - Expansion
+            logger.debug("expand");
             if (promisingNode.getState().getBoard().getStatus() == Status.GAME_CONTINUES)
                 expandNode(promisingNode);
 
             // Phase 3 - Simulation
+            logger.debug("playout");
             Tree.Node nodeToExplore = promisingNode;
             if (promisingNode.getChildArray().size() > 0) {
                 nodeToExplore = promisingNode.getRandomChildNode();
@@ -52,6 +56,7 @@ public class MonteCarloBot extends CleverBot {
             // Phase 4 - Update
             backPropogation(nodeToExplore, playoutResult);
         }
+        logger.debug("final");
         //logger.debug("{}", cnt);
         Tree.Node winnerNode = rootNode.getChildWithMaxScore();
         tree.setRoot(winnerNode);
@@ -63,8 +68,8 @@ public class MonteCarloBot extends CleverBot {
         while (node.getChildArray().size() != 0) {
             node = UCT.findBestNodeWithUCT(node);
         }
-        //if(node.getState().getLastTurn() != null)
-        //logger.debug("{} {}", node.getState().getLastTurn().getInnerBoard(), node.getState().getLastTurn().getInnerSquare());
+        if(node.getState().getLastTurn() != null)
+        logger.debug("{} {}", node.getState().getLastTurn().getInnerBoard(), node.getState().getLastTurn().getInnerSquare());
         return node;
     }
 
@@ -101,6 +106,8 @@ public class MonteCarloBot extends CleverBot {
             tempState.randomPlay();
             boardStatus = tempState.getBoard().getStatus();
         }
+        BoardAnalyzer.printBoard(tempNode.getState().getBoard());
+        logger.debug(boardStatus.name());
         return boardStatus;
     }
 
