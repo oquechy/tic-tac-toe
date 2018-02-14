@@ -6,17 +6,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.util.Objects;
 
 import ru.spbau.tictactoe.ui.UI;
 
 public class ReadLogin extends AppCompatActivity {
 
-    static class ClientRunner extends AsyncTask<Activity, Void, Void> {
+    static class ClientRunner extends AsyncTask<Activity, Activity, Activity> {
 
         String text;
 
@@ -26,12 +26,15 @@ public class ReadLogin extends AppCompatActivity {
         }
 
         @Override
-        protected Void doInBackground(Activity... activities) {
-            Controller.optionConnectToFriend(text);
-            Intent intent = new Intent(activities[0], UI.class);
-            activities[0].startActivity(intent);
-            Controller.newGame(Controller.myTurn);
-            return null;
+        protected Activity doInBackground(Activity... activities) {
+            Controller.optionJoinFriend(text);
+            return activities[0];
+        }
+
+        @Override
+        protected void onPostExecute(Activity activity) {
+            Intent intent = new Intent(activity, UI.class);
+            activity.startActivity(intent);
         }
     }
 
@@ -39,7 +42,8 @@ public class ReadLogin extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_login);
-        /*EditText id = */((EditText) findViewById(R.id.editText)).setOnEditorActionListener(
+
+        final EditText id = ((EditText) findViewById(R.id.editText)); /*.setOnEditorActionListener(
                 new EditText.OnEditorActionListener() {
                     @Override
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -47,15 +51,28 @@ public class ReadLogin extends AppCompatActivity {
                                 actionId == EditorInfo.IME_ACTION_DONE ||
                                 event.getAction() == KeyEvent.ACTION_DOWN &&
                                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                                new ClientRunner(v.getText().toString()).execute(ReadLogin.this);
-                                return true; // consume.
+                            new ClientRunner(v.getText().toString()).execute(ReadLogin.this);
+                            return true; // consume.
                         }
                         return false; // pass on to other listeners.
                     }
                 }
-                    );
+        );*/
 
-//        String text = id.getText().toString();
+        Button connectionButton = (Button) findViewById(R.id.connectionButton);
+        View.OnClickListener oclConnectionButton = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String text = id.getText().toString();
+                Controller.optionJoinFriend(text);
+                Intent intent = new Intent(ReadLogin.this, UI.class);
+                ReadLogin.this.startActivity(intent);
+            }
+        };
+
+        connectionButton.setOnClickListener(oclConnectionButton);
+
+
 //        while (!Objects.equals(text, "")) {
 //            text = id.getText().toString();
 //        }

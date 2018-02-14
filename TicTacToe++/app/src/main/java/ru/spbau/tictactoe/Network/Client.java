@@ -23,18 +23,20 @@ public class Client extends Connection {
     }
 
 
-    public void start(String clientName, String hostName, String portNumber) throws IOException {
-        socket = createSocket(hostName, portNumber);
+    public void start(String clientName, String hostName, String portNumber)
+            throws IOException, ExecutionException, InterruptedException {
+        socket = isMainThread() ? new SocketCreator().execute(hostName, portNumber).get()
+                : createSocket(hostName, portNumber);
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        String serverName;
+//        String serverName;
 
-        serverName = in.readLine();
-        System.out.println("ServerName: " + serverName);
+//        serverName = in.readLine();
+//        System.out.println("ServerName: " + serverName);
 
         System.out.println("ClientName: " + clientName);
-        out.println(clientName);
+        passTo(clientName);
 
 
     }

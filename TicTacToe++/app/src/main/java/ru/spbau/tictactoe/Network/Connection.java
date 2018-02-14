@@ -5,6 +5,7 @@ import android.os.Looper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import ru.spbau.tictactoe.Network.SocketUtils.SocketReader;
@@ -16,12 +17,12 @@ public class Connection {
     BufferedReader in;
 
     public void asyncPassTo(String s) {
-        System.out.println(this.getClass() + " send: " + s);
+        System.out.println(this.getClass() + " passed: " + s);
         new SocketWriter(out).execute(s);
     }
 
     public void directPassTo(String s) {
-        System.out.println("Server passed: " + s);
+        System.out.println(this.getClass() + " passed: " + s);
         out.println(s);
     }
 
@@ -29,19 +30,17 @@ public class Connection {
         String s = null;
         try {
             s = new SocketReader().execute(in).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        System.out.println(this.getClass() + " get: " + s);
+        System.out.println(this.getClass() + " got: " + s);
         return s;
     }
 
     public String directGetFrom() {
         try {
             String s = in.readLine();
-            System.out.println("Server got: " + s);
+            System.out.println(this.getClass() + " got: " + s);
             return s;
         } catch (IOException e) {
             return null;
@@ -72,34 +71,60 @@ public class Connection {
 //        };
 //    }
 
-    public NetAnotherPlayer getClientPlayer(final String name) {
+    protected boolean isMainThread() {
+        return Looper.myLooper() == Looper.getMainLooper();
+    }
+
+    public NetAnotherPlayer getPlayer() {
         return new NetAnotherPlayer() {
+            String name;
+
             @Override
             public void setOpponentTurn(Turn turn) {
                 String stringTurn = turn.toString();
-                boolean mainThread = Looper.myLooper() == Looper.getMainLooper();
-                if (mainThread) {
-                    asyncPassTo(stringTurn);
-                } else {
-                    directPassTo(stringTurn);
-                }
+                passTo(stringTurn);
             }
 
             @Override
             public Turn getOpponentTurn() {
-                boolean mainThread = Looper.myLooper() == Looper.getMainLooper();
-                return Turn.fromString(mainThread ? asyncGetFrom() : directGetFrom());
+                Turn turn = null;
+                while (turn == null) {
+                    try {
+                        turn = Turn.fromString(getFrom());
+                    } catch (NumberFormatException ignored) { }
+                }
+                return turn;
             }
 
             @Override
-            public boolean getFirstPlayer() {
-                return Boolean.parseBoolean(directGetFrom());
+            public boolean choosePlayer() {
+                return Boolean.parseBoolean(getFrom());
             }
 
             @Override
             public String getName() {
-                return name;
+                return name == null ?
+                        name = getFrom() : name;
+            }
+
+            @Override
+            public void receivePlayer(boolean b) {
+                String player = String.valueOf(b);
+                passTo(player);
             }
         };
+    }
+
+    private String getFrom() {
+        String s = isMainThread() ? asyncGetFrom() : directGetFrom();
+        return s;
+    }
+
+    public void passTo(String string) {
+        if (isMainThread()) {
+            asyncPassTo(string);
+        } else {
+            directPassTo(string);
+        }
     }
 }

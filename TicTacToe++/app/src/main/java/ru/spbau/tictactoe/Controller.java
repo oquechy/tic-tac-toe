@@ -6,6 +6,7 @@ import android.text.format.Formatter;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import ru.spbau.tictactoe.Logic.Board.Status;
@@ -23,8 +24,6 @@ import static android.content.Context.WIFI_SERVICE;
  * and transmitting information between other classes
  */
 public class Controller {
-
-    public static boolean myTurn;
 
     public static void main(String[] args) {
         System.err.println(LOCAL_NET_MASK);
@@ -85,13 +84,17 @@ public class Controller {
             }
 
             @Override
-            public boolean getFirstPlayer() {
+            public boolean choosePlayer() {
                 return true;
             }
 
             @Override
             public String getName() {
                 return bot.getName();
+            }
+
+            @Override
+            public void receivePlayer(boolean b) {
             }
         };
 
@@ -162,14 +165,14 @@ public class Controller {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            newGame();
+            newSession();
             return true;
         }
 
         return false;
     }
 
-    public static void newGame() {
+    public static void newSession() {
         logic = new Logic();
         ui.setUpField();
         optionGameWithBot();
@@ -263,34 +266,36 @@ public class Controller {
     }
 
 
-    public static void optionConnectToFriend(String text) {
+    public static void optionJoinFriend(String text) {
         state = State.CONNECT_TO_FRIEND;
         int ipTail = WordCoder.decode(text);
 
         String ip = Formatter.formatIpAddress(LOCAL_NET_MASK | ipTail << 16);
         System.err.println(ip);
-        connectToServer(ip);
+        try {
+            connectToServer(ip);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    private static void connectToServer(String ip) {
+    private static void connectToServer(String ip) throws ExecutionException, InterruptedException {
         client = new Client();
         try {
-            client.start("Client", ip, "3030");
-            friend = client.getClientPlayer("Server");
-            myTurn = friend.getFirstPlayer();
-//            newGame(myTurn);
+            client.start("Client Lisa", ip, "3030");
+            friend = client.getPlayer();
+            String name = friend.getName();
+            myType = friend.choosePlayer();
+            state = myType ? State.MY_TURN : State.FRIENDS_TURN;
+//            newSession(myTurn);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void newGame(boolean myTurn) {
-        if (!myTurn) {
-            state = State.FRIENDS_TURN;
-
+    public static void startGameCycle() {
+        if (state == State.FRIENDS_TURN) {
             setOpponentTurn(friend.getOpponentTurn());
-        } else {
-            state = State.MY_TURN;
         }
     }
 
@@ -299,20 +304,21 @@ public class Controller {
 
         server = new Server();
         try {
-            server.start("Server", 3030);
+            server.start("Server Gena", 3030);
 
-            myTurn = choosePlayer();
-
-            friend = server.getClientPlayer("Client");
-//            newGame(myTurn);
-        } catch (IOException e) {
+            myType = choosePlayer();
+            state = myType ? State.MY_TURN : State.FRIENDS_TURN;
+            friend = server.getPlayer();
+            String name = friend.getName();
+            friend.receivePlayer(!myType);
+        } catch (IOException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
 
     private static boolean choosePlayer() {
-        myTurn = new Random().nextBoolean();
-        server.directPassTo(Boolean.toString(!myTurn));
+        boolean myTurn = true; //new Random().nextBoolean();
+//        server.passTo(Boolean.toString(!myTurn));
         System.err.println("myTurn: " + myTurn);
         return myTurn;
     }
