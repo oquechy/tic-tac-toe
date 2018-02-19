@@ -24,13 +24,7 @@ public class Logic {
 
     public void applyOpponentsTurn(Turn turn) {
         lastTurn = turn;
-        if(board.getCurrentInnerBoard() == -1){
-                isLittleWin = board.makeMoveToAnyOuterSquare(
-                        turn.getInnerBoard(), turn.getInnerSquare());
-        }
-        else {
-            isLittleWin = board.makeMove(turn.getInnerSquare());
-        }
+        isLittleWin = board.makeMove(turn);
     }
 
     public void applyMyTurn(Turn turn) {

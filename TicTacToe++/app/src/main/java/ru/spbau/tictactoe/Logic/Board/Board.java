@@ -4,17 +4,12 @@ package ru.spbau.tictactoe.Logic.Board;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Arrays;
 
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
-import static ru.spbau.tictactoe.Logic.Board.Status.*;
+import static ru.spbau.tictactoe.Logic.Board.Status.DRAW;
+import static ru.spbau.tictactoe.Logic.Board.Status.GAME_CONTINUES;
 
 
 /**
@@ -24,20 +19,12 @@ import static ru.spbau.tictactoe.Logic.Board.Status.*;
  * could be considered as a standard tic-tac-toe board.
  * At any moment there is a block where the next move will happen (initially it is the medium block).
  */
-public class Board extends AbstractBoard implements Serializable {
+public class Board extends AbstractBoard {
 
     /**
      * An outer square or an inner board.
      */
     public static class InnerBoard extends AbstractBoard {
-        /**
-         * Number of squares on inner board that are not empty.
-         */
-        private int numberOfMarkedSquares;
-
-        public int getNumberOfMarkedSquares(){
-            return numberOfMarkedSquares;
-        }
 
         /**
          * Initializes the values of squares in innerBoard with GAME_CONTINUES, as they should be empty in
@@ -50,9 +37,8 @@ public class Board extends AbstractBoard implements Serializable {
             }
         }
 
-        public InnerBoard(InnerBoard other){
+        private InnerBoard(InnerBoard other) {
             super(other);
-            numberOfMarkedSquares = other.numberOfMarkedSquares;
         }
 
         /**
@@ -82,6 +68,9 @@ public class Board extends AbstractBoard implements Serializable {
          * @param squareId is a square to be freed
          */
         public void discardChanges(int squareId) {
+            if (board[squareId].status == GAME_CONTINUES) {
+                return;
+            }
             board[squareId].status = GAME_CONTINUES;
             numberOfMarkedSquares--;
             status = GAME_CONTINUES;
@@ -114,11 +103,6 @@ public class Board extends AbstractBoard implements Serializable {
         return currentPlayer;
     }
 
-    /**
-     * Number of blocks where the game is over.
-     */
-    private int numberOfInvalidBlocks;
-
     public Board() {
         super();
         for (int i = 0; i < 9; i++) {
@@ -126,14 +110,15 @@ public class Board extends AbstractBoard implements Serializable {
         }
     }
 
-    public Board(Board other){
+    public Board(Board other) {
         super();
         status = other.status;
         currentPlayer = other.currentPlayer;
         currentInnerBoard = other.currentInnerBoard;
-        for(int i = 0; i < 9; i++){
+        numberOfMarkedSquares = other.numberOfMarkedSquares;
+        for (int i = 0; i < 9; i++) {
             assert other.board[i] != null;
-            board[i] = new InnerBoard((InnerBoard)other.board[i]);
+            board[i] = new InnerBoard((InnerBoard) other.board[i]);
         }
     }
 
@@ -149,50 +134,27 @@ public class Board extends AbstractBoard implements Serializable {
         return board[outerSquare].status;
     }
 
-
-    /**
-     * Marks the specified square on current inner board with the sign of the specified player.
-     *
-     * @param innerSquare is the id of the square to be marked
-     */
-    public Status makeMove(
-            int innerSquare) {
-        boolean blockIsOver = ((InnerBoard) board[currentInnerBoard])
-                .setSquare(innerSquare, currentPlayer);
-        Status res = board[currentInnerBoard].status;
-        if (blockIsOver) {
-            numberOfInvalidBlocks++;
-        }
-        if (board[innerSquare].status == Status.GAME_CONTINUES) {
-            currentInnerBoard = innerSquare;
-        } else {
-            currentInnerBoard = -1;
-        }
-        if (isOver()) {
-            status = Status.playerToStatus(currentPlayer);
-        } else {
-            if (numberOfInvalidBlocks == 9) {
-                status = DRAW;
-            }
-        }
-        currentPlayer = currentPlayer.opponent();
-        return res;
+    public InnerBoard[] getBoard() {
+        return Arrays.copyOf(board, board.length, InnerBoard[].class);
     }
 
     /**
-     * Marks the specified square on specified inner board with the sign of the given player
-     * if the current inner square is not specified yet.
+     * Makes the turn on board.
      *
-     * @param block       is the block id where a square will be marked
-     * @param innerSquare is the id of the inner square to be marked
+     * @param turn is a turn to be made.
+     * @return the status of the inner board after the move.
+     * @throws IncorrectMoveException if the current inner board is undefined or a given square is busy
      */
-    public Status makeMoveToAnyOuterSquare(
-            int block, int innerSquare) {
-
+    public Status makeMove(Turn turn) {
+        if (!verifyTurn(turn)) {
+            throw new IncorrectMoveException();
+        }
+        int innerSquare = turn.getInnerSquare();
+        int block = turn.getInnerBoard();
         boolean blockIsOver = ((InnerBoard) board[block])
                 .setSquare(innerSquare, currentPlayer);
         if (blockIsOver) {
-            numberOfInvalidBlocks++;
+            numberOfMarkedSquares++;
         }
         if (board[innerSquare].status == GAME_CONTINUES) {
             currentInnerBoard = innerSquare;
@@ -202,7 +164,7 @@ public class Board extends AbstractBoard implements Serializable {
         if (isOver()) {
             status = Status.playerToStatus(currentPlayer);
         } else {
-            if (numberOfInvalidBlocks == 9) {
+            if (numberOfMarkedSquares == 9) {
                 status = DRAW;
             }
         }
@@ -210,18 +172,17 @@ public class Board extends AbstractBoard implements Serializable {
         return board[block].status;
     }
 
-    public Status makeMove(Turn turn){
-        if(!verifyTurn(turn)){
+    /**
+     * Sets the current player's sign on a given inner square of the current inner board.
+     *
+     * @param innerSquare is an inner square on current inner board which status is to be changed.
+     * @throws IncorrectMoveException if the current inner board is undefined or a given square is busy
+     */
+    public void makeMove(int innerSquare) {
+        if (currentInnerBoard == -1) {
             throw new IncorrectMoveException();
         }
-        if(currentInnerBoard == -1){
-            return makeMoveToAnyOuterSquare(turn.getInnerBoard(), turn.getInnerSquare());
-        }
-        return makeMove(turn.getInnerSquare());
-    }
-
-    public InnerBoard[] getBoard() {
-        return Arrays.copyOf(board, board.length, InnerBoard[].class);
+        makeMove(new Turn(currentInnerBoard, innerSquare));
     }
 
     /**
@@ -234,26 +195,39 @@ public class Board extends AbstractBoard implements Serializable {
         return (currentInnerBoard == -1 || turn.getInnerBoard() == currentInnerBoard)
                 && board[turn.getInnerBoard()].getStatus() == GAME_CONTINUES
                 && ((InnerBoard) board[turn.getInnerBoard()])
-                        .getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
+                .getSquare(turn.getInnerSquare()) == GAME_CONTINUES;
     }
 
     /**
      * Creates a copy of this board without any shared references.
+     *
      * @return a copy of this board
      */
-    public Board deepCopy(){
+    public Board deepCopy() {
         return new Board(this);
     }
 
-    public void discardChanges(Turn turn, int innerBoard){
-        Logger logger = LoggerFactory.getLogger(Board.class);
-        //logger.debug(Integer.toString(turn.getInnerBoard()) + " " + Integer.toString(turn.getInnerSquare()));
-        //logger.debug(((InnerBoard) board[turn.getInnerBoard()]).getSquare(turn.getInnerSquare()).name());
+    /**
+     * Annuls the last turn.
+     *
+     * @param turn       is the turn to annulled.
+     * @param innerBoard is an inner board number to be set as a current inner board.
+     */
+    public void discardChanges(Turn turn, int innerBoard) {
+        if (board[turn.getInnerBoard()].getStatus() != Status.GAME_CONTINUES) {
+            numberOfMarkedSquares--;
+        }
         ((InnerBoard) board[turn.getInnerBoard()]).
                 discardChanges(turn.getInnerSquare());
         currentInnerBoard = innerBoard;
         currentPlayer = currentPlayer.opponent();
-        //logger.debug(((InnerBoard) board[turn.getInnerBoard()]).getSquare(turn.getInnerSquare()).name());
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        currentInnerBoard = 4;
+        currentPlayer = Turn.Player.CROSS;
     }
 
 }

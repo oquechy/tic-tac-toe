@@ -10,9 +10,8 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import ru.spbau.tictactoe.Bot.Bot;
-import ru.spbau.tictactoe.Bot.CleverBot;
-import ru.spbau.tictactoe.Bot.MiniMaxBot;
-import ru.spbau.tictactoe.Bot.MonteCarloBot;
+import ru.spbau.tictactoe.Bot.MiniMaxBot.MiniMaxBot;
+import ru.spbau.tictactoe.Bot.MonteCarloBot.MonteCarloBot;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Logic.Result.Result;
@@ -83,7 +82,7 @@ public class Controller {
         state = State.CREATE_FIELD;
         myType = true;
 
-        final Bot bot = new MonteCarloBot(logic.getBoard());
+        final Bot bot = new MiniMaxBot(logic.getBoard());
         friend = new NetAnotherPlayer() {
             @Override
             public Turn getOpponentTurn() {

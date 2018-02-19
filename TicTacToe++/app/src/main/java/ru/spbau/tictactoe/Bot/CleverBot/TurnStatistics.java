@@ -1,10 +1,8 @@
-package ru.spbau.tictactoe.Bot;
+package ru.spbau.tictactoe.Bot.CleverBot;
 
 
 import android.support.annotation.NonNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -48,11 +46,6 @@ public class TurnStatistics implements Comparable<TurnStatistics> {
      */
     boolean sendToSquareWhereOpponentWins;
 
-    /**
-     * Logger used for debug.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(TurnStatistics.class);
-
     @Override
     public int compareTo(@NonNull TurnStatistics other) {
         if (this.isBusy) {
@@ -62,35 +55,27 @@ public class TurnStatistics implements Comparable<TurnStatistics> {
             return 1;
         }
         if (this.nextMoveToAnySquare && !other.nextMoveToAnySquare) {
-            logger.debug("%d %d next move to any square\n", this.block, this.pos);
             return -1;
         }
         if (!this.nextMoveToAnySquare && other.nextMoveToAnySquare) {
-            logger.debug("%d %d next move to any square\n", other.block, other.pos);
             return 1;
         }
         if (this.sendToSquareWhereOpponentWins && !other.sendToSquareWhereOpponentWins) {
-            logger.debug("%d %d send to square where opponent wins\n", this.block, this.pos);
             return -1;
         }
         if (!this.sendToSquareWhereOpponentWins && other.sendToSquareWhereOpponentWins) {
-            logger.debug("%d %d send to square where opponent wins\n", other.block, other.pos);
             return 1;
         }
         if (this.isWin && !other.isWin) {
-            logger.debug("%d %d wins\n", this.block, this.pos);
             return 1;
         }
         if (!this.isWin && other.isWin) {
-            logger.debug("%d %d wins\n", other.block, other.pos);
             return -1;
         }
         if (this.blocksOpponentWin && !other.blocksOpponentWin) {
-            logger.debug("%d %d blocks opponent's win\n", this.block, this.pos);
             return 1;
         }
         if (!this.blocksOpponentWin && other.blocksOpponentWin) {
-            logger.debug("%d %d blocks opponent's win\n", other.block, other.pos);
             return -1;
         }
         return 0;

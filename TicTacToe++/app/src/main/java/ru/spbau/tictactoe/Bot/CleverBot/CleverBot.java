@@ -1,4 +1,4 @@
-package ru.spbau.tictactoe.Bot;
+package ru.spbau.tictactoe.Bot.CleverBot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +7,7 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.spbau.tictactoe.Bot.Bot;
 import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
@@ -32,9 +33,6 @@ public class CleverBot extends Bot {
      * @return TurnStatistics for every square on board
      */
     protected TurnStatistics[] analyzeBlock(int block, Turn.Player player, Board copy) {
-        logger.info("Analyzing block " +
-                (Integer.valueOf(block)).toString() + ",player " + player.name());
-
         Board.InnerBoard[] realBoard = copy.getBoard();
         TurnStatistics[] res = new TurnStatistics[9];
         ArrayList<Integer> indexes = new ArrayList<>();
@@ -52,7 +50,6 @@ public class CleverBot extends Bot {
                 square.setSquare(i, player);
                 if (board.getBlockStatus(i) == Status.GAME_CONTINUES) {
                     if (square.isOver() && square.getStatus() != Status.DRAW) {
-                        logger.info(player.name() + " can win " + Integer.valueOf(i).toString());
                         res[ind].isWin = true;
                         if (i == block) {
                             res[ind].nextMoveToAnySquare = true;
@@ -63,7 +60,6 @@ public class CleverBot extends Bot {
                 }
                 square.discardChanges(i);
                 if (analyzeBlockForLose(i, player, copy)) {
-                    logger.info(player.opponent().name() + " can win " + Integer.valueOf(i).toString());
                     res[ind].sendToSquareWhereOpponentWins = true;
                 }
                 square.discardChanges(i);
@@ -73,8 +69,6 @@ public class CleverBot extends Bot {
                 }
                 square.discardChanges(i);
             } else {
-                logger.info(Integer.valueOf(block).toString()
-                        + ", " + Integer.valueOf(i).toString() + " is busy");
                 res[ind].isBusy = true;
             }
         }
@@ -89,7 +83,6 @@ public class CleverBot extends Bot {
      * @return true if player's opponent can win on board, false otherwise
      */
     public boolean analyzeBlockForLose(int block, Turn.Player player, Board board) {
-        logger.info("analyse block for lose " + Integer.valueOf(block).toString());
         Board.InnerBoard[] realBoard = board.getBoard();
         for (int i = 0; i < 9; i++) {
             Board.InnerBoard square = realBoard[block];
@@ -98,9 +91,6 @@ public class CleverBot extends Bot {
                 if (board.getBlockStatus(i) == Status.GAME_CONTINUES) {
                     if (square.isOver() && square.getStatus() != Status.DRAW) {
                         square.discardChanges(i);
-                        logger.info("can win on " +
-                                Integer.valueOf(block).toString() +
-                                " square " + Integer.valueOf(i).toString());
                         return true;
                     }
                 }
@@ -141,13 +131,7 @@ public class CleverBot extends Bot {
             return new Turn(bestInBlock[8].block, bestInBlock[8].pos);
         }
         TurnStatistics[] statistics = analyzeBlock(cur, board.getCurrentPlayer(), copy);
-        for (int i = 0; i < 9; i++) {
-            logger.info(Integer.valueOf(statistics[i].pos).toString() + (i == 8 ? "\n" : " "));
-        }
         Arrays.sort(statistics);
-        for (int i = 0; i < 9; i++) {
-            logger.info(Integer.valueOf(statistics[i].pos).toString() + (i == 8 ? "\n" : " "));
-        }
         return new Turn(cur, statistics[8].pos);
     }
 
@@ -157,28 +141,26 @@ public class CleverBot extends Bot {
      * Launches console version for debug.
      */
     protected void go() {
+        int cnt = 0;
         Scanner reader = new Scanner(System.in);
-        for(int i = 0; i < 9; i++){
-            logger.debug(board.getBoard()[i].toString());
-        }
         while (!board.isOver()) {
+            if(cnt++ == 2){
+                System.out.println("ooups");
+            }
             System.out.printf("Current board is %d\n", board.getCurrentInnerBoard());
             printBoard(board);
             if (board.getCurrentInnerBoard() == -1) {
                 int x = reader.nextInt();
                 int y = reader.nextInt();
-                board.makeMoveToAnyOuterSquare(x, y);
+                board.makeMove(new Turn(x, y));
             } else {
                 int x = 0;
-                board.makeMove(x = reader.nextInt());
+                board.makeMove(new Turn(board.getCurrentInnerBoard(),
+                        x = reader.nextInt()));
                 System.out.println(board.getBlockStatus(x));
             }
             Turn turn = makeTurn();
-            if (board.getCurrentInnerBoard() == -1) {
-                board.makeMoveToAnyOuterSquare(turn.getInnerBoard(), turn.getInnerSquare());
-            } else {
-                board.makeMove(turn.getInnerSquare());
-            }
+            board.makeMove(turn);
         }
     }
 

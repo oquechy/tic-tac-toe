@@ -1,11 +1,11 @@
-package ru.spbau.tictactoe.Bot;
+package ru.spbau.tictactoe.Bot.MiniMaxBot;
 
 import org.junit.Test;
 
+import ru.spbau.tictactoe.Bot.BoardAnalyzer;
+import ru.spbau.tictactoe.Bot.MiniMaxBot.MiniMaxBot;
 import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
-
-import static org.junit.Assert.*;
 
 
 public class MiniMaxBotTest {

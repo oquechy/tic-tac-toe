@@ -78,4 +78,25 @@ public class BoardTest {
         assertEquals(Status.NOUGHT, board.getSquare(8, 7));
         assertEquals(Status.GAME_CONTINUES, copy.getSquare(8, 7));
     }
+
+    @Test
+    public void clear(){
+        Board board = new Board();
+        board.makeMove(0); //cross
+        board.makeMove(4); //nought
+        board.makeMove(1); //cross
+        board.makeMove(4); //nought
+        board.makeMove(2); //cross
+        board.clear();
+        assertEquals(4, board.getCurrentInnerBoard());
+        assertEquals(Turn.Player.CROSS, board.getCurrentPlayer());
+        assertEquals(0, board.getNumberOfMarkedSquares());
+        for(int i = 0; i < 9; i++){
+            assertEquals(Status.GAME_CONTINUES, board.getBlockStatus(i));
+            assertEquals(0, board.getNumberOfMarkedSquares());
+            for(int j = 0; j < 9; j++){
+                assertEquals(Status.GAME_CONTINUES, board.getSquare(i, j));
+            }
+        }
+    }
 }

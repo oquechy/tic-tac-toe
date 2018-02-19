@@ -6,10 +6,6 @@ import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
-/**
- * Created by olga on 2/10/2018.
- */
-
 public class BoardAnalyzer {
     public static ArrayList<Turn> getAvailableMoves(Board board){
         ArrayList<Turn> possibleMoves = new ArrayList<>();
@@ -40,6 +36,10 @@ public class BoardAnalyzer {
      * @param board is a board to be printed
      */
     public static void printBoard(Board board) {
+        for(int i = 0; i < 9; i++){
+            System.out.print("=");
+        }
+        System.out.println();
         Board.InnerBoard[] innerBoards = (Board.InnerBoard[])board.getBoard();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {

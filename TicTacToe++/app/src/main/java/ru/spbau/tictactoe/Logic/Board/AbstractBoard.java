@@ -1,9 +1,6 @@
 package ru.spbau.tictactoe.Logic.Board;
 
 
-
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,33 +23,41 @@ public class AbstractBoard implements Cloneable {
      * nobody won but the moves cannot be made - BLOCK.
      */
     protected Status status;
+
+    /**
+     * Number of squares on board that are not empty.
+     */
+    protected int numberOfMarkedSquares;
     /**
      * Squares of this board. All squares are null, if it is a square of the inner board.
      */
     protected AbstractBoard[] board;
 
-    AbstractBoard(){
+    AbstractBoard() {
         status = GAME_CONTINUES;
         board = new AbstractBoard[9];
     }
 
     /**
      * Copy constructor
+     *
      * @param other is an object which deep copy is to be created
      */
-    AbstractBoard(AbstractBoard other){
+    AbstractBoard(AbstractBoard other) {
         assert other != null;
         assert other.status != null;
         status = other.status;
-        if(other.board != null){
+        numberOfMarkedSquares = other.numberOfMarkedSquares;
+        if (other.board != null) {
             board = new AbstractBoard[9];
-            for(int i = 0; i < 9; i++){
-                if(other.board[i] != null){
+            for (int i = 0; i < 9; i++) {
+                if (other.board[i] != null) {
                     board[i] = new AbstractBoard(other.board[i]);
                 }
             }
         }
     }
+
     /**
      * Checks if the game on board is over.
      * Checks every row, column and diagonal if there are three squares
@@ -93,7 +98,25 @@ public class AbstractBoard implements Cloneable {
         return status;
     }
 
-    public AbstractBoard getBox(int index){
+    public AbstractBoard getBox(int index) {
         return board[index];
+    }
+
+    public int getNumberOfMarkedSquares() {
+        return numberOfMarkedSquares;
+    }
+
+
+    /**
+     * Clears the board for a new game.
+     */
+    public void clear() {
+        status = Status.GAME_CONTINUES;
+        numberOfMarkedSquares = 0;
+        for (int i = 0; i < 9; i++) {
+            if (board[i] != null) {
+                board[i].clear();
+            }
+        }
     }
 }
