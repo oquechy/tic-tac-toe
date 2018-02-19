@@ -1,11 +1,27 @@
 package ru.spbau.tictactoe;
 
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.sql.SQLException;
+
+import ru.spbau.tictactoe.Statistic.DataBase;
+import ru.spbau.tictactoe.ui.InviteFriend;
+import ru.spbau.tictactoe.ui.UI;
 
 public class EntryPoint extends AppCompatActivity {
 
@@ -16,43 +32,48 @@ public class EntryPoint extends AppCompatActivity {
 
         //create buttons
         Button singleButton = (Button) findViewById(R.id.singleButton);
-        Button inviteFriendButton = (Button) findViewById(R.id.inviteFriendButton);
-        Button joinAFriendButton = (Button) findViewById(R.id.joinAFriendButton);
+        Button inviteFriendButton = (Button) findViewById(R.id.friendButton);
         Button settingsButton = (Button) findViewById(R.id.settingsButton);
         Button recordsButton = (Button) findViewById(R.id.recordsButton);
+        TextView name = (TextView) findViewById(R.id.name);
+        Typeface font = Typeface.createFromAsset(getAssets(), "font/maintypeface.ttf");
+        singleButton.setTypeface(font);
+        inviteFriendButton.setTypeface(font);
+        settingsButton.setTypeface(font);
+        recordsButton.setTypeface(font);
+        name.setTypeface(font);
         //create OnClickListener for all buttons
         View.OnClickListener oclSingleButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(EntryPoint.this, SelectLevelActivity.class);
-                startActivity(intent);
+                Controller.optionGameWithBot();
+                newGame();
             }
         };
 
         View.OnClickListener oclInviteFriendButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),
-                        Controller.getIPtoShow(EntryPoint.this),
-                        Toast.LENGTH_LONG).show();
-                Toast.makeText(getApplicationContext(),
-                        WordCoder.encode(Controller.getIP(EntryPoint.this)),
-                        Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(EntryPoint.this, InviteFriend.class);
+                startActivity(intent);
             }
         };
         View.OnClickListener oclJoinFriendButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(),
-                        "Input address of server",
+                        Controller.getIPtoShow(EntryPoint.this),
                         Toast.LENGTH_LONG).show();
+
+                    Intent intent = new Intent(EntryPoint.this, ReadLogin.class);
+                startActivity(intent);
+
             }
         };
         View.OnClickListener oclSettingsButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(EntryPoint.this, RecordActivity.class);
-                startActivity(intent);
+                //TODO
             }
         };
         View.OnClickListener oclRecordsButton = new View.OnClickListener() {
@@ -66,8 +87,12 @@ public class EntryPoint extends AppCompatActivity {
 
         singleButton.setOnClickListener(oclSingleButton);
         inviteFriendButton.setOnClickListener(oclInviteFriendButton);
-        joinAFriendButton.setOnClickListener(oclJoinFriendButton);
         settingsButton.setOnClickListener(oclSettingsButton);
         recordsButton.setOnClickListener(oclRecordsButton);
+    }
+
+    private void newGame() {
+        Intent intent = new Intent(EntryPoint.this, UI.class);
+        startActivity(intent);
     }
 }

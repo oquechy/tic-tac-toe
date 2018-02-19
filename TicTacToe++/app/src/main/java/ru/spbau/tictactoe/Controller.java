@@ -3,13 +3,13 @@ package ru.spbau.tictactoe;
 import android.app.Activity;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
-import android.view.View;
-import android.widget.Toast;
-
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import ru.spbau.tictactoe.Bot.Bot;
+import ru.spbau.tictactoe.Bot.MiniMaxBot.MiniMaxBot;
+import ru.spbau.tictactoe.Bot.MonteCarloBot.MonteCarloBot;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Logic.Result.Result;
@@ -27,6 +27,14 @@ import static android.content.Context.WIFI_SERVICE;
  * and transmitting information between other classes
  */
 public class Controller {
+
+    public static boolean myTurn;
+
+    public static void main(String[] args) {
+        System.err.println(LOCAL_NET_MASK);
+    }
+
+    private final static int LOCAL_NET_MASK = (192) | (168 << 8);
 
     /**
      * cross is true and nought is false
@@ -72,7 +80,7 @@ public class Controller {
         state = State.CREATE_FIELD;
         myType = true;
 
-        final Bot bot = new Bot(logic.getBoard());
+        final Bot bot = new MiniMaxBot(logic.getBoard());
         friend = new NetAnotherPlayer() {
             @Override
             public Turn getOpponentTurn() {
@@ -81,6 +89,7 @@ public class Controller {
 
             @Override
             public void setOpponentTurn(Turn t) {
+                bot.getTurn(t);
             }
 
             @Override
@@ -157,19 +166,19 @@ public class Controller {
             Result result = logic.getResult();
             ui.displayResult(result);
             dataBase.addRecord(result, friend.getName(), logic.getTurnCounter());
-            try {
-                TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            newGame();
+//            try {
+//                TimeUnit.SECONDS.sleep(5);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            newGame();
             return true;
         }
 
         return false;
     }
 
-    private static void newGame() {
+    public static void newGame() {
         logic = new Logic();
         ui.setUpField();
         optionGameWithBot();
@@ -263,31 +272,34 @@ public class Controller {
     }
 
 
-    public static void optionConnectToFriend() {
+    public static void optionConnectToFriend(String text) {
         state = State.CONNECT_TO_FRIEND;
+        int ipTail = WordCoder.decode(text);
 
-//        ui.getGameCode();           // could be possible to return to main menu
-        setGameCode("");
+        String ip = Formatter.formatIpAddress(LOCAL_NET_MASK | ipTail << 16);
+        System.err.println(ip);
+        connectToServer(ip);
     }
 
-    public static void setGameCode(String gameCode) {
+    private static void connectToServer(String ip) {
         client = new Client();
         try {
-            client.start("Client", "192.168.1.49", "3030");
-            boolean myTurn = Boolean.parseBoolean(client.getFrom());
-//            ui.switchTurn(myTurn);
-            friend = client.getPlayer("Server");
-            if (!myTurn) {
-                state = State.FRIENDS_TURN;
-                setOpponentTurn(friend.getOpponentTurn());
-            } else {
-                state = State.MY_TURN;
-                verifyTurn( 1, 1);
-            }
+            client.start("Client", ip, "3030");
+            friend = client.getClientPlayer("Server");
+            myTurn = friend.getFirstPlayer();
+//            newGame(myTurn);
         } catch (IOException e) {
-//            ui.networkError();
-//            ui.getGameCode();
             e.printStackTrace();
+        }
+    }
+
+    public static void newGame(boolean myTurn) {
+        if (!myTurn) {
+            state = State.FRIENDS_TURN;
+
+            setOpponentTurn(friend.getOpponentTurn());
+        } else {
+            state = State.MY_TURN;
         }
     }
 
@@ -297,22 +309,42 @@ public class Controller {
         server = new Server();
         try {
             server.start("Server", 3030);
-            boolean myTurn = new Random().nextBoolean();
-//            ui.switchTurn(myTurn);
-            server.passTo(Boolean.toString(!myTurn));
-            friend = server.getPlayer("Client");
-            if (!myTurn) {
-                state = State.FRIENDS_TURN;
-                Turn opponentTurn = friend.getOpponentTurn();
-                setOpponentTurn(opponentTurn);
-            } else {
-                state = State.MY_TURN;
-                verifyTurn(3, 3);
-            }
+
+            myTurn = choosePlayer();
+
+            friend = server.getClientPlayer("Client");
+//            newGame(myTurn);
         } catch (IOException e) {
-//            ui.networkError();
             e.printStackTrace();
         }
+    }
+
+
+    private static boolean choosePlayer() {
+        myTurn = new Random().nextBoolean();
+        server.directPassTo(Boolean.toString(!myTurn));
+        System.err.println("myTurn: " + myTurn);
+        return myTurn;
+    }
+
+    public static String getEncodedIP(Activity activity) {
+        int ipAddress = getIP(activity);
+        if (ipAddress == 0) {
+            return "No connection";
+        }
+
+        String s = Formatter.formatIpAddress(ipAddress);
+        String[] ipString = s.split("\\.");
+        int ipTail = (Integer.parseInt(ipString[2])) + (Integer.parseInt(ipString[3]) << 8);
+
+        return WordCoder.encode(ipTail);
+    }
+
+    public static String getDecodedIP(String manuda) {
+        int ipTail = WordCoder.decode(manuda);
+
+        String ip = Formatter.formatIpAddress(LOCAL_NET_MASK | ipTail << 16);
+        return ip;
     }
 
     public static void initDB(Activity activity) {

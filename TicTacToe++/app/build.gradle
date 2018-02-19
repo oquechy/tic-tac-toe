@@ -28,4 +28,9 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'org.xerial:sqlite-jdbc:3.21.0'
     testCompile 'junit:junit:4.12'
+    compile group: 'org.slf4j', name:'slf4j-api', version: '1.7.6'
+    compile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.9'
+    compile group: 'ch.qos.logback', name:'logback-core', version: '1.0.9'
+
+
 }
