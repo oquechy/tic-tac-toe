@@ -1,18 +1,32 @@
 package ru.spbau.tictactoe;
 
-public class Turn {
-    boolean player;
-    int x;
-    int y;
+import ru.spbau.tictactoe.Logic.Turn.Turn;
 
-    public Turn(boolean player, int x, int y) {
-        this.player = player;
+public class UITurn {
+    private boolean cross;
+    private int x;
+    private int y;
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public boolean isCross() {
+        return cross;
+    }
+
+    public UITurn(boolean isCross, int x, int y) {
+        this.cross = isCross;
         this.x = x;
         this.y = y;
     }
 
-    public Turn(ru.spbau.tictactoe.Logic.Turn.Turn turn) {
-        player = false;
+    public UITurn(Turn turn) {
+        cross = false;
         x = (turn.getInnerBoard() % 3) * 3 + turn.getInnerSquare() % 3;
         y = (turn.getInnerBoard() / 3) * 3 + turn.getInnerSquare() / 3;
 
@@ -22,7 +36,7 @@ public class Turn {
 
     }
 
-    public ru.spbau.tictactoe.Logic.Turn.Turn convertToTurn() {
+    public Turn convertToTurn() {
         int[][] bigBoard = new int[9][9];
         int[][] littleBoard = new int[9][9];
 
@@ -56,17 +70,17 @@ public class Turn {
         System.err.println("was mine: " + x + " " + y);
         System.err.println("converted to olya's: " + bigBoard[y][x] + " " + littleBoard[y][x]);
 
-        return new ru.spbau.tictactoe.Logic.Turn.Turn(bigBoard[y][x], littleBoard[y][x]);
+        return new Turn(bigBoard[y][x], littleBoard[y][x]);
     }
 
     @Override
     public String toString() {
-        return (player ? "1" : "0") + " " + x + " " + y;
+        return (cross ? "1" : "0") + " " + x + " " + y;
     }
 
-    public static Turn fromString(String s) {
+    public static UITurn fromString(String s) {
         String[] tokens = s.split(" ");
-        return new Turn(Integer.parseInt(tokens[0]) != 0,
+        return new UITurn(Integer.parseInt(tokens[0]) != 0,
                 Integer.parseInt(tokens[1]),
                 Integer.parseInt(tokens[2]));
     }

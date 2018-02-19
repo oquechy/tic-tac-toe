@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutionException;
 
 import ru.spbau.tictactoe.Network.SocketUtils.SocketReader;
 import ru.spbau.tictactoe.Network.SocketUtils.SocketWriter;
-import ru.spbau.tictactoe.Turn;
+import ru.spbau.tictactoe.UITurn;
 
 public class Connection {
     PrintWriter out;
@@ -33,13 +33,13 @@ public class Connection {
     public NetAnotherPlayer getPlayer(final String name) {
         return new NetAnotherPlayer() {
             @Override
-            public void setOpponentTurn(Turn turn) {
+            public void setOpponentTurn(UITurn turn) {
                 passTo(turn.toString());
             }
 
             @Override
-            public Turn getOpponentTurn() {
-                return Turn.fromString(getFrom());
+            public UITurn getOpponentTurn() {
+                return UITurn.fromString(getFrom());
             }
 
             @Override
