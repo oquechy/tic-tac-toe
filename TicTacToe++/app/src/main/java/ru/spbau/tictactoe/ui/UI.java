@@ -164,6 +164,20 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         //surfaceHolder.unlockCanvasAndPost(canvas);
     }
 
+    public void incorrectTurnTime() {
+        TextView res = findViewById(R.id.textView2);
+        Typeface font = Typeface.createFromAsset(getAssets(), "font/maintypeface.ttf");
+        res.setTypeface(font);
+        res.setTextColor(Color.rgb(163, 121, 73));
+        res.setTextSize(40);
+        res.setText("OPPONENT TURN");
+    }
+
+    public void clearMessage() {
+        TextView res = findViewById(R.id.textView2);
+        res.setText("");
+    }
+
     public void redraw() {
         Canvas canvas = surfaceHolder.lockCanvas();
         Drawer.drawEverything(canvas);

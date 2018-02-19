@@ -17,6 +17,11 @@ public class WriteLogin extends AppCompatActivity {
         TextView text = (TextView) findViewById(R.id.textView);
         Typeface font = Typeface.createFromAsset(getAssets(), "font/maintypeface.ttf");
         text.setTypeface(font);
-        text.setText(Controller.getEncodedIP(this));
+        TextView code = (TextView) findViewById(R.id.textView3);
+        code.setTypeface(font);
+        code.setText(Controller.getEncodedIP(this));
+        TextView error = (TextView) findViewById(R.id.textView5);
+        error.setTypeface(font);
+        error.setText("???");
     }
 }
