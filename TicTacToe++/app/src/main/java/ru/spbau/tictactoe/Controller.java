@@ -3,6 +3,7 @@ package ru.spbau.tictactoe;
 import android.app.Activity;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
+
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -27,14 +28,8 @@ import static android.content.Context.WIFI_SERVICE;
  */
 public class Controller {
 
-    public static boolean myTurn;
-
-    public static void main(String[] args) {
-        System.err.println(LOCAL_NET_MASK);
-    }
-
     private final static int LOCAL_NET_MASK = (192) | (168 << 8);
-
+    public static boolean myTurn;
     /**
      * cross is true and nought is false
      */
@@ -45,12 +40,15 @@ public class Controller {
     private static Client client;
     private static Logic logic = new Logic();
     private static DataBase dataBase;
-
     /**
      * either bot or net friend
      */
     private static NetAnotherPlayer friend;
     private boolean paused = false;
+
+    public static void main(String[] args) {
+        System.err.println(LOCAL_NET_MASK);
+    }
 
     /**
      * provides access to ui as a static field

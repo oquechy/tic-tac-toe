@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import ru.spbau.tictactoe.Controller;
 import ru.spbau.tictactoe.R;
 
 public class WriteLogin extends AppCompatActivity {
@@ -16,6 +17,11 @@ public class WriteLogin extends AppCompatActivity {
         TextView text = (TextView) findViewById(R.id.textView);
         Typeface font = Typeface.createFromAsset(getAssets(), "font/maintypeface.ttf");
         text.setTypeface(font);
-
+        TextView code = (TextView) findViewById(R.id.textView3);
+        code.setTypeface(font);
+        code.setText(Controller.getEncodedIP(this));
+        TextView error = (TextView) findViewById(R.id.textView5);
+        error.setTypeface(font);
+        error.setText("???");
     }
 }

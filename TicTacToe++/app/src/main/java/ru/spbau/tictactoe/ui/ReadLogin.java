@@ -28,5 +28,8 @@ public class ReadLogin extends AppCompatActivity {
             }
         };
         but.setOnClickListener(oclBut);
+        TextView error = (TextView) findViewById(R.id.textView6);
+        error.setTypeface(font);
+        error.setText("???");
     }
 }

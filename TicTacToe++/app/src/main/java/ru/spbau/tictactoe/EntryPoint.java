@@ -1,13 +1,5 @@
 package ru.spbau.tictactoe;
 
-import android.app.Activity;
-import android.content.ContentValues;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -17,11 +9,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.SQLException;
-
-import ru.spbau.tictactoe.Statistic.DataBase;
 import ru.spbau.tictactoe.ui.InviteFriend;
+import ru.spbau.tictactoe.ui.ReadLogin;
 import ru.spbau.tictactoe.ui.UI;
+import ru.spbau.tictactoe.ui.WriteLogin;
 
 public class EntryPoint extends AppCompatActivity {
 
