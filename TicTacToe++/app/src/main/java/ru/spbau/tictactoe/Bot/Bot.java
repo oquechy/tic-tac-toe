@@ -5,6 +5,7 @@ import java.util.Random;
 import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
+import ru.spbau.tictactoe.UITurn;
 
 /**
  * First version of Bot
@@ -51,7 +52,7 @@ public class Bot {
         return new Turn(cur, x);
     }
 
-    public void getTurn(ru.spbau.tictactoe.Turn turn){
+    public void getTurn(UITurn turn){
        lastOpponentsTurn = turn.convertToTurn();
     }
 

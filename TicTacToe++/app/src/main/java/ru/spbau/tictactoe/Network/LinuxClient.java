@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import ru.spbau.tictactoe.Controller;
-import ru.spbau.tictactoe.Turn;
+import ru.spbau.tictactoe.UITurn;
 
 
 public class LinuxClient {
@@ -49,7 +49,7 @@ public class LinuxClient {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                fromUser = new Turn(false, Math.abs(random.nextInt() % 9), Math.abs(random.nextInt() % 9)).toString();
+                fromUser = new UITurn(false, Math.abs(random.nextInt() % 9), Math.abs(random.nextInt() % 9)).toString();
                 System.out.println("LinuxClient: " + fromUser);
                 out.println(fromUser);
             }

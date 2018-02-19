@@ -37,7 +37,7 @@ public class EntryPoint extends AppCompatActivity {
         View.OnClickListener oclSingleButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Controller.optionGameWithBot();
+                Controller.optionGameWithBot(1);
                 newGame();
             }
         };

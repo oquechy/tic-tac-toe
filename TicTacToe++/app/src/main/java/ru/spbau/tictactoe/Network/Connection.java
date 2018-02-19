@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import ru.spbau.tictactoe.Network.SocketUtils.SocketReader;
 import ru.spbau.tictactoe.Network.SocketUtils.SocketWriter;
-import ru.spbau.tictactoe.Turn;
+import ru.spbau.tictactoe.UITurn;
 
 public class Connection {
     protected PrintWriter out;
@@ -56,24 +56,24 @@ public class Connection {
             String name;
 
             @Override
-            public void setOpponentTurn(Turn turn) {
+            public void setOpponentTurn(UITurn turn) {
                 String stringTurn = turn.toString();
                 passTo(stringTurn);
             }
 
             @Override
-            public Turn getOpponentTurn() {
-                Turn turn = null;
+            public UITurn getOpponentTurn() {
+                UITurn turn = null;
                 while (turn == null) {
                     try {
-                        turn = Turn.fromString(getFrom());
+                        turn = UITurn.fromString(getFrom());
                     } catch (NumberFormatException ignored) { }
                 }
                 return turn;
             }
 
             @Override
-            public boolean choosePlayer() {
+            public boolean amIFirstPlayer() {
                 return Boolean.parseBoolean(getFrom());
             }
 
