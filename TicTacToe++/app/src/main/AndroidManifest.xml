@@ -13,17 +13,27 @@
         android:roundIcon="@mipmap/icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EntryPoint">
+        <activity
+            android:name=".EntryPoint"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.UI" />
-        <activity android:name=".ui.InviteFriend" />
-        <activity android:name=".WriteLogin" />
-        <activity android:name=".ReadLogin"></activity>
+        <activity
+            android:name=".ui.UI"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.InviteFriend"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.WriteLogin"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".ui.ReadLogin"
+            android:screenOrientation="portrait"
+            />
     </application>
 
 </manifest>

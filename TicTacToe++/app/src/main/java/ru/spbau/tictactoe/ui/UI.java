@@ -2,11 +2,15 @@ package ru.spbau.tictactoe.ui;
 
 import android.app.Activity;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import ru.spbau.tictactoe.Controller;
 import ru.spbau.tictactoe.Logic.Result.Result;
@@ -36,7 +40,16 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         surfaceHolder.addCallback(this);
         surface.setOnTouchListener(UI.this);
         Controller.initController(this);
-//
+        Button buttonReplay = findViewById(R.id.buttonReplay);
+        View.OnClickListener replay = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        };
+        buttonReplay.setOnClickListener(replay);
+        Typeface font = Typeface.createFromAsset(getAssets(), "font/maintypeface.ttf");
+        buttonReplay.setTypeface(font);
     }
 
     private Pair<Integer, Integer> getCoordinates(float x, float y) {
@@ -133,10 +146,22 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
     }
 
     public void displayResult(Result r) {
-        Canvas canvas = surfaceHolder.lockCanvas();
-        Drawer.drawEverything(canvas);
-        Drawer.writeWin(canvas, r);
-        surfaceHolder.unlockCanvasAndPost(canvas);
+        //Canvas canvas = surfaceHolder.lockCanvas();
+        //Drawer.drawEverything(canvas);
+        TextView res = findViewById(R.id.textView2);
+        Typeface font = Typeface.createFromAsset(getAssets(), "font/maintypeface.ttf");
+        res.setTypeface(font);
+        res.setTextColor(Color.rgb(163, 121, 73));
+        res.setTextSize(50);
+        if (r == Result.DRAW) {
+            res.setText("DRAW!");
+            return;
+        }
+        if (r == Result.CROSS && UI.crossOrZero == 1 || r == Result.NOUGHT && UI.crossOrZero == -1) {
+            res.setText("WIN!");
+        } else
+            res.setText("LOSE!");
+        //surfaceHolder.unlockCanvasAndPost(canvas);
     }
 
     public void redraw() {
