@@ -1,13 +1,13 @@
 package ru.spbau.tictactoe.Network;
 
-import ru.spbau.tictactoe.Turn;
+import ru.spbau.tictactoe.UITurn;
 
 public interface NetAnotherPlayer {
-    void setOpponentTurn(Turn turn);
+    void setOpponentTurn(UITurn turn);
 
-    Turn getOpponentTurn();
+    UITurn getOpponentTurn();
 
-    public boolean getFirstPlayer();
+    public boolean amIFirstPlayer();
 
     String getName();
 }
