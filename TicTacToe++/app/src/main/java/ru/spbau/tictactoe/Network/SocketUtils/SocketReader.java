@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class SocketReader extends AsyncTask<BufferedReader, Void, String> {
 
-    IOException exception;
+    private IOException exception;
 
     @Override
     protected String doInBackground(BufferedReader... in) {

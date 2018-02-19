@@ -10,7 +10,7 @@ import ru.spbau.tictactoe.Network.SocketUtils.SocketWriter;
 
 public class Client extends Connection {
 
-    Socket socket;
+    private Socket socket;
 
     private Socket createSocket(String... params) {
         try {

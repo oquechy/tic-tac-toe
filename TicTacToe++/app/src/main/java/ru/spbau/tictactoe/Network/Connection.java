@@ -13,20 +13,20 @@ import ru.spbau.tictactoe.Network.SocketUtils.SocketWriter;
 import ru.spbau.tictactoe.Turn;
 
 public class Connection {
-    PrintWriter out;
-    BufferedReader in;
+    protected PrintWriter out;
+    protected BufferedReader in;
 
-    public void asyncPassTo(String s) {
+    protected void asyncPassTo(String s) {
         System.out.println(this.getClass() + " passed: " + s);
         new SocketWriter(out).execute(s);
     }
 
-    public void directPassTo(String s) {
+    protected void directPassTo(String s) {
         System.out.println(this.getClass() + " passed: " + s);
         out.println(s);
     }
 
-    public String asyncGetFrom() {
+    protected String asyncGetFrom() {
         String s = null;
         try {
             s = new SocketReader().execute(in).get();
@@ -37,7 +37,7 @@ public class Connection {
         return s;
     }
 
-    public String directGetFrom() {
+    protected String directGetFrom() {
         try {
             String s = in.readLine();
             System.out.println(this.getClass() + " got: " + s);
@@ -46,30 +46,6 @@ public class Connection {
             return null;
         }
     }
-
-//    public NetAnotherPlayer getAnotherPlayer(final String name) {
-//        return new NetAnotherPlayer() {
-//            @Override
-//            public void setOpponentTurn(Turn turn) {
-//                passTo(turn.toString());
-//            }
-//
-//            @Override
-//            public Turn getOpponentTurn() {
-//                return Turn.fromString(getFrom());
-//            }
-//
-//            @Override
-//            public boolean getFirstPlayer() {
-//                return Boolean.parseBoolean(getFrom());
-//            }
-//
-//            @Override
-//            public String getName() {
-//                return name;
-//            }
-//        };
-//    }
 
     protected boolean isMainThread() {
         return Looper.myLooper() == Looper.getMainLooper();
@@ -115,9 +91,8 @@ public class Connection {
         };
     }
 
-    private String getFrom() {
-        String s = isMainThread() ? asyncGetFrom() : directGetFrom();
-        return s;
+    public String getFrom() {
+        return isMainThread() ? asyncGetFrom() : directGetFrom();
     }
 
     public void passTo(String string) {

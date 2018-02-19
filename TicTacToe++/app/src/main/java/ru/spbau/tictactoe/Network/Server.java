@@ -33,7 +33,8 @@ public class Server extends Connection {
             return null;
         }
     }
-    public void start(String serverName, int portNumber) throws IOException, ExecutionException, InterruptedException {
+    public void start(String serverName, int portNumber)
+            throws IOException, ExecutionException, InterruptedException {
 
         clientSocket = isMainThread() ? new ServerSocketCreator().execute(portNumber).get()
                 : getClientSocket(portNumber);
