@@ -3,7 +3,6 @@ package ru.spbau.tictactoe;
 import android.app.Activity;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.Random;
@@ -149,12 +148,12 @@ public class Controller {
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
             ui.displayResult(logic.getResult());
-            try {
-                TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            newGame();
+//            try {
+//                TimeUnit.SECONDS.sleep(5);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            newGame();
             return true;
         }
 

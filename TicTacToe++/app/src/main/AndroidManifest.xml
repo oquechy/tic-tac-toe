@@ -3,6 +3,7 @@
     package="ru.spbau.tictactoe">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/icon"
@@ -10,15 +11,23 @@
         android:roundIcon="@mipmap/icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EntryPoint">
+        <activity
+            android:name=".EntryPoint"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.UI" />
-        <activity android:name=".ui.InviteFriend"></activity>
+        <activity
+            android:name=".ui.UI"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.InviteFriend"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.WriteLogin" />
+        <activity android:name=".ui.ReadLogin"></activity>
     </application>
 
 </manifest>
