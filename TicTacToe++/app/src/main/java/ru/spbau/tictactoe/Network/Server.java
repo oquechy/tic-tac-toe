@@ -33,19 +33,20 @@ public class Server extends Connection {
             return null;
         }
     }
-    public void start(String serverName, int portNumber) throws IOException {
+    public void start(String serverName, int portNumber)
+            throws IOException, ExecutionException, InterruptedException {
 
-        clientSocket = getClientSocket(portNumber); //new ServerSocketCreator().execute(portNumber).get();
+        clientSocket = isMainThread() ? new ServerSocketCreator().execute(portNumber).get()
+                : getClientSocket(portNumber);
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 
-        String clientName;
+//        String clientName;
 
-        out.println(serverName);
+        passTo(serverName);
         System.out.println("ServerName: " + serverName);
-        clientName = in.readLine();
-        System.out.println("ClientName: " + clientName);
+//        clientName = in.readLine();
     }
 
 }

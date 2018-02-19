@@ -10,4 +10,6 @@ public interface NetAnotherPlayer {
     public boolean amIFirstPlayer();
 
     String getName();
+
+    void receivePlayer(boolean b);
 }

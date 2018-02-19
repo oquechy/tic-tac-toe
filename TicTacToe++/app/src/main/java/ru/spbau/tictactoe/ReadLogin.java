@@ -6,17 +6,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.util.Objects;
 
 import ru.spbau.tictactoe.ui.UI;
 
 public class ReadLogin extends AppCompatActivity {
 
-    static class ClientRunner extends AsyncTask<Activity, Void, Void> {
+    static class ClientRunner extends AsyncTask<Activity, Activity, Activity> {
 
         String text;
 
@@ -26,12 +26,15 @@ public class ReadLogin extends AppCompatActivity {
         }
 
         @Override
-        protected Void doInBackground(Activity... activities) {
-            Controller.optionConnectToFriend(text);
-            Intent intent = new Intent(activities[0], UI.class);
-            activities[0].startActivity(intent);
-            Controller.newGame(Controller.myTurn);
-            return null;
+        protected Activity doInBackground(Activity... activities) {
+            Controller.optionJoinFriend(text);
+            return activities[0];
+        }
+
+        @Override
+        protected void onPostExecute(Activity activity) {
+            Intent intent = new Intent(activity, UI.class);
+            activity.startActivity(intent);
         }
     }
 

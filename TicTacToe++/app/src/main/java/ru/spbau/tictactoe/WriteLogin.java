@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
-
 
 import ru.spbau.tictactoe.ui.UI;
 
@@ -15,14 +17,18 @@ import ru.spbau.tictactoe.Statistic.DataBase;
 
 public class WriteLogin extends AppCompatActivity {
 
-    static class ServerRunner extends AsyncTask<Activity, Void, Void> {
+    static class ServerRunner extends AsyncTask<Activity, Void, Activity> {
+
         @Override
-        protected Void doInBackground(Activity... activities) {
+        protected Activity doInBackground(Activity... activities) {
             Controller.optionInviteFriend();
-            Intent intent = new Intent(activities[0], UI.class);
-            activities[0].startActivity(intent);
-            Controller.newGame(Controller.myTurn);
-            return null;
+            return activities[0];
+        }
+
+        @Override
+        protected void onPostExecute(Activity activity) {
+            Intent intent = new Intent(activity, UI.class);
+            activity.startActivity(intent);
         }
     }
 
