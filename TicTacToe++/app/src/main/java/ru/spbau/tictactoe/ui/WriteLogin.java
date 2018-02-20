@@ -58,5 +58,6 @@ public class WriteLogin extends AppCompatActivity {
         TextView error = (TextView) findViewById(R.id.textView5);
         error.setTypeface(font);
         error.setText(errorMsg);
+//        ErrorHandler.setErrorMsgAndReturnToMenu(WriteLogin.this);
     }
 }

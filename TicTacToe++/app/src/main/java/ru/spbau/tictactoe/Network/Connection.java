@@ -84,10 +84,13 @@ public class Connection {
             }
 
             @Override
-            public void receivePlayer(boolean b) {
+            public void receivePlayerType(boolean b) {
                 String player = String.valueOf(b);
                 passTo(player);
             }
+
+            @Override
+            public void newGameAsPlayer(boolean isCross) { }
         };
     }
 

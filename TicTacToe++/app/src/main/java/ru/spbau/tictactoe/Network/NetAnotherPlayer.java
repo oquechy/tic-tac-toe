@@ -11,5 +11,7 @@ public interface NetAnotherPlayer {
 
     String getName();
 
-    void receivePlayer(boolean b);
+    void receivePlayerType(boolean b);
+
+    void newGameAsPlayer(boolean isCross);
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -76,9 +77,7 @@ public class ReadLogin extends AppCompatActivity {
         };
 
         but.setOnClickListener(oclBut);
-        TextView error = (TextView) findViewById(R.id.textView6);
-        error.setTypeface(font);
-        error.setText(errorMsg);
+//        ErrorHandler.setErrorMsgAndReturnToMenu(ReadLogin.this);
     }
 
 }
