@@ -35,6 +35,7 @@
             android:name=".ui.ReadLogin"
             android:screenOrientation="portrait" />
         <activity android:name=".ui.ChooseLevelActivity"></activity>
+        <activity android:name=".RecordActivity" />
     </application>
 
 </manifest>

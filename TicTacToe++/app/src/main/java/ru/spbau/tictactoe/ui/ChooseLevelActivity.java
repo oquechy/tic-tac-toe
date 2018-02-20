@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import ru.spbau.tictactoe.Controller;
 import ru.spbau.tictactoe.R;
@@ -16,6 +17,7 @@ public class ChooseLevelActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_level);
+        TextView text = (TextView) findViewById(R.id.textView7);
         Button bot1 = (Button) findViewById(R.id.B1);
         Button bot2 = (Button) findViewById(R.id.B2);
         Button bot3 = (Button) findViewById(R.id.B3);
@@ -25,6 +27,7 @@ public class ChooseLevelActivity extends AppCompatActivity {
         bot2.setTypeface(font);
         bot3.setTypeface(font);
         bot4.setTypeface(font);
+        text.setTypeface(font);
         View.OnClickListener ocl1 = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
