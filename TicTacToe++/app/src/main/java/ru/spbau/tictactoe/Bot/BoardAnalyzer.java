@@ -43,6 +43,7 @@ public class BoardAnalyzer {
      *
      * @param board is a board to be printed
      */
+    @SuppressWarnings("unchecked")
     public static void printBoard(Board board) {
         for (int i = 0; i < 9; i++) {
             System.out.print("=");

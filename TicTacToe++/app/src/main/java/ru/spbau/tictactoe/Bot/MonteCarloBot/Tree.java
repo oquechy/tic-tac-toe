@@ -7,23 +7,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import ru.spbau.tictactoe.Bot.MonteCarloBot.State;
 
 /**
  * Basic implementation for Tree and Node classes for a tree search functionality.
+ * This class is used only for MonteCarloBot, so class and all methods are package private.
  */
-public class Tree {
+class Tree {
     private Node root;
 
-    public Tree() {
+    Tree() {
         root = new Node();
     }
 
-    public Node getRoot() {
+    Node getRoot() {
         return root;
     }
 
-    public void setRoot(Node root) {
+    void setRoot(Node root) {
         this.root = root;
     }
 
@@ -35,12 +35,12 @@ public class Tree {
         private Node parent;
         private List<Node> childNodes;
 
-        public Node() {
+        Node() {
             this.state = new State();
             childNodes = new ArrayList<>();
         }
 
-        public Node(State state) {
+        Node(State state) {
             this.state = state;
             childNodes = new ArrayList<>();
         }
@@ -50,7 +50,7 @@ public class Tree {
          *
          * @param node a node which copy is to be created
          */
-        public Node(Node node) {
+        Node(Node node) {
             this.childNodes = new ArrayList<>();
             this.state = new State(node.getState());
             if (node.getParent() != null) {
@@ -61,7 +61,7 @@ public class Tree {
             }
         }
 
-        public State getState() {
+        State getState() {
             return state;
         }
 
@@ -73,14 +73,14 @@ public class Tree {
             this.parent = parent;
         }
 
-        public List<Node> getChildNodes() {
+        List<Node> getChildNodes() {
             return childNodes;
         }
 
         /**
          * @return random child of this node
          */
-        public Node getRandomChildNode() {
+        Node getRandomChildNode() {
             int noOfPossibleMoves = this.childNodes.size();
             Random rand = new Random(System.currentTimeMillis());
             int selectRandom = (int) (rand.nextDouble() * ((noOfPossibleMoves - 1) + 1));
@@ -90,7 +90,7 @@ public class Tree {
         /**
          * @return child node with max score
          */
-        public Node getChildWithMaxScore() {
+        Node getChildWithMaxScore() {
             return Collections.max(this.childNodes);
         }
 

@@ -2,9 +2,6 @@ package ru.spbau.tictactoe.Bot.MiniMaxBot;
 
 import android.support.annotation.NonNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -15,14 +12,13 @@ import ru.spbau.tictactoe.Logic.Board.Board;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
-import static ru.spbau.tictactoe.Bot.BoardAnalyzer.*;
+import static ru.spbau.tictactoe.Bot.BoardAnalyzer.getAvailableMoves;
 
 /**
  * Bot which implements the MiniMax algorithm.
  */
 public class MiniMaxBot extends CleverBot {
     private int maxDepth;
-    private static final Logger logger = LoggerFactory.getLogger(MiniMaxBot.class);
 
     public MiniMaxBot(Board board) {
         super(board);
@@ -45,11 +41,20 @@ public class MiniMaxBot extends CleverBot {
         if (currentDepth++ == maxDepth || givenBoard.isOver()) {
             return new TurnWithScore(turn, score(givenBoard));
         }
+        TurnWithScore result = null;
         if (givenBoard.getCurrentPlayer() == player) {
-            return getMax(givenBoard, currentDepth);
+            result = getMax(givenBoard, currentDepth);
+
         } else {
-            return getMin(givenBoard, currentDepth);
+            result = getMin(givenBoard, currentDepth);
         }
+        if(result.score < Integer.MIN_VALUE + 1000){
+            result.score++;
+        }
+        if(result.score > Integer.MAX_VALUE - 1000){
+            result.score--;
+        }
+        return result;
     }
 
     /**
@@ -61,7 +66,6 @@ public class MiniMaxBot extends CleverBot {
     private TurnWithScore getMax(Board givenBoard, int currentPly) {
         ArrayList<TurnWithScore> turnWithScores = new ArrayList<>();
         int currentInnerBoard = givenBoard.getCurrentInnerBoard();
-        assert givenBoard.getCurrentPlayer() == player;
         for (Turn turn : getAvailableMoves(givenBoard)) {
             givenBoard.makeMove(turn);
 
@@ -79,9 +83,11 @@ public class MiniMaxBot extends CleverBot {
      * @param max   indicates which score is to be considered as the best (min or max)
      * @return random TurnWithScore from TurnWithScores with the best (equal) score
      */
+    @SuppressWarnings("unchecked")
     private TurnWithScore randomBestTurn(ArrayList<TurnWithScore> turns, boolean max) {
         int bestScore;
         if (max) {
+
             bestScore = Collections.max(turns).score;
         } else {
             bestScore = Collections.min(turns).score;
@@ -104,7 +110,6 @@ public class MiniMaxBot extends CleverBot {
      * @return the score of the board
      */
     private TurnWithScore getMin(Board givenBoard, int currentDepth) {
-        assert givenBoard.getCurrentPlayer() == player.opponent();
         ArrayList<TurnWithScore> turnWithScores = new ArrayList<>();
         int currentInnerBoard = givenBoard.getCurrentInnerBoard();
         for (Turn turn : getAvailableMoves(givenBoard)) {
@@ -144,6 +149,18 @@ public class MiniMaxBot extends CleverBot {
         return score;
     }
 
+    /**
+     * Transforms board status to sign (0, +1, -1)
+     * @param status is a status to be transformed
+     * @return 1 if bot won, -1 if bot lost, 0 if the status is draw
+     */
+    private int statusSign(Status status){
+        if(status == Status.DRAW){
+            return 0;
+        }
+        return Status.playerToStatus(this.player) == board.getStatus() ? 1 : -1;
+    }
+
 
     /**
      * Calculates the score on given board.
@@ -153,7 +170,7 @@ public class MiniMaxBot extends CleverBot {
     private int scoreOnBoard(int coef, AbstractBoard board) {
         if (board.getStatus() == Status.CROSS
                 || board.getStatus() == Status.NOUGHT) {
-            return coef * (Status.playerToStatus(this.player) == board.getStatus() ? 1 : -1);
+            return coef * statusSign(board.getStatus());
         }
         int values[] = new int[9];
         if ((board instanceof Board.InnerBoard || board instanceof Board)
@@ -178,10 +195,10 @@ public class MiniMaxBot extends CleverBot {
      *
      * @return the score of the board
      */
-    public int score(Board board) {
+    int score(Board board) {
         int score = 0;
         if (board.getStatus() != Status.GAME_CONTINUES) {
-            return scoreOnBoard(Integer.MAX_VALUE / 32, board);
+            return Integer.MAX_VALUE * statusSign(board.getStatus());
         }
         if (board.getCurrentInnerBoard() == -1) {
             score += 48 * (player == board.getCurrentPlayer() ? 1 : -1);
@@ -213,6 +230,4 @@ public class MiniMaxBot extends CleverBot {
         MiniMaxBot bot = new MiniMaxBot(board);
         bot.go();
     }
-
-
 }
