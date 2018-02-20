@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ru.spbau.tictactoe.ui.ChooseLevelActivity;
 import ru.spbau.tictactoe.ui.InviteFriend;
 import ru.spbau.tictactoe.ui.ReadLogin;
 import ru.spbau.tictactoe.ui.UI;
@@ -37,8 +38,8 @@ public class EntryPoint extends AppCompatActivity {
         View.OnClickListener oclSingleButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Controller.optionGameWithBot();
-                newGame();
+                Intent intent = new Intent(EntryPoint.this, ChooseLevelActivity.class);
+                startActivity(intent);
             }
         };
 
