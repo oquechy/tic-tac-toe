@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 
 public class SocketWriter extends AsyncTask<String, Void, Void> {
 
-    PrintWriter out;
+    private PrintWriter out;
 
     public SocketWriter(PrintWriter out) {
         super();

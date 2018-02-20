@@ -47,12 +47,13 @@ public class Tree {
 
         /**
          * Copy constructor.
+         *
          * @param node a node which copy is to be created
          */
         public Node(Node node) {
             this.childNodes = new ArrayList<>();
             this.state = new State(node.getState());
-            if (node.getParent() != null){
+            if (node.getParent() != null) {
                 this.parent = node.getParent();
             }
             for (Node child : node.getChildNodes()) {
@@ -95,7 +96,7 @@ public class Tree {
 
         @Override
         public int compareTo(@NonNull Node node) {
-            return ((Integer)getState().getVisitCount()).
+            return ((Integer) getState().getVisitCount()).
                     compareTo(node.getState().getVisitCount());
         }
     }

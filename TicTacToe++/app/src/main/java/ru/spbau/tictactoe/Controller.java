@@ -2,11 +2,11 @@ package ru.spbau.tictactoe;
 
 import android.app.Activity;
 import android.net.wifi.WifiManager;
+import android.support.annotation.NonNull;
 import android.text.format.Formatter;
-
 import java.io.IOException;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
+
+import java.util.concurrent.ExecutionException;
 
 import ru.spbau.tictactoe.Bot.Bot;
 import ru.spbau.tictactoe.Bot.MiniMaxBot.MiniMaxBot;
@@ -19,6 +19,7 @@ import ru.spbau.tictactoe.Network.NetAnotherPlayer;
 import ru.spbau.tictactoe.Network.Server;
 import ru.spbau.tictactoe.Statistic.DataBase;
 import ru.spbau.tictactoe.ui.UI;
+import ru.spbau.tictactoe.utils.Converter;
 
 import static android.content.Context.WIFI_SERVICE;
 
@@ -29,36 +30,56 @@ import static android.content.Context.WIFI_SERVICE;
  */
 public class Controller {
 
+    private static final int PORT_NUMBER = 3030;
+
+    private enum State {
+        MAIN_MENU,                 // game with friend, game with bot, stats
+        SHARE_IP,                  // allows friend to connect
+        CONNECT_TO_FRIEND,         // get server's ip
+        CREATE_FIELD,
+        MY_TURN,
+        FRIENDS_TURN,
+        END_OF_GAME,
+        STATS
+    }
+
+    private enum Player {
+        CROSS,
+        NOUGHT;
+
+        public boolean isCross() {
+            return this == CROSS;
+        }
+    }
+
     private final static int LOCAL_NET_MASK = (192) | (168 << 8);
-    public static boolean myTurn;
+
     /**
      * cross is true and nought is false
      */
-    private static boolean myType;
+    private static Player myType;
+
     private static State state;
     private static UI ui;
     private static Server server;
     private static Client client;
     private static Logic logic = new Logic();
     private static DataBase dataBase;
+
+
     /**
      * either bot or net friend
      */
     private static NetAnotherPlayer friend;
-    private boolean paused = false;
-
-    public static void main(String[] args) {
-        System.err.println(LOCAL_NET_MASK);
-    }
 
     /**
-     * provides access to ui as a static field
+     * provides access to ui as a field
      *
      * @param ui class for interaction with user
      */
     public static void initController(UI ui) {
         Controller.ui = ui;
-        Controller.initDB(ui);
+//        initDB(ui);
     }
 
     /**
@@ -73,25 +94,27 @@ public class Controller {
     /**
      * sets first player to real player and second player to new bot
      * and then switches state accordingly
+     * @param botLevel parameter to determine difficulty of game
      */
-    public static void optionGameWithBot() {
+    public static void optionGameWithBot(int botLevel) {
         state = State.CREATE_FIELD;
-        myType = true;
+        myType = Player.CROSS;
 
-        final Bot bot = new MiniMaxBot(logic.getBoard());
+        final Bot bot = getBot(botLevel);
         friend = new NetAnotherPlayer() {
+
             @Override
-            public Turn getOpponentTurn() {
-                return new Turn(bot.makeTurn());
+            public UITurn getOpponentTurn() {
+                return new UITurn(bot.makeTurn());
             }
 
             @Override
-            public void setOpponentTurn(Turn t) {
+            public void setOpponentTurn(UITurn t) {
                 bot.getTurn(t);
             }
 
             @Override
-            public boolean getFirstPlayer() {
+            public boolean amIFirstPlayer() {
                 return true;
             }
 
@@ -99,10 +122,20 @@ public class Controller {
             public String getName() {
                 return bot.getName();
             }
+
+            @Override
+            public void receivePlayer(boolean b) {
+            }
         };
 
-        boolean firstPlayer = myType;
-        state = firstPlayer ? State.MY_TURN : State.FRIENDS_TURN;
+        state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
+    }
+
+    @NonNull
+    private static Bot getBot(int botLevel) {
+        return botLevel == 1 ? new Bot(logic.getBoard())
+                : botLevel == 2 ? new MonteCarloBot(logic.getBoard())
+                : new MiniMaxBot(logic.getBoard());
     }
 
     /**
@@ -118,44 +151,42 @@ public class Controller {
      * @param y is vertical projection of move [1..9]
      */
     public static void verifyTurn(int x, int y) {
-        Turn newTurn = new Turn(myType, x, y);
+        UITurn newTurn = new UITurn(myType.isCross(), x, y);
 
         if (state == State.MY_TURN && logic.verifyTurn(newTurn.convertToTurn())) {
             ui.disableHighlight();
-            ui.applyTurn(getX(newTurn), getY(newTurn), getMyType());
+            ui.applyTurn(Converter.getX(newTurn), Converter.getY(newTurn), getMyType());
             logic.applyMyTurn(newTurn.convertToTurn());
 
             friend.setOpponentTurn(newTurn);
 
-            if (!checkForWins()) {
+            if (!checkForEndOfGame(newTurn)) {
                 state = State.FRIENDS_TURN;
                 setOpponentTurn(friend.getOpponentTurn());
             }
-        } else {
+        } else if (state == State.FRIENDS_TURN) {
+            ui.incorrectTurnTime();
             System.err.println("incorrect turn time");
         }
     }
 
-    private static int getX(Turn newTurn) {
-        return newTurn.x + 1;
-    }
-
     private static int getMyType() {
-        return myType ? 1 : -1;
+        return myType.isCross() ? 1 : -1;
     }
 
     /**
      * end of game on little board causes drawing of big sign
      * end of game on whole board causes start of new game
      *
+     * @param newTurn is last made turn
      * @return whether game was ended
      */
-    private static boolean checkForWins() {
+    private static boolean checkForEndOfGame(UITurn newTurn) {
         Status littleWin = logic.isLittleWin();
         if (littleWin == Status.NOUGHT || littleWin == Status.CROSS) {
             int littleWinCoords = logic.getLittleWinCoords();
-            ui.smallWin(getXOfBoard(littleWinCoords),
-                    getYOfBoard(littleWinCoords),
+            ui.smallWin(Converter.getXOfBoard(littleWinCoords),
+                    Converter.getYOfBoard(littleWinCoords),
                     getPlayer(littleWin));
         }
 
@@ -163,35 +194,21 @@ public class Controller {
             state = State.END_OF_GAME;
             Result result = logic.getResult();
             ui.displayResult(result);
-            dataBase.addRecord(result, friend.getName(), logic.getTurnCounter());
-//            try {
-//                TimeUnit.SECONDS.sleep(5);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            newGame();
+            dataBase.addRecord(result, friend.getName(), logic.getTurnCounter(), myType.isCross());
+
             return true;
         }
-
         return false;
     }
 
-    public static void newGame() {
+    private static void newGame() {
         logic = new Logic();
         ui.setUpField();
-        optionGameWithBot();
+        optionGameWithBot(1);
     }
 
     private static int getPlayer(Status status) {
         return status == Status.CROSS ? 1 : status == Status.NOUGHT ? -1 : 0;
-    }
-
-    private static int getXOfBoard(int littleWinCoords) {
-        return littleWinCoords % 3 + 1;
-    }
-
-    private static int getYOfBoard(int littleWinCoords) {
-        return littleWinCoords / 3 + 1;
     }
 
     /**
@@ -200,20 +217,16 @@ public class Controller {
      *
      * @param turn is new move
      */
-    public static void setOpponentTurn(Turn turn) {
+    public static void setOpponentTurn(UITurn turn) {
         if (state == State.FRIENDS_TURN) {
             logic.applyOpponentsTurn(turn.convertToTurn());
-            try {
-                TimeUnit.MILLISECONDS.sleep(75);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            ui.applyTurn(getX(turn), getY(turn), getFriendsType());
+            ui.applyTurn(Converter.getX(turn), Converter.getY(turn), getFriendsType());
 
-            if (!checkForWins()) {
+            if (!checkForEndOfGame(turn)) {
+                ui.clearMessage();
                 state = State.MY_TURN;
                 if (logic.getStatusOfInner(nextInnerBoard(turn)) == Status.GAME_CONTINUES) {
-                    ui.setHighlight(getXOfNextBoard(turn), getYOfNextBoard(turn));
+                    ui.setHighlight(Converter.getXOfNextBoard(turn), Converter.getYOfNextBoard(turn));
                 } else {
                     ui.highlightAll();
                 }
@@ -223,24 +236,12 @@ public class Controller {
         }
     }
 
-    private static int nextInnerBoard(Turn turn) {
-        return turn.y % 3 * 3 + turn.x % 3;
-    }
-
-    private static int getYOfNextBoard(Turn turn) {
-        return turn.y % 3 + 1;
-    }
-
-    private static int getXOfNextBoard(Turn turn) {
-        return turn.x % 3 + 1;
+    private static int nextInnerBoard(UITurn turn) {
+        return turn.getY() % 3 * 3 + turn.getX() % 3;
     }
 
     private static int getFriendsType() {
-        return myType ? -1 : 1;
-    }
-
-    private static int getY(Turn turn) {
-        return turn.y + 1;
+        return myType.isCross() ? -1 : 1;
     }
 
     /**
@@ -270,59 +271,60 @@ public class Controller {
     }
 
 
-    public static void optionConnectToFriend(String text) {
+    public static void optionJoinFriend(String text) throws IOException {
         state = State.CONNECT_TO_FRIEND;
         int ipTail = WordCoder.decode(text);
 
         String ip = Formatter.formatIpAddress(LOCAL_NET_MASK | ipTail << 16);
         System.err.println(ip);
-        connectToServer(ip);
-    }
-
-    private static void connectToServer(String ip) {
-        client = new Client();
         try {
-            client.start("Client", ip, "3030");
-            friend = client.getClientPlayer("Server");
-            myTurn = friend.getFirstPlayer();
-//            newGame(myTurn);
-        } catch (IOException e) {
+            connectToServer(ip);
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public static void newGame(boolean myTurn) {
-        if (!myTurn) {
-            state = State.FRIENDS_TURN;
+    private static void connectToServer(String ip)
+            throws ExecutionException, InterruptedException, IOException {
+        client = new Client();
+        client.start("Client Lisa", ip, "3030");
+        friend = client.getPlayer();
+        String name = friend.getName();
+        myType = friend.amIFirstPlayer() ? Player.CROSS : Player.NOUGHT;
+        state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
+        System.out.println("state = " + state);
+//        startGameCycle();
+//            newSession(myTurn);
+    }
 
+    public static void startGameCycle() {
+        if (state == State.FRIENDS_TURN) {
             setOpponentTurn(friend.getOpponentTurn());
-        } else {
-            state = State.MY_TURN;
         }
     }
 
-    public static void optionInviteFriend() {
+    public static void optionInviteFriend()
+            throws IOException {
         state = State.SHARE_IP;
 
         server = new Server();
         try {
             server.start("Server", 3030);
-
-            myTurn = choosePlayer();
-
-            friend = server.getClientPlayer("Client");
-//            newGame(myTurn);
-        } catch (IOException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
+
+        myType = choosePlayer();
+        state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
+        friend = server.getPlayer();
+        friend.receivePlayer(!myType.isCross());
     }
 
-
-    private static boolean choosePlayer() {
-        myTurn = new Random().nextBoolean();
-        server.directPassTo(Boolean.toString(!myTurn));
+    private static Player choosePlayer() {
+        boolean myTurn = true; //new Random().nextBoolean();
+//        server.passTo(Boolean.toString(!myTurn));
         System.err.println("myTurn: " + myTurn);
-        return myTurn;
+        return myTurn ? Player.CROSS : Player.NOUGHT;
     }
 
     public static String getEncodedIP(Activity activity) {
@@ -343,20 +345,5 @@ public class Controller {
 
         String ip = Formatter.formatIpAddress(LOCAL_NET_MASK | ipTail << 16);
         return ip;
-    }
-
-    public static void initDB(Activity activity) {
-        dataBase = new DataBase(activity.getApplicationContext());
-    }
-
-    private enum State {
-        MAIN_MENU,                 // game with friend, game with bot, stats
-        SHARE_IP,                  // allows friend to connect
-        CONNECT_TO_FRIEND,         // get server's ip
-        CREATE_FIELD,
-        MY_TURN,
-        FRIENDS_TURN,
-        END_OF_GAME,
-        STATS
     }
 }

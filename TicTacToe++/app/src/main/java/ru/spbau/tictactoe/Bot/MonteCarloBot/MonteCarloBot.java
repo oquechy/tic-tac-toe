@@ -15,7 +15,7 @@ import ru.spbau.tictactoe.Logic.Turn.Turn;
  * An implementation of Monte Carlo tree search algorithm.
  */
 public class MonteCarloBot extends CleverBot {
-    public MonteCarloBot(Board board){
+    public MonteCarloBot(Board board) {
         super(board);
         level = 7;
     }
@@ -42,7 +42,7 @@ public class MonteCarloBot extends CleverBot {
             // Selection
             Tree.Node promisingNode = selectPromisingNode(rootNode);
             // Expansion
-            if (promisingNode.getState().getBoard().getStatus() == Status.GAME_CONTINUES){
+            if (promisingNode.getState().getBoard().getStatus() == Status.GAME_CONTINUES) {
                 expandNode(promisingNode);
             }
             // Simulation
@@ -62,6 +62,7 @@ public class MonteCarloBot extends CleverBot {
 
     /**
      * Selects node with the best UCT (Upper Confidence Bound) function.
+     *
      * @param rootNode is the node which child node is to be selected
      * @return node with the best UCT function
      */
@@ -74,12 +75,14 @@ public class MonteCarloBot extends CleverBot {
     }
 
     /**
-     * 
-     * @param node
+     * When it can no longer apply UCT to find the successor node,
+     * it expands the game tree by appending all possible states from the leaf node.
+     *
+     * @param node is a node to be expanded.
      */
     private void expandNode(Tree.Node node) {
         List<State> possibleStates = node.getState().getAllPossibleStates();
-        for(State state : possibleStates){
+        for (State state : possibleStates) {
             Tree.Node newNode = new Tree.Node(state);
             newNode.setParent(node);
             node.getChildNodes().add(newNode);
@@ -87,15 +90,17 @@ public class MonteCarloBot extends CleverBot {
     }
 
     /**
+     * Traverses upwards to the root and increments visit score for all visited nodes.
+     * It also updates win score for each node if the player for that position has won the playout.
      *
-     * @param nodeToExplore
-     * @param result
+     * @param nodeToExplore a node from which the score is to be updated.
+     * @param result        is a result of the simulation
      */
     private void backPropogation(Tree.Node nodeToExplore, Status result) {
         Tree.Node tempNode = nodeToExplore;
         while (tempNode != null) {
             tempNode.getState().incrementVisit();
-            if (result == Status.playerToStatus(player)){
+            if (result == Status.playerToStatus(player)) {
                 tempNode.getState().addScore(WIN_SCORE);
             }
             tempNode = tempNode.getParent();
@@ -103,9 +108,10 @@ public class MonteCarloBot extends CleverBot {
     }
 
     /**
+     * Simulates random playout on board relevant to the given node.
      *
-     * @param node
-     * @return
+     * @param node is a node on which board is to simulated
+     * @return a result of the game
      */
     private Status simulateRandomPlayout(Tree.Node node) {
         Tree.Node tempNode = new Tree.Node(node);
@@ -130,17 +136,18 @@ public class MonteCarloBot extends CleverBot {
     }
 
     /**
-     *
+     * Class for computation UCT (Upper Confidence Bound applied to trees) formula.
      */
     private static class UCT {
         /**
+         * Calculates the UCT formula for the given node.
          *
-         * @param totalVisit
-         * @param nodeWinScore
-         * @param nodeVisit
-         * @return
+         * @param totalVisit   a number of total visits
+         * @param nodeWinScore node's win score
+         * @param nodeVisit    a number of this node's visits
+         * @return a calculated value of UCT function
          */
-         private static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit) {
+        private static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit) {
             if (nodeVisit == 0) {
                 return Integer.MAX_VALUE;
             }
@@ -149,9 +156,10 @@ public class MonteCarloBot extends CleverBot {
         }
 
         /**
+         * Finds the child node with the greatest UCT function.
          *
-         * @param node
-         * @return
+         * @param node is the node which child to be returned
+         * @return a child node of the given node with the maximum score
          */
         private static Tree.Node findBestNodeWithUCT(Tree.Node node) {
             final int parentVisit = node.getState().getVisitCount();

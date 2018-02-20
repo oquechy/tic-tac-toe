@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class SocketReader extends AsyncTask<BufferedReader, Void, String> {
 
-    IOException exception;
+    private IOException exception;
 
     @Override
     protected String doInBackground(BufferedReader... in) {
@@ -15,7 +15,7 @@ public class SocketReader extends AsyncTask<BufferedReader, Void, String> {
             return in[0].readLine();
         } catch (IOException e) {
             exception = e;
-            return null;
+            return "fail in socket reader";
         }
     }
 }
