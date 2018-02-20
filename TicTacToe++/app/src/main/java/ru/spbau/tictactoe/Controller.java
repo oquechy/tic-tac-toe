@@ -194,11 +194,10 @@ public class Controller {
             state = State.END_OF_GAME;
             Result result = logic.getResult();
             ui.displayResult(result);
-            dataBase.addRecord(result, friend.getName(), logic.getTurnCounter());
+            dataBase.addRecord(result, friend.getName(), logic.getTurnCounter(), myType.isCross());
 
             return true;
         }
-
         return false;
     }
 
@@ -272,7 +271,7 @@ public class Controller {
     }
 
 
-    public void optionConnectToFriend(String text) {
+    public static void optionJoinFriend(String text) throws IOException {
         state = State.CONNECT_TO_FRIEND;
         int ipTail = WordCoder.decode(text);
 
@@ -285,41 +284,40 @@ public class Controller {
         }
     }
 
-    private void connectToServer(String ip) throws ExecutionException, InterruptedException {
+    private static void connectToServer(String ip)
+            throws ExecutionException, InterruptedException, IOException {
         client = new Client();
-        try {
-            client.start("Client Lisa", ip, "3030");
-            friend = client.getPlayer();
-            String name = friend.getName();
-            myType = friend.amIFirstPlayer() ? Player.CROSS : Player.NOUGHT;
-            state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
+        client.start("Client Lisa", ip, "3030");
+        friend = client.getPlayer();
+        String name = friend.getName();
+        myType = friend.amIFirstPlayer() ? Player.CROSS : Player.NOUGHT;
+        state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
+        System.out.println("state = " + state);
+//        startGameCycle();
 //            newSession(myTurn);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    public void startGameCycle() {
+    public static void startGameCycle() {
         if (state == State.FRIENDS_TURN) {
             setOpponentTurn(friend.getOpponentTurn());
         }
     }
 
-    public void optionInviteFriend() {
+    public static void optionInviteFriend()
+            throws IOException {
         state = State.SHARE_IP;
 
         server = new Server();
         try {
             server.start("Server", 3030);
-
-            myType = choosePlayer();
-            state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
-            friend = server.getPlayer();
-            String name = friend.getName();
-            friend.receivePlayer(!myType.isCross());
-        } catch (IOException | InterruptedException | ExecutionException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
+
+        myType = choosePlayer();
+        state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
+        friend = server.getPlayer();
+        friend.receivePlayer(!myType.isCross());
     }
 
     private static Player choosePlayer() {
