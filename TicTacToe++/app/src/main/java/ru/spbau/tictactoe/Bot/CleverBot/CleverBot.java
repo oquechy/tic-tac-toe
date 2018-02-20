@@ -20,8 +20,6 @@ import static ru.spbau.tictactoe.Bot.BoardAnalyzer.printBoard;
  * Bot which looks over all possible moves and chooses the best according to my views.
  */
 public class CleverBot extends Bot {
-    private static final Logger logger = LoggerFactory.getLogger(CleverBot.class);
-
     public CleverBot(Board board) {
         super(board);
     }

@@ -10,8 +10,9 @@ import ru.spbau.tictactoe.Logic.Turn.Turn;
 
 /**
  * A class which represents a state of the game for a certain node.
+ * This class is used only for MonteCarloBot, so class and all methods are package private.
  */
-public class State {
+class State {
     private Board board;
     private Turn lastTurn;
     private int visitCount;
@@ -19,7 +20,7 @@ public class State {
     private Bot cross;
     private Bot nought;
 
-    public State() {
+    State() {
         board = new Board();
         cross = new Bot(board);
         nought = new Bot(board);
@@ -27,7 +28,7 @@ public class State {
         nought.setPlayer(Turn.Player.NOUGHT);
     }
 
-    public State(State state) {
+    State(State state) {
         board = (state.getBoard().deepCopy());
         visitCount = state.getVisitCount();
         winScore = state.getWinScore();
@@ -38,7 +39,7 @@ public class State {
         lastTurn = new Turn(state.lastTurn.getInnerBoard(), state.lastTurn.getInnerSquare());
     }
 
-    public State(Board board) {
+    private State(Board board) {
         this.board = board.deepCopy();
         cross = new Bot(board);
         nought = new Bot(board);
@@ -46,31 +47,31 @@ public class State {
         nought.setPlayer(Turn.Player.NOUGHT);
     }
 
-    public Turn getLastTurn() {
+    Turn getLastTurn() {
         return lastTurn;
     }
 
-    public Board getBoard() {
+    Board getBoard() {
         return board;
     }
 
-    public void setBoard(Board board) {
+    void setBoard(Board board) {
         this.board = board;
     }
 
-    public Turn.Player getPlayer() {
+    Turn.Player getPlayer() {
         return board.getCurrentPlayer();
     }
 
-    public int getVisitCount() {
+    int getVisitCount() {
         return visitCount;
     }
 
-    public double getWinScore() {
+    double getWinScore() {
         return winScore;
     }
 
-    public void setWinScore(double winScore) {
+    void setWinScore(double winScore) {
         this.winScore = winScore;
     }
 
@@ -78,7 +79,7 @@ public class State {
      * Returns all states approachable from this state after one turn.
      * @return list of all states
      */
-    public List<State> getAllPossibleStates() {
+    List<State> getAllPossibleStates() {
         List<State> possibleStates = new ArrayList<>();
         List<Turn> availablePositions = BoardAnalyzer.getAvailableMoves(board);
         for (Turn turn : availablePositions) {
@@ -93,7 +94,7 @@ public class State {
     /**
      * Increments total number of visits.
      */
-    public void incrementVisit() {
+    void incrementVisit() {
         this.visitCount++;
     }
 
@@ -101,7 +102,7 @@ public class State {
      * Adds a score to an existing win score.
      * @param score is a score to be added
      */
-    public void addScore(double score) {
+    void addScore(double score) {
         if (this.winScore != Integer.MIN_VALUE)
             this.winScore += score;
     }
@@ -109,7 +110,7 @@ public class State {
     /**
      * Simulates random play on board using two random bots.
      */
-    public void randomPlay() {
+    void randomPlay() {
         if (board.getCurrentPlayer() == Turn.Player.CROSS) {
             board.makeMove(cross.makeTurn());
         } else {

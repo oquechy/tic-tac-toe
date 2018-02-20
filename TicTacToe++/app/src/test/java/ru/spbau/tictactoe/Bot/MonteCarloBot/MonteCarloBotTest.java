@@ -1,7 +1,8 @@
-package ru.spbau.tictactoe.Bot;
+package ru.spbau.tictactoe.Bot.MonteCarloBot;
 
 import org.junit.Test;
 
+import ru.spbau.tictactoe.Bot.Bot;
 import ru.spbau.tictactoe.Bot.CleverBot.CleverBot;
 import ru.spbau.tictactoe.Bot.MonteCarloBot.MonteCarloBot;
 import ru.spbau.tictactoe.Logic.Board.Board;
@@ -10,7 +11,6 @@ import ru.spbau.tictactoe.Logic.Turn.Turn;
 
 
 public class MonteCarloBotTest {
-
     @Test
     public void monteCarloTest(){
         int victories = 0;
@@ -19,7 +19,7 @@ public class MonteCarloBotTest {
             Board board = new Board();
             Bot bot = new MonteCarloBot(board);
             Bot opponent = new CleverBot(board);
-            bot.player = Turn.Player.CROSS;
+            bot.setPlayer(Turn.Player.CROSS);
             while(board.getStatus() == Status.GAME_CONTINUES){
                 if(board.getCurrentPlayer() == Turn.Player.CROSS){
                     board.makeMove(bot.makeTurn());
@@ -27,7 +27,6 @@ public class MonteCarloBotTest {
                 else {
                     board.makeMove(opponent.makeTurn());
                 }
-                //BoardAnalyzer.printBoard(board);
             }
             if(board.getStatus() == Status.DRAW){
                 draws++;

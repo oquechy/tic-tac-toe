@@ -166,7 +166,6 @@ public class Controller {
             }
         } else if (state == State.FRIENDS_TURN) {
             ui.incorrectTurnTime();
-            System.err.println("incorrect turn time");
         }
     }
 
@@ -276,7 +275,6 @@ public class Controller {
         int ipTail = WordCoder.decode(text);
 
         String ip = Formatter.formatIpAddress(LOCAL_NET_MASK | ipTail << 16);
-        System.err.println(ip);
         try {
             connectToServer(ip);
         } catch (ExecutionException | InterruptedException e) {
