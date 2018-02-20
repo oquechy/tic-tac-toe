@@ -1,10 +1,12 @@
 package ru.spbau.tictactoe.Logic.Turn;
 
 
-import java.io.Serializable;
-
-public class Turn implements Serializable {
-    public enum Player implements Serializable {
+/**
+ * Class which keeps the id of the inner board
+ * and the inner square where the turn is to be made.
+ */
+public class Turn {
+    public enum Player {
         CROSS, NOUGHT;
 
         public Player opponent() {

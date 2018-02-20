@@ -1,11 +1,6 @@
 package ru.spbau.tictactoe.Logic.Board;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.Serializable;
-
 import static ru.spbau.tictactoe.Logic.Board.Status.DRAW;
 import static ru.spbau.tictactoe.Logic.Board.Status.GAME_CONTINUES;
 

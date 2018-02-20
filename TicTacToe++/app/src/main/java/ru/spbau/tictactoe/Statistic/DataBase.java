@@ -121,5 +121,3 @@ public class DataBase extends SQLiteOpenHelper {
         db.insert("stats", null, cv);
     }
 }
-
-//

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Scanner;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ public class CleverBot extends Bot {
      * @param player is a player who makes a turn
      * @return TurnStatistics for every square on board
      */
-    protected TurnStatistics[] analyzeBlock(int block, Turn.Player player, Board copy) {
+    private TurnStatistics[] analyzeBlock(int block, Turn.Player player, Board copy) {
         Board.InnerBoard[] realBoard = copy.getBoard();
         TurnStatistics[] res = new TurnStatistics[9];
         ArrayList<Integer> indexes = new ArrayList<>();
@@ -82,7 +83,7 @@ public class CleverBot extends Bot {
      * @param player is a player who makes a turn
      * @return true if player's opponent can win on board, false otherwise
      */
-    public boolean analyzeBlockForLose(int block, Turn.Player player, Board board) {
+    private boolean analyzeBlockForLose(int block, Turn.Player player, Board board) {
         Board.InnerBoard[] realBoard = board.getBoard();
         for (int i = 0; i < 9; i++) {
             Board.InnerBoard square = realBoard[block];
@@ -136,7 +137,6 @@ public class CleverBot extends Bot {
     }
 
 
-
     /**
      * Launches console version for debug.
      */
@@ -144,10 +144,6 @@ public class CleverBot extends Bot {
         int cnt = 0;
         Scanner reader = new Scanner(System.in);
         while (!board.isOver()) {
-            if(cnt++ == 2){
-                System.out.println("ooups");
-            }
-            System.out.printf("Current board is %d\n", board.getCurrentInnerBoard());
             printBoard(board);
             if (board.getCurrentInnerBoard() == -1) {
                 int x = reader.nextInt();
