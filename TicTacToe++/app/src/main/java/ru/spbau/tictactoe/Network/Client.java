@@ -27,13 +27,13 @@ public class Client extends Connection {
             throws IOException, ExecutionException, InterruptedException {
         socket = isMainThread() ? new SocketCreator().execute(hostName, portNumber).get()
                 : createSocket(hostName, portNumber);
+
+        if (socket == null) {
+            throw new ConnectException();
+        }
+
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-//        String serverName;
-
-//        serverName = in.readLine();
-//        System.out.println("ServerName: " + serverName);
 
         System.out.println("ClientName: " + clientName);
         passTo(clientName);

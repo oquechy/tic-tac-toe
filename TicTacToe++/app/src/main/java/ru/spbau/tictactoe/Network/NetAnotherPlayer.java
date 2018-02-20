@@ -7,7 +7,7 @@ public interface NetAnotherPlayer {
 
     UITurn getOpponentTurn();
 
-    public boolean amIFirstPlayer();
+    boolean amIFirstPlayer();
 
     String getName();
 

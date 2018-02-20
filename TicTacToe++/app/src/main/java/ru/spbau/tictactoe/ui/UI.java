@@ -188,6 +188,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         Controller.initBoard();
         redraw();
+        Controller.startGameCycle();
     }
 
     @Override
