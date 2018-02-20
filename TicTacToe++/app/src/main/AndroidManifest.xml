@@ -28,12 +28,13 @@
         <activity
             android:name=".ui.InviteFriend"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.WriteLogin"
-            android:screenOrientation="portrait"
-            />
-        <activity android:name=".ui.ReadLogin"
-            android:screenOrientation="portrait"
-            />
+        <activity
+            android:name=".ui.WriteLogin"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.ReadLogin"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.ChooseLevelActivity"></activity>
     </application>
 
 </manifest>
