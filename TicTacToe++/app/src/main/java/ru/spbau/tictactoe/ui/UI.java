@@ -20,12 +20,12 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
 
     static int[][] board = new int[9][9];
     static int[][] smallBoard = new int[3][3];
-    static int Hx = 1;
-    static int Hy = 1;
-    static int Lx = -1;
-    static int Ly = -1;
-    static int Lbx = -1;
-    static int Lby = -1;
+    static int highlightX = 1;
+    static int highlightY = 1;
+    static int lightX = -1;
+    static int lightY = -1;
+    static int lightBigX = -1;
+    static int lightBigY = -1;
 
     static int crossOrZero = 1;
 
@@ -86,10 +86,10 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         System.err.println("sasha's from " + (who == 1 ? "ui" : "bot") + ": " + x + " " + y);
         board[x - 1][y - 1] = who;
         if (who * crossOrZero < 0) {
-            Lx = x - 1;
-            Ly = y - 1;
-            Lby = -1;
-            Lbx = -1;
+            lightX = x - 1;
+            lightY = y - 1;
+            lightBigY = -1;
+            lightBigX = -1;
         }
         redraw();
     }
@@ -103,40 +103,46 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
     public void setUpField() {
         board = new int[9][9];
         smallBoard = new int[3][3];
-        Hx = 1;
-        Hy = 1;
-        Lx = -1;
-        Ly = -1;
-        Lbx = -1;
-        Lby = -1;
+        highlightX = 1;
+        highlightY = 1;
+        lightX = -1;
+        lightY = -1;
+        lightBigX = -1;
+        lightBigY = -1;
+        TextView res = findViewById(R.id.textView2);
+        res.setText("");
         redraw();
     }
 
     public void setHighlight(int x, int y) {
-        Hx = x - 1;
-        Hy = y - 1;
+        highlightX = x - 1;
+        highlightY = y - 1;
         redraw();
     }
 
     public void highlightAll() {
-        Hx = -2;
-        Hy = -2;
+        highlightX = -2;
+        highlightY = -2;
         redraw();
     }
 
     public void disableHighlight() {
-        Hx = -1;
-        Hy = -1;
+        highlightX = -1;
+        highlightY = -1;
         redraw();
     }
 
     public void smallWin(int x, int y, int who) {
         smallBoard[x - 1][y - 1] = who;
         if (who * crossOrZero < 0) {
-            Lx = -1;
-            Ly = -1;
-            Lbx = x - 1;
-            Lby = y - 1;
+            lightX = -1;
+            lightY = -1;
+            lightBigX = x - 1;
+            lightBigY = y - 1;
+        }
+        if (who * crossOrZero > 0 && (x - 1 == lightX / 3) && (y - 1 == lightY / 3)) {
+            lightX = -1;
+            lightY = -1;
         }
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -147,8 +153,6 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
     }
 
     public void displayResult(Result r) {
-        //Canvas canvas = surfaceHolder.lockCanvas();
-        //Drawer.drawEverything(canvas);
         TextView res = findViewById(R.id.textView2);
         Typeface font = Typeface.createFromAsset(getAssets(), "font/maintypeface.ttf");
         res.setTypeface(font);
@@ -162,7 +166,6 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
             res.setText("WIN!");
         } else
             res.setText("LOSE!");
-        //surfaceHolder.unlockCanvasAndPost(canvas);
     }
 
     public void incorrectTurnTime() {
