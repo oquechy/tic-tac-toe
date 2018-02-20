@@ -1,4 +1,4 @@
-package ru.spbau.tictactoe;
+package ru.spbau.tictactoe.utils;
 
 import java.util.Random;
 

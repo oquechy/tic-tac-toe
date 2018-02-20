@@ -22,6 +22,7 @@ import ru.spbau.tictactoe.Network.Server;
 import ru.spbau.tictactoe.Statistic.DataBase;
 import ru.spbau.tictactoe.ui.UI;
 import ru.spbau.tictactoe.utils.Converter;
+import ru.spbau.tictactoe.utils.WordCoder;
 
 import static android.content.Context.WIFI_SERVICE;
 
@@ -311,12 +312,9 @@ public class Controller {
         client = new Client();
         client.start("Client Lisa", ip, "3030");
         friend = client.getPlayer();
-        String name = friend.getName();
         myType = friend.amIFirstPlayer() ? Player.CROSS : Player.NOUGHT;
         state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
         System.out.println("state = " + state);
-//        startGameCycle();
-//            newSession(myTurn);
     }
 
     public static void startGameCycle() {

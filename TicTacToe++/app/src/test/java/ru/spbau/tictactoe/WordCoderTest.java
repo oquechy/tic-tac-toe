@@ -2,6 +2,8 @@ package ru.spbau.tictactoe;
 
 import org.junit.Test;
 
+import ru.spbau.tictactoe.utils.WordCoder;
+
 import static org.junit.Assert.*;
 
 public class WordCoderTest {
