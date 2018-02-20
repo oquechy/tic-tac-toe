@@ -194,11 +194,10 @@ public class Controller {
             state = State.END_OF_GAME;
             Result result = logic.getResult();
             ui.displayResult(result);
-            dataBase.addRecord(result, friend.getName(), logic.getTurnCounter());
+            dataBase.addRecord(result, friend.getName(), logic.getTurnCounter(), myType.isCross());
 
             return true;
         }
-
         return false;
     }
 

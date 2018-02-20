@@ -19,7 +19,7 @@ public class RecordActivity extends AppCompatActivity {
         StringBuilder st = new StringBuilder();
         for (DataBase.Entry elem : records) {
             st.append(Integer.toString(elem.rowNumber) + ' ' + elem.result
-                    + ' ' + elem.opponent + ' ' + Integer.toString(elem.moves) + '\n');
+                    + ' ' + elem.opponent + ' ' + Integer.toString(elem.moves) + ' ' + elem.myType + '\n');
         }
         recordField.setText(st.toString());
     }
