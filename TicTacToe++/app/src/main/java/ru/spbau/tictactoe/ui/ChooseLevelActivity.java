@@ -1,5 +1,6 @@
 package ru.spbau.tictactoe.ui;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,8 +9,6 @@ import android.widget.Button;
 
 import ru.spbau.tictactoe.Controller;
 import ru.spbau.tictactoe.R;
-
-import static ru.spbau.tictactoe.Controller.newGame;
 
 public class ChooseLevelActivity extends AppCompatActivity {
 
@@ -30,28 +29,33 @@ public class ChooseLevelActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Controller.optionGameWithBot(1);
-                newGame();
+                Intent intent = new Intent(ChooseLevelActivity.this, UI.class);
+                startActivity(intent);
             }
         };
         View.OnClickListener ocl2 = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Controller.optionGameWithBot(2);
-                newGame();
+                Intent intent = new Intent(ChooseLevelActivity.this, UI.class);
+                startActivity(intent);
             }
         };
         View.OnClickListener ocl3 = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Controller.optionGameWithBot(3);
-                newGame();
+                Intent intent = new Intent(ChooseLevelActivity.this, UI.class);
+                startActivity(intent);
             }
         };
         View.OnClickListener ocl4 = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Controller.optionGameWithBot(4);
-                newGame();
+                Intent intent = new Intent(ChooseLevelActivity.this, UI.class);
+                startActivity(intent);
+
             }
         };
         bot1.setOnClickListener(ocl1);
