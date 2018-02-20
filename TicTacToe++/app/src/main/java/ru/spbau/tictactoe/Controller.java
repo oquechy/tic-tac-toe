@@ -145,6 +145,10 @@ public class Controller {
             }
         };
 
+//        if (ui != null) {
+//            ui.setUpField();
+//        }
+
         state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
     }
 
