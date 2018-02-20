@@ -17,31 +17,35 @@ import ru.spbau.tictactoe.R;
 
 public class ReadLogin extends AppCompatActivity {
 
-    public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
-    }
-
-    private String errorMsg = "";
+    private static boolean error = false;
 
     static class ClientRunner extends AsyncTask<Activity, Activity, Activity> {
 
-        String text;
+        String code;
 
-        ClientRunner(String text) {
+        ClientRunner(String code) {
             super();
-            this.text = text;
+            this.code = code;
         }
 
         @Override
         protected Activity doInBackground(Activity... activities) {
-//            Controller.optionJoinFriend(text);
+            try {
+                Controller.optionJoinFriend(code);
+            } catch (IOException e) {
+                error = true;
+            }
             return activities[0];
         }
 
         @Override
         protected void onPostExecute(Activity activity) {
-            Intent intent = new Intent(activity, UI.class);
-            activity.startActivity(intent);
+            if (!error) {
+                Intent intent = new Intent(activity, UI.class);
+                activity.startActivity(intent);
+            } else {
+                ErrorHandler.handleConnectionError(activity);
+            }
         }
     }
 
@@ -57,8 +61,6 @@ public class ReadLogin extends AppCompatActivity {
         Button but = (Button) findViewById(R.id.button);
         final TextView text2 = (TextView) findViewById(R.id.editText);
         text2.setTypeface(font);
-
-        errorMsg = "";
 
         View.OnClickListener oclBut = new View.OnClickListener() {
             @Override
@@ -76,9 +78,6 @@ public class ReadLogin extends AppCompatActivity {
         };
 
         but.setOnClickListener(oclBut);
-        TextView error = (TextView) findViewById(R.id.textView6);
-        error.setTypeface(font);
-        error.setText(errorMsg);
     }
 
 }

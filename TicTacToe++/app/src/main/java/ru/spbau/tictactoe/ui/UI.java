@@ -44,7 +44,8 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         View.OnClickListener replay = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                setUpField();
+                Controller.newGame();
             }
         };
         buttonReplay.setOnClickListener(replay);

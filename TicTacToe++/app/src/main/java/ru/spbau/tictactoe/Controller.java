@@ -9,11 +9,13 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import ru.spbau.tictactoe.Bot.Bot;
+import ru.spbau.tictactoe.Bot.CleverBot.CleverBot;
 import ru.spbau.tictactoe.Bot.MiniMaxBot.MiniMaxBot;
 import ru.spbau.tictactoe.Bot.MonteCarloBot.MonteCarloBot;
 import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Logic;
 import ru.spbau.tictactoe.Logic.Result.Result;
+import ru.spbau.tictactoe.Logic.Turn.Turn;
 import ru.spbau.tictactoe.Network.Client;
 import ru.spbau.tictactoe.Network.NetAnotherPlayer;
 import ru.spbau.tictactoe.Network.Server;
@@ -50,6 +52,10 @@ public class Controller {
         public boolean isCross() {
             return this == CROSS;
         }
+
+        public Player inverted() {
+            return this == CROSS ? NOUGHT : CROSS;
+        }
     }
 
     private final static int LOCAL_NET_MASK = (192) | (168 << 8);
@@ -79,7 +85,11 @@ public class Controller {
      */
     public static void initController(UI ui) {
         Controller.ui = ui;
-//        initDB(ui);
+        initDB(ui);
+    }
+
+    private static void initDB(Activity activity) {
+        dataBase = new DataBase(activity.getApplicationContext());
     }
 
     /**
@@ -103,6 +113,7 @@ public class Controller {
         final Bot bot = getBot(botLevel);
         friend = new NetAnotherPlayer() {
 
+
             @Override
             public UITurn getOpponentTurn() {
                 return new UITurn(bot.makeTurn());
@@ -124,9 +135,19 @@ public class Controller {
             }
 
             @Override
-            public void receivePlayer(boolean b) {
+            public void receivePlayerType(boolean b) {
+            }
+
+            @Override
+            public void newGameAsPlayer(boolean isCross) {
+                bot.setBoard(logic.getBoard());
+                bot.setPlayer(isCross ? Turn.Player.CROSS : Turn.Player.NOUGHT);
             }
         };
+
+//        if (ui != null) {
+//            ui.setUpField();
+//        }
 
         state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
     }
@@ -134,7 +155,8 @@ public class Controller {
     @NonNull
     private static Bot getBot(int botLevel) {
         return botLevel == 1 ? new Bot(logic.getBoard())
-                : botLevel == 2 ? new MonteCarloBot(logic.getBoard())
+                : botLevel == 2 ? new CleverBot(logic.getBoard())
+                : botLevel == 3 ? new MonteCarloBot(logic.getBoard())
                 : new MiniMaxBot(logic.getBoard());
     }
 
@@ -200,10 +222,12 @@ public class Controller {
         return false;
     }
 
-    private static void newGame() {
+    public static void newGame() {
         logic = new Logic();
-        ui.setUpField();
-        optionGameWithBot(1);
+        myType = myType.inverted();
+        state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
+        friend.newGameAsPlayer(myType.inverted().isCross());
+        startGameCycle();
     }
 
     private static int getPlayer(Status status) {
@@ -315,7 +339,7 @@ public class Controller {
         myType = choosePlayer();
         state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
         friend = server.getPlayer();
-        friend.receivePlayer(!myType.isCross());
+        friend.receivePlayerType(!myType.isCross());
     }
 
     private static Player choosePlayer() {

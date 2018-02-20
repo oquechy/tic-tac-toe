@@ -71,7 +71,7 @@ public class EntryPoint extends AppCompatActivity {
         View.OnClickListener oclRecordsButton = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(EntryPoint.this, WriteLogin.class);
+                Intent intent = new Intent(EntryPoint.this, RecordActivity.class);
                 startActivity(intent);
             }
 

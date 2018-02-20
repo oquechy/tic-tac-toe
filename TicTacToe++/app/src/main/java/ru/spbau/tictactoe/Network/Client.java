@@ -16,7 +16,9 @@ public class Client extends Connection {
         try {
             String hostName = params[0];
             int portNumber = Integer.parseInt(params[1]);
-            return new Socket(hostName, portNumber);
+            Socket socket =  new Socket();
+            socket.connect(new InetSocketAddress(hostName, portNumber), 1000);
+            return socket;
         } catch (IOException e) {
             return null;
         }

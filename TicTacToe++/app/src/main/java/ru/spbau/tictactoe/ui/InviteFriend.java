@@ -20,7 +20,7 @@ public class InviteFriend extends AppCompatActivity {
         Typeface font = Typeface.createFromAsset(getAssets(), "font/maintypeface.ttf");
         inviteFriend.setTypeface(font);
         connectFriend.setTypeface(font);
-        View.OnClickListener oclInviteriends = new View.OnClickListener() {
+        View.OnClickListener oclInviteFriends = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(InviteFriend.this, WriteLogin.class);
@@ -34,7 +34,7 @@ public class InviteFriend extends AppCompatActivity {
                 startActivity(intent);
             }
         };
-        inviteFriend.setOnClickListener(oclInviteriends);
+        inviteFriend.setOnClickListener(oclInviteFriends);
         connectFriend.setOnClickListener(oclConnectFriend);
     }
 }
