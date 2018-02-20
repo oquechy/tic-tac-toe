@@ -35,6 +35,8 @@ public class MiniMaxBot extends CleverBot {
         boardCopy = board.deepCopy();
         TurnWithScore res = miniMax(boardCopy, 0, null);
         logger.debug("score = {}", res.score);
+        logger.debug("depth = {}", res.depth);
+        logger.debug("turn = {} {}", res.turn.getInnerBoard(), res.turn.getInnerSquare());
         return res.turn;
     }
 
@@ -49,8 +51,6 @@ public class MiniMaxBot extends CleverBot {
             if (givenBoard.getStatus() != Status.GAME_CONTINUES) {
                 logger.debug("end of game after {}, {} won", currentDepth, givenBoard.getStatus().name());
                 logger.debug("score on this board = {}", score(givenBoard));
-                logger.debug("sign = {}", statusSign(givenBoard.getStatus()));
-                logger.debug(player.name());
             }
             return new TurnWithScore(turn, score(givenBoard), currentDepth - 1);
         }
@@ -69,11 +69,17 @@ public class MiniMaxBot extends CleverBot {
      * @return the score of the board
      */
     private TurnWithScore getMax(Board givenBoard, int currentDepth) {
+        boolean debug = false;
+        if(currentDepth == 1){
+            debug = true;
+        }
         ArrayList<TurnWithScore> turnWithScores = new ArrayList<>();
         int currentInnerBoard = givenBoard.getCurrentInnerBoard();
         for (Turn turn : getAvailableMoves(givenBoard)) {
             givenBoard.makeMove(turn);
             TurnWithScore turnWithScore = miniMax(givenBoard, currentDepth, turn);
+            logger.debug("turn = {}, {}, score = {}, depth = {}", turn.getInnerBoard(), turn.getInnerSquare(),
+                    turnWithScore.score, turnWithScore.depth);
             turnWithScores.add(new TurnWithScore(turn,
                     turnWithScore.score, turnWithScore.depth));
             givenBoard.discardChanges(turn, currentInnerBoard);
