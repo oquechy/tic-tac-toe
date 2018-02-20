@@ -71,19 +71,19 @@ class Drawer {
         mPaintFat.setStyle(Paint.Style.STROKE);
         mPaintFat.setColor(Color.RED);
 
-        if (UI.Hx >= 0 && UI.Hy >= 0) {
-            canvas.drawRect(UI.Hx * 3 * CELL_WIDTH, UI.Hy * 3 * CELL_HEIGHT,
-                    (UI.Hx + 1) * 3 * CELL_WIDTH, (UI.Hy + 1) * 3 * CELL_HEIGHT, mPaintFat);
+        if (UI.highlightX >= 0 && UI.highlightY >= 0) {
+            canvas.drawRect(UI.highlightX * 3 * CELL_WIDTH, UI.highlightY * 3 * CELL_HEIGHT,
+                    (UI.highlightX + 1) * 3 * CELL_WIDTH, (UI.highlightY + 1) * 3 * CELL_HEIGHT, mPaintFat);
         }
 
-        if (UI.Hx == -2 && UI.Hy == -2) {
+        if (UI.highlightX == -2 && UI.highlightY == -2) {
             canvas.drawRect(0, 0,
                     9 * CELL_WIDTH, 9 * CELL_HEIGHT, mPaintFat);
         }
-        if (UI.Lx >= 0 && UI.Ly >= 0)
-            drawCircle(canvas, UI.Lx, UI.Ly, Color.rgb(45, 183, 165));
-        if (UI.Lbx >= 0 && UI.Lby >= 0)
-            drawBigCircle(canvas, UI.Lbx, UI.Lby, Color.rgb(45, 183, 165));
+        if (UI.lightX >= 0 && UI.lightY >= 0)
+            drawCircle(canvas, UI.lightX, UI.lightY, Color.rgb(45, 183, 165));
+        if (UI.lightBigX >= 0 && UI.lightBigY >= 0)
+            drawBigCircle(canvas, UI.lightBigX, UI.lightBigY, Color.rgb(45, 183, 165));
     }
 
     static private boolean drawCircle(Canvas mCanvas, int x, int y, int color) {
