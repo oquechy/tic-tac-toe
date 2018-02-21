@@ -180,13 +180,11 @@ public class Controller {
         if (state == State.MY_TURN && logic.verifyTurn(newTurn.convertToTurn())) {
             ui.disableHighlight();
             ui.applyTurn(Converter.getX(newTurn), Converter.getY(newTurn), getMyType());
-            logic.applyMyTurn(newTurn.convertToTurn());
-
             friend.setOpponentTurn(newTurn);
-
+            logic.applyMyTurn(newTurn.convertToTurn());
             if (!checkForEndOfGame(newTurn)) {
                 state = State.FRIENDS_TURN;
-                setOpponentTurn(friend.getOpponentTurn());
+                new TurnTransmitter().execute(friend);
             }
         } else if (state == State.FRIENDS_TURN) {
             ui.incorrectTurnTime();
@@ -329,7 +327,7 @@ public class Controller {
 
     public static void startGameCycle() {
         if (state == State.FRIENDS_TURN) {
-            setOpponentTurn(friend.getOpponentTurn());
+            new TurnTransmitter().execute(friend);
         }
     }
 
