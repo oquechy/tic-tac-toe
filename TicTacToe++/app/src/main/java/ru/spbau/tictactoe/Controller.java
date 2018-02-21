@@ -61,6 +61,7 @@ public class Controller {
     }
 
     private final static int LOCAL_NET_MASK = (192) | (168 << 8);
+    private static boolean netGame = false;
 
     /**
      * cross is true and nought is false
@@ -98,6 +99,7 @@ public class Controller {
      * defines appearance of field at the beginning of the game
      */
     public static void initBoard() {
+        ui.disableHighlight();
         if (state == State.MY_TURN) {
             ui.setHighlight(2, 2);
         }
@@ -109,6 +111,7 @@ public class Controller {
      * @param botLevel parameter to determine difficulty of game
      */
     public static void optionGameWithBot(int botLevel) {
+        netGame = false;
         state = State.CREATE_FIELD;
         myType = Player.CROSS;
 
@@ -216,10 +219,14 @@ public class Controller {
             Result result = getResult();
             ui.displayResult(result);
             dataBase.addRecord(result, friend.getName(), logic.getTurnCounter(), myType.isCross());
-
+            netGame = false;
             return true;
         }
         return false;
+    }
+
+    public boolean needReplay() {
+        return !netGame;
     }
 
     private static Result getResult() {
@@ -304,6 +311,7 @@ public class Controller {
 
 
     public static void optionJoinFriend(String text) throws IOException {
+        netGame = true;
         state = State.CONNECT_TO_FRIEND;
         int ipTail = WordCoder.decode(text);
 
@@ -333,6 +341,7 @@ public class Controller {
 
     public static void optionInviteFriend()
             throws IOException {
+        netGame = true;
         state = State.SHARE_IP;
 
         server = new Server();
