@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
 import android.text.format.Formatter;
-import java.io.IOException;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import ru.spbau.tictactoe.Bot.Bot;
@@ -34,46 +34,18 @@ import static android.content.Context.WIFI_SERVICE;
 public class Controller {
 
     private static final int PORT_NUMBER = 3030;
-
-    private enum State {
-        MAIN_MENU,                 // game with friend, game with bot, stats
-        SHARE_IP,                  // allows friend to connect
-        CONNECT_TO_FRIEND,         // get server's ip
-        CREATE_FIELD,
-        MY_TURN,
-        FRIENDS_TURN,
-        END_OF_GAME,
-        STATS
-    }
-
-    private enum Player {
-        CROSS,
-        NOUGHT;
-
-        public boolean isCross() {
-            return this == CROSS;
-        }
-
-        public Player inverted() {
-            return this == CROSS ? NOUGHT : CROSS;
-        }
-    }
-
     private final static int LOCAL_NET_MASK = (192) | (168 << 8);
-
+    private static boolean netGame = false;
     /**
      * cross is true and nought is false
      */
     private static Player myType;
-
     private static State state;
     private static UI ui;
     private static Server server;
     private static Client client;
     private static Logic logic = new Logic();
     private static DataBase dataBase;
-
-
     /**
      * either bot or net friend
      */
@@ -97,6 +69,7 @@ public class Controller {
      * defines appearance of field at the beginning of the game
      */
     public static void initBoard() {
+        ui.disableHighlight();
         if (state == State.MY_TURN) {
             ui.setHighlight(2, 2);
         }
@@ -108,6 +81,7 @@ public class Controller {
      * @param botLevel parameter to determine difficulty of game
      */
     public static void optionGameWithBot(int botLevel) {
+        netGame = false;
         state = State.CREATE_FIELD;
         myType = Player.CROSS;
 
@@ -179,13 +153,11 @@ public class Controller {
         if (state == State.MY_TURN && logic.verifyTurn(newTurn.convertToTurn())) {
             ui.disableHighlight();
             ui.applyTurn(Converter.getX(newTurn), Converter.getY(newTurn), getMyType());
-            logic.applyMyTurn(newTurn.convertToTurn());
-
             friend.setOpponentTurn(newTurn);
-
+            logic.applyMyTurn(newTurn.convertToTurn());
             if (!checkForEndOfGame(newTurn)) {
                 state = State.FRIENDS_TURN;
-                setOpponentTurn(friend.getOpponentTurn());
+                new TurnTransmitter().execute(friend);
             }
         } else if (state == State.FRIENDS_TURN) {
             ui.incorrectTurnTime();
@@ -214,13 +186,26 @@ public class Controller {
 
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
-            Result result = logic.getResult();
+            Result result = getResult();
             ui.displayResult(result);
             dataBase.addRecord(result, friend.getName(), logic.getTurnCounter(), myType.isCross());
-
+            netGame = false;
             return true;
         }
         return false;
+    }
+
+    public static boolean needReplay() {
+        return !netGame;
+    }
+
+    private static Result getResult() {
+        Result result = logic.getResult();
+        if (result == Result.DRAW) {
+            return Result.DRAW;
+        }
+
+        return result == Result.CROSS ^ myType.isCross() ? Result.NOUGHT : Result.CROSS;
     }
 
     public static void newGame() {
@@ -294,8 +279,8 @@ public class Controller {
         return builder.toString();
     }
 
-
     public static void optionJoinFriend(String text) throws IOException {
+        netGame = true;
         state = State.CONNECT_TO_FRIEND;
         int ipTail = WordCoder.decode(text);
 
@@ -319,12 +304,13 @@ public class Controller {
 
     public static void startGameCycle() {
         if (state == State.FRIENDS_TURN) {
-            setOpponentTurn(friend.getOpponentTurn());
+            new TurnTransmitter().execute(friend);
         }
     }
 
     public static void optionInviteFriend()
             throws IOException {
+        netGame = true;
         state = State.SHARE_IP;
 
         server = new Server();
@@ -341,10 +327,7 @@ public class Controller {
     }
 
     private static Player choosePlayer() {
-        boolean myTurn = true; //new Random().nextBoolean();
-//        server.passTo(Boolean.toString(!myTurn));
-        System.err.println("myTurn: " + myTurn);
-        return myTurn ? Player.CROSS : Player.NOUGHT;
+        return Player.CROSS;
     }
 
     public static String getEncodedIP(Activity activity) {
@@ -365,5 +348,29 @@ public class Controller {
 
         String ip = Formatter.formatIpAddress(LOCAL_NET_MASK | ipTail << 16);
         return ip;
+    }
+
+    private enum State {
+        MAIN_MENU,                 // game with friend, game with bot, stats
+        SHARE_IP,                  // allows friend to connect
+        CONNECT_TO_FRIEND,         // get server's ip
+        CREATE_FIELD,
+        MY_TURN,
+        FRIENDS_TURN,
+        END_OF_GAME,
+        STATS
+    }
+
+    private enum Player {
+        CROSS,
+        NOUGHT;
+
+        public boolean isCross() {
+            return this == CROSS;
+        }
+
+        public Player inverted() {
+            return this == CROSS ? NOUGHT : CROSS;
+        }
     }
 }

@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import ru.spbau.tictactoe.Bot.BoardAnalyzer;
 import ru.spbau.tictactoe.Logic.Board.Board;
+import ru.spbau.tictactoe.Logic.Board.Status;
 import ru.spbau.tictactoe.Logic.Turn.Turn;
 
 import static org.junit.Assert.*;
@@ -67,23 +68,12 @@ public class MiniMaxBotTest {
     }
 
     @Test
-    public void situation2(){
+    public void statusToSign(){
         Board board = new Board();
         MiniMaxBot bot = new MiniMaxBot(board);
-        board.makeMove(5);
-        board.makeMove(6);
-        board.makeMove(0);
-        board.makeMove(7);
-        board.makeMove(2);
-        board.makeMove(6);
-        board.makeMove(3);
-        board.makeMove(7);
-        board.makeMove(4);
-        board.makeMove(3);
-        board.makeMove(8);
-        BoardAnalyzer.printBoard(board);
-        board.makeMove(bot.makeTurn());
-        BoardAnalyzer.printBoard(board);
+        assertEquals(1, bot.statusSign(Status.NOUGHT));
     }
+
+
 
 }

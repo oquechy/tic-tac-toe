@@ -17,7 +17,7 @@ import ru.spbau.tictactoe.Logic.Turn.Turn;
 public class MonteCarloBot extends CleverBot {
     public MonteCarloBot(Board board) {
         super(board);
-        level = 7;
+        level = 5;
     }
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(MonteCarloBot.class);
@@ -133,6 +133,11 @@ public class MonteCarloBot extends CleverBot {
         Board board = new Board();
         MonteCarloBot bot = new MonteCarloBot(board);
         bot.go();
+    }
+
+    @Override
+    public String getName() {
+        return "David";
     }
 
     /**

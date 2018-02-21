@@ -2,6 +2,9 @@ package ru.spbau.tictactoe.Bot.MiniMaxBot;
 
 import android.support.annotation.NonNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -19,6 +22,8 @@ import static ru.spbau.tictactoe.Bot.BoardAnalyzer.getAvailableMoves;
  */
 public class MiniMaxBot extends CleverBot {
     private int maxDepth;
+    private int numberOfTurnsMade;
+    private static final Logger logger = LoggerFactory.getLogger(MiniMaxBot.class);
 
     public MiniMaxBot(Board board) {
         super(board);
@@ -27,8 +32,14 @@ public class MiniMaxBot extends CleverBot {
 
     @Override
     public Turn makeTurn() {
+        numberOfTurnsMade++;
+        detectMaxDepth();
         boardCopy = board.deepCopy();
-        return miniMax(boardCopy, 0, null).turn;
+        TurnWithScore res = miniMax(boardCopy, 0, null, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        logger.debug("score = {}", res.score);
+        logger.debug("depth = {}", res.depth);
+        logger.debug("turn = {} {}", res.turn.getInnerBoard(), res.turn.getInnerSquare());
+        return res.turn;
     }
 
     /**
@@ -37,43 +48,83 @@ public class MiniMaxBot extends CleverBot {
      * @param currentDepth the current depth
      * @return the score of the board
      */
-    private TurnWithScore miniMax(Board givenBoard, int currentDepth, Turn turn) {
-        if (currentDepth++ == maxDepth || givenBoard.isOver()) {
-            return new TurnWithScore(turn, score(givenBoard));
+    private TurnWithScore miniMax(Board givenBoard, int currentDepth, Turn turn, int alpha, int beta) {
+        if (currentDepth++ == maxDepth || givenBoard.getStatus() != Status.GAME_CONTINUES) {
+            if (givenBoard.getStatus() != Status.GAME_CONTINUES) {
+                logger.debug("end of game after {}, {} won", currentDepth, givenBoard.getStatus().name());
+                logger.debug("score on this board = {}", score(givenBoard));
+                logger.debug("turn = {} {}", turn.getInnerBoard(), turn.getInnerSquare());
+            }
+            return new TurnWithScore(turn, score(givenBoard), currentDepth - 1);
         }
-        TurnWithScore result = null;
         if (givenBoard.getCurrentPlayer() == player) {
-            result = getMax(givenBoard, currentDepth);
+            return getMax(givenBoard, currentDepth, alpha, beta);
 
         } else {
-            result = getMin(givenBoard, currentDepth);
+            return getMin(givenBoard, currentDepth, alpha, beta);
         }
-        if(result.score < Integer.MIN_VALUE + 1000){
-            result.score++;
-        }
-        if(result.score > Integer.MAX_VALUE - 1000){
-            result.score--;
-        }
-        return result;
     }
 
     /**
      * Play the move with the highest score.
      *
-     * @param currentPly the current depth
+     * @param currentDepth the current depth
      * @return the score of the board
      */
-    private TurnWithScore getMax(Board givenBoard, int currentPly) {
+    private TurnWithScore getMax(Board givenBoard, int currentDepth, int alpha, int beta) {
         ArrayList<TurnWithScore> turnWithScores = new ArrayList<>();
         int currentInnerBoard = givenBoard.getCurrentInnerBoard();
         for (Turn turn : getAvailableMoves(givenBoard)) {
             givenBoard.makeMove(turn);
-
-            int score = miniMax(givenBoard, currentPly, turn).score;
-            turnWithScores.add(new TurnWithScore(turn, score));
+            TurnWithScore turnWithScore = miniMax(givenBoard, currentDepth, turn, alpha, beta);
+            if(turnWithScore.score > alpha){
+                alpha = turnWithScore.score;
+            }
+            turnWithScores.add(new TurnWithScore(turn,
+                    turnWithScore.score, turnWithScore.depth));
             givenBoard.discardChanges(turn, currentInnerBoard);
+            if (alpha >= beta) {
+                break;
+            }
         }
         return randomBestTurn(turnWithScores, true);
+    }
+
+    /**
+     * Play the move with the lowest score.
+     *
+     * @param currentDepth the current depth
+     * @return the score of the board
+     */
+    private TurnWithScore getMin(Board givenBoard, int currentDepth, int alpha, int beta) {
+        ArrayList<TurnWithScore> turnWithScores = new ArrayList<>();
+        int currentInnerBoard = givenBoard.getCurrentInnerBoard();
+        for (Turn turn : getAvailableMoves(givenBoard)) {
+            givenBoard.makeMove(turn);
+            TurnWithScore turnWithScore = miniMax(givenBoard, currentDepth, turn, alpha, beta);
+            if(turnWithScore.score < beta){
+                beta = turnWithScore.score;
+            }
+            turnWithScores.add(new TurnWithScore(turn,
+                    turnWithScore.score, turnWithScore.depth));
+            givenBoard.discardChanges(turn, currentInnerBoard);
+            if (alpha >= beta) {
+                break;
+            }
+        }
+        return randomBestTurn(turnWithScores, false);
+    }
+
+     /**
+      * Sets the max depth of recursion for this turn
+      * analyzing the board and number of turns.
+      **/
+    private void detectMaxDepth(){
+        if(numberOfTurnsMade < 15 || numberOfTurnsMade < 23 && board.getNumberOfMarkedSquares() > 1){
+            maxDepth = 4;
+            return;
+        }
+        maxDepth = 5;
     }
 
     /**
@@ -85,40 +136,21 @@ public class MiniMaxBot extends CleverBot {
      */
     @SuppressWarnings("unchecked")
     private TurnWithScore randomBestTurn(ArrayList<TurnWithScore> turns, boolean max) {
-        int bestScore;
+        TurnWithScore bestScore;
         if (max) {
-
-            bestScore = Collections.max(turns).score;
+            bestScore = Collections.max(turns);
         } else {
-            bestScore = Collections.min(turns).score;
+            bestScore = Collections.min(turns);
         }
         ArrayList<TurnWithScore> bestTurns = new ArrayList<>();
         for (TurnWithScore turnWithScore : turns) {
-            if (turnWithScore.score == bestScore) {
+            if (turnWithScore.compareTo(bestScore) == 0) {
                 bestTurns.add(turnWithScore);
             }
         }
         Random random = new Random(System.currentTimeMillis());
         int index = random.nextInt(bestTurns.size());
         return bestTurns.get(index);
-    }
-
-    /**
-     * Play the move with the lowest score.
-     *
-     * @param currentDepth the current depth
-     * @return the score of the board
-     */
-    private TurnWithScore getMin(Board givenBoard, int currentDepth) {
-        ArrayList<TurnWithScore> turnWithScores = new ArrayList<>();
-        int currentInnerBoard = givenBoard.getCurrentInnerBoard();
-        for (Turn turn : getAvailableMoves(givenBoard)) {
-            givenBoard.makeMove(turn);
-            int score = miniMax(givenBoard, currentDepth, turn).score;
-            turnWithScores.add(new TurnWithScore(turn, score));
-            givenBoard.discardChanges(turn, currentInnerBoard);
-        }
-        return randomBestTurn(turnWithScores, false);
     }
 
     /**
@@ -149,16 +181,24 @@ public class MiniMaxBot extends CleverBot {
         return score;
     }
 
+    @Override
+    public void setBoard(Board board) {
+        super.setBoard(board);
+        numberOfTurnsMade = 0;
+        maxDepth = 4;
+    }
+
     /**
      * Transforms board status to sign (0, +1, -1)
+     *
      * @param status is a status to be transformed
      * @return 1 if bot won, -1 if bot lost, 0 if the status is draw
      */
-    private int statusSign(Status status){
+    int statusSign(Status status) {
         if(status == Status.DRAW){
             return 0;
         }
-        return Status.playerToStatus(this.player) == board.getStatus() ? 1 : -1;
+        return Status.playerToStatus(this.player) == status ? 1 : -1;
     }
 
 
@@ -208,21 +248,33 @@ public class MiniMaxBot extends CleverBot {
     }
 
     /**
-     * Class which represents a turn and a score relevant to this turn.
+     * Class which represents a turn, a score relevant to this turn and number of turns
+     * before the game is over (or max recursion depth if the end of game wasn't reached).
      */
     private static class TurnWithScore implements Comparable {
         private Turn turn;
         private int score;
+        private int depth;
 
-        private TurnWithScore(Turn turn, int score) {
+        private TurnWithScore(Turn turn, int score, int depth) {
             this.turn = turn;
             this.score = score;
+            this.depth = depth;
         }
 
         @Override
         public int compareTo(@NonNull Object o) {
-            return ((Integer) this.score).compareTo(((TurnWithScore) o).score);
+            if (score - ((TurnWithScore) o).score != 0) {
+                return score - ((TurnWithScore) o).score;
+            }
+            //if the score < 0 it returns the deepest lose
+            return Integer.signum(score) * (((TurnWithScore) o).depth - depth);
         }
+    }
+
+    @Override
+    public String getName() {
+        return "Alex";
     }
 
     public static void main(String[] args) {

@@ -158,6 +158,11 @@ public class CleverBot extends Bot {
         }
     }
 
+    @Override
+    public String getName() {
+        return "Andrew";
+    }
+
     public static void main(String[] args) {
         Board board = new Board();
         CleverBot bot = new CleverBot(board);

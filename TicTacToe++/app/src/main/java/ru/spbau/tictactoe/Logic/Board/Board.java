@@ -214,6 +214,7 @@ public class Board extends AbstractBoard {
      * @param innerBoard is an inner board number to be set as a current inner board.
      */
     public void discardChanges(Turn turn, int innerBoard) {
+        status = GAME_CONTINUES;
         if (board[turn.getInnerBoard()].getStatus() != Status.GAME_CONTINUES) {
             numberOfMarkedSquares--;
         }

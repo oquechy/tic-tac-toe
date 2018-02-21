@@ -45,7 +45,6 @@ public class UITurn {
                 }
             }
         }
-
         return new Turn(bigBoard[y][x], littleBoard[y][x]);
     }
 

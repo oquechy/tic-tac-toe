@@ -28,16 +28,16 @@ public class WriteLogin extends AppCompatActivity {
         protected Activity doInBackground(Activity... activities) {
             try {
                 Controller.optionInviteFriend();
+                return activities[0];
             } catch (IOException e) {
-                e.printStackTrace();
                 ErrorHandler.handleConnectionError(activities[0]);
+                return null;
             }
-
-            return activities[0];
         }
 
         @Override
         protected void onPostExecute(Activity activity) {
+            activity.setContentView(R.layout.activity_board);
             Intent intent = new Intent(activity, UI.class);
             activity.startActivity(intent);
         }
