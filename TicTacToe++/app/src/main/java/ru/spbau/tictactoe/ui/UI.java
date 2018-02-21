@@ -31,6 +31,12 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
 
     static private SurfaceHolder surfaceHolder;
 
+    //1 - cross
+    //-1 - zero
+    public static void whoAmI(int i) {
+        crossOrZero = i;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,12 +100,6 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
             lightBigX = -1;
         }
         redraw();
-    }
-
-    //1 - cross
-    //-1 - zero
-    public void whoAmI(int i) {
-        crossOrZero = i;
     }
 
     public void setUpField() {
@@ -204,6 +204,21 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        TextView res = findViewById(R.id.textView2);
+        savedInstanceState.putString("STRING", res.getText().toString());
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        TextView res = findViewById(R.id.textView2);
+        res.setText(savedInstanceState.getString("STRING"));
     }
 
     static private class Pair<T, S> {

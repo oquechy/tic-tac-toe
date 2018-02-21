@@ -70,6 +70,7 @@ public class Controller {
      */
     public static void initBoard() {
         ui.disableHighlight();
+        UI.whoAmI(myType.isCross() ? 1 : -1);
         if (state == State.MY_TURN) {
             ui.setHighlight(2, 2);
         }
@@ -213,6 +214,7 @@ public class Controller {
         myType = myType.inverted();
         state = myType.isCross() ? State.MY_TURN : State.FRIENDS_TURN;
         friend.newGameAsPlayer(myType.inverted().isCross());
+        UI.whoAmI(myType.isCross() ? 1 : -1);
         startGameCycle();
     }
 

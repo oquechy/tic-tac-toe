@@ -49,20 +49,20 @@ class Drawer {
         }
         for (int i = 0 ; i < 9; i++) {
             for (int j = 0 ; j < 9; j++) {
-                if (UI.board[i][j] * UI.crossOrZero == 1) {
+                if (UI.board[i][j] == 1) {
                     drawCross(canvas, i, j, Color.rgb(201, 102, 102));
                 }
-                if (UI.board[i][j] * UI.crossOrZero == -1) {
+                if (UI.board[i][j] == -1) {
                     drawCircle(canvas, i, j, Color.rgb(68, 152, 163));
                 }
             }
         }
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (UI.smallBoard[i][j] * UI.crossOrZero == 1) {
+                if (UI.smallBoard[i][j] == 1) {
                     drawBigCross(canvas, i, j, Color.rgb(201, 102, 102));
                 }
-                if (UI.smallBoard[i][j] * UI.crossOrZero == -1) {
+                if (UI.smallBoard[i][j] == -1) {
                     drawBigCircle(canvas, i, j, Color.rgb(68, 152, 163));
                 }
             }
@@ -80,10 +80,14 @@ class Drawer {
             canvas.drawRect(0, 0,
                     9 * CELL_WIDTH, 9 * CELL_HEIGHT, mPaintFat);
         }
-        if (UI.lightX >= 0 && UI.lightY >= 0)
+        if (UI.lightX >= 0 && UI.lightY >= 0 && UI.crossOrZero == 1)
             drawCircle(canvas, UI.lightX, UI.lightY, Color.rgb(108, 221, 221));
-        if (UI.lightBigX >= 0 && UI.lightBigY >= 0)
+        if (UI.lightBigX >= 0 && UI.lightBigY >= 0 && UI.crossOrZero == 1)
             drawBigCircle(canvas, UI.lightBigX, UI.lightBigY, Color.rgb(108, 221, 221));
+        if (UI.lightX >= 0 && UI.lightY >= 0 && UI.crossOrZero == -1)
+            drawCross(canvas, UI.lightX, UI.lightY, Color.rgb(107, 61, 61));
+        if (UI.lightBigX >= 0 && UI.lightBigY >= 0 && UI.crossOrZero == -1)
+            drawBigCross(canvas, UI.lightBigX, UI.lightBigY, Color.rgb(107, 61, 61));
     }
 
     static private boolean drawCircle(Canvas mCanvas, int x, int y, int color) {
