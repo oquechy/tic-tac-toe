@@ -51,6 +51,8 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
         buttonReplay.setOnClickListener(replay);
         Typeface font = Typeface.createFromAsset(getAssets(), "font/maintypeface.ttf");
         buttonReplay.setTypeface(font);
+        if (Controller.needReplay())
+            buttonReplay.setVisibility(View.VISIBLE);
     }
 
     private Pair<Integer, Integer> getCoordinates(float x, float y) {
