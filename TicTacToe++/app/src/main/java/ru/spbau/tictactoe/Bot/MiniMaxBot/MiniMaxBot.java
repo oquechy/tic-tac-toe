@@ -34,7 +34,7 @@ public class MiniMaxBot extends CleverBot {
     @Override
     public Turn makeTurn() {
         numberOfTurnsMade++;
-        if(numberOfTurnsMade > 15){
+        if (numberOfTurnsMade > 15) {
             maxDepth = 5;
         }
         boardCopy = board.deepCopy();
@@ -74,17 +74,11 @@ public class MiniMaxBot extends CleverBot {
      * @return the score of the board
      */
     private TurnWithScore getMax(Board givenBoard, int currentDepth) {
-        boolean debug = false;
-        if(currentDepth == 1){
-            debug = true;
-        }
         ArrayList<TurnWithScore> turnWithScores = new ArrayList<>();
         int currentInnerBoard = givenBoard.getCurrentInnerBoard();
         for (Turn turn : getAvailableMoves(givenBoard)) {
             givenBoard.makeMove(turn);
             TurnWithScore turnWithScore = miniMax(givenBoard, currentDepth, turn);
-            logger.debug("turn = {}, {}, score = {}, depth = {}", turn.getInnerBoard(), turn.getInnerSquare(),
-                    turnWithScore.score, turnWithScore.depth);
             turnWithScores.add(new TurnWithScore(turn,
                     turnWithScore.score, turnWithScore.depth));
             givenBoard.discardChanges(turn, currentInnerBoard);
@@ -166,7 +160,7 @@ public class MiniMaxBot extends CleverBot {
     }
 
     @Override
-    public void setBoard(Board board){
+    public void setBoard(Board board) {
         super.setBoard(board);
         numberOfTurnsMade = 0;
         maxDepth = 4;
@@ -254,8 +248,8 @@ public class MiniMaxBot extends CleverBot {
     }
 
     @Override
-    public String getName(){
-        return "David";
+    public String getName() {
+        return "Alex";
     }
 
     public static void main(String[] args) {

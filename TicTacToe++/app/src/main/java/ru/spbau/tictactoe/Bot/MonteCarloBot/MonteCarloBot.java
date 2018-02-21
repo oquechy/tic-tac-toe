@@ -135,6 +135,11 @@ public class MonteCarloBot extends CleverBot {
         bot.go();
     }
 
+    @Override
+    public String getName() {
+        return "David";
+    }
+
     /**
      * Class for computation UCT (Upper Confidence Bound applied to trees) formula.
      */
