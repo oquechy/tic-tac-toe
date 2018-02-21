@@ -23,15 +23,20 @@ import static ru.spbau.tictactoe.Bot.BoardAnalyzer.printBoard;
  */
 public class MiniMaxBot extends CleverBot {
     private int maxDepth;
+    private int numberOfTurnsMade;
     private static final Logger logger = LoggerFactory.getLogger(MiniMaxBot.class);
 
     public MiniMaxBot(Board board) {
         super(board);
-        maxDepth = 5;
+        maxDepth = 4;
     }
 
     @Override
     public Turn makeTurn() {
+        numberOfTurnsMade++;
+        if(numberOfTurnsMade > 15){
+            maxDepth = 5;
+        }
         boardCopy = board.deepCopy();
         TurnWithScore res = miniMax(boardCopy, 0, null);
         logger.debug("score = {}", res.score);
@@ -160,14 +165,21 @@ public class MiniMaxBot extends CleverBot {
         return score;
     }
 
+    @Override
+    public void setBoard(Board board){
+        super.setBoard(board);
+        numberOfTurnsMade = 0;
+        maxDepth = 4;
+    }
+
     /**
      * Transforms board status to sign (0, +1, -1)
      *
      * @param status is a status to be transformed
      * @return 1 if bot won, -1 if bot lost, 0 if the status is draw
      */
-    private int statusSign(Status status) {
-        return Status.playerToStatus(this.player) == board.getStatus() ? 1 : -1;
+    int statusSign(Status status) {
+        return Status.playerToStatus(this.player) == status ? 1 : -1;
     }
 
 
@@ -236,9 +248,14 @@ public class MiniMaxBot extends CleverBot {
             if (score - ((TurnWithScore) o).score != 0) {
                 return score - ((TurnWithScore) o).score;
             }
-            //if  score < 0 it returns the deepest lose
+            //if the score < 0 it returns the deepest lose
             return Integer.signum(score) * (((TurnWithScore) o).depth - depth);
         }
+    }
+
+    @Override
+    public String getName(){
+        return "David";
     }
 
     public static void main(String[] args) {
