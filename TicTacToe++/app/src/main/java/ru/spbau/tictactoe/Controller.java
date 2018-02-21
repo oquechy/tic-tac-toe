@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.text.format.Formatter;
 import java.io.IOException;
 
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import ru.spbau.tictactoe.Bot.Bot;
@@ -214,13 +215,22 @@ public class Controller {
 
         if (logic.isEndOfGame()) {
             state = State.END_OF_GAME;
-            Result result = logic.getResult();
+            Result result = getResult();
             ui.displayResult(result);
             dataBase.addRecord(result, friend.getName(), logic.getTurnCounter(), myType.isCross());
 
             return true;
         }
         return false;
+    }
+
+    private static Result getResult() {
+        Result result = logic.getResult();
+        if (result == Result.DRAW) {
+            return Result.DRAW;
+        }
+
+        return result == Result.CROSS ^ myType.isCross() ? Result.NOUGHT : Result.CROSS;
     }
 
     public static void newGame() {
@@ -341,10 +351,7 @@ public class Controller {
     }
 
     private static Player choosePlayer() {
-        boolean myTurn = true; //new Random().nextBoolean();
-//        server.passTo(Boolean.toString(!myTurn));
-        System.err.println("myTurn: " + myTurn);
-        return myTurn ? Player.CROSS : Player.NOUGHT;
+        return Player.CROSS;
     }
 
     public static String getEncodedIP(Activity activity) {

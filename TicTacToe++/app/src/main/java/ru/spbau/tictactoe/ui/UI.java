@@ -162,7 +162,7 @@ public class UI extends Activity implements SurfaceHolder.Callback, View.OnTouch
             res.setText("DRAW!");
             return;
         }
-        if (r == Result.CROSS && UI.crossOrZero == 1 || r == Result.NOUGHT && UI.crossOrZero == -1) {
+        if (r == Result.CROSS) {
             res.setText("WIN!");
         } else
             res.setText("LOSE!");
