@@ -34,9 +34,7 @@ public class MiniMaxBot extends CleverBot {
     @Override
     public Turn makeTurn() {
         numberOfTurnsMade++;
-        if (numberOfTurnsMade > 15) {
-            maxDepth = 5;
-        }
+        detectMaxDepth();
         boardCopy = board.deepCopy();
         TurnWithScore res = miniMax(boardCopy, 0, null);
         logger.debug("score = {}", res.score);
@@ -56,6 +54,7 @@ public class MiniMaxBot extends CleverBot {
             if (givenBoard.getStatus() != Status.GAME_CONTINUES) {
                 logger.debug("end of game after {}, {} won", currentDepth, givenBoard.getStatus().name());
                 logger.debug("score on this board = {}", score(givenBoard));
+                logger.debug("turn = {} {}", turn.getInnerBoard(), turn.getInnerSquare());
             }
             return new TurnWithScore(turn, score(givenBoard), currentDepth - 1);
         }
@@ -103,6 +102,18 @@ public class MiniMaxBot extends CleverBot {
             givenBoard.discardChanges(turn, currentInnerBoard);
         }
         return randomBestTurn(turnWithScores, false);
+    }
+
+     /**
+      * Sets the max depth of recursion for this turn
+      * analyzing the board and number of turns.
+      **/
+    private void detectMaxDepth(){
+        if(numberOfTurnsMade < 15 || numberOfTurnsMade < 23 && board.getNumberOfMarkedSquares() > 1){
+            maxDepth = 4;
+            return;
+        }
+        maxDepth = 5;
     }
 
     /**
@@ -173,6 +184,9 @@ public class MiniMaxBot extends CleverBot {
      * @return 1 if bot won, -1 if bot lost, 0 if the status is draw
      */
     int statusSign(Status status) {
+        if(status == Status.DRAW){
+            return 0;
+        }
         return Status.playerToStatus(this.player) == status ? 1 : -1;
     }
 
